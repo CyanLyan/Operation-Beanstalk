@@ -19,9 +19,13 @@ public class Tower : MonoBehaviour
         float y;
         float z;
 
+        //Vector3 objectSize = Vector3.Scale(transform.localScale, GetComponent())
+        float blockHeight = blockPrefab.transform.localScale.y + 0.1f;
+
         for (float i = 0; i < nPallets; i++)
         {
-            Pallet pallet = new Pallet(blockPrefab, 0, 0, 0);
+            y = (i == 0) ? 0.8f : (i * (blockHeight) + 0.2f );
+            Pallet pallet = new Pallet(blockPrefab, 0, y, 0);
             palletStack.Add(pallet);
         }
     }
