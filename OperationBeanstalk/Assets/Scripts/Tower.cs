@@ -19,13 +19,15 @@ public class Tower : MonoBehaviour
         float y;
         float z;
 
+        Quaternion spawnRotation;
         //Vector3 objectSize = Vector3.Scale(transform.localScale, GetComponent())
-        float blockHeight = blockPrefab.transform.localScale.y + 0.1f;
+        float blockHeight = blockPrefab.transform.localScale.y;
 
         for (float i = 0; i < nPallets; i++)
         {
-            y = (i == 0) ? 0.8f : (i * (blockHeight) + 0.2f );
-            Pallet pallet = new Pallet(blockPrefab, 0, y, 0);
+            y = (i == 0) ? 0.5f : (i * (blockHeight)) + 0.5f;
+            spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(0, 90, 0) : Quaternion.identity;
+            Pallet pallet = new Pallet(blockPrefab, spawnRotation , 0, y, 0,3f, 0.05f);
             palletStack.Add(pallet);
         }
     }
