@@ -29,4 +29,11 @@ public class DragObject : MonoBehaviour
         Debug.Log("mouse drag");
         transform.position = GetMouseWorldPos() + mOffset;
     }
+
+    void Update()
+    {
+        transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel"));
+    }
+
+    // void OnMouse
 }

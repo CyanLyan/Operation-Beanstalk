@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cakeslice.outline-effect": "file:C:/Users/j/Downloads/Outline-Effect-master/Outline-Effect-master",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.0",
