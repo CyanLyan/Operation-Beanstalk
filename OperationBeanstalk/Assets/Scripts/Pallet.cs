@@ -20,7 +20,7 @@ public class Pallet : MonoBehaviour
 
     void Awake()
     {
-        //0createPallet(block); //Only in awake for debug
+        //createPallet(block); //Only in awake for debug
     }
 
     public void createPallet(GameObject block, Quaternion rotation, float nBlocks = 3f, float blockSpacing = 0.3f)
