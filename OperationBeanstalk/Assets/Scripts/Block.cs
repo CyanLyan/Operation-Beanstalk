@@ -65,10 +65,10 @@ public class Block : MonoBehaviour
         Debug.Log(Input.GetAxis("Mouse ScrollWheel"));
         if (Input.GetAxis("Mouse ScrollWheel") > 0.0f)
         {
-            transform.Translate(new Vector3(1, 0, 0) * Input.GetAxis("Mouse ScrollWheel"));
+            transform.Translate(new Vector3(0, -1, 0) * Input.GetAxis("Mouse ScrollWheel"));
             //transform.position += (transform.forward * Input.GetAxis("Mouse ScrollWheel"));
         } else if(Input.GetAxis("Mouse ScrollWheel") < 0.0f) {
-            transform.Translate(new Vector3(-1,0,0)* Input.GetAxis("Mouse ScrollWheel") * -1);
+            transform.Translate(new Vector3(0,1,0)* Input.GetAxis("Mouse ScrollWheel") * -1);
         }
     }
 }

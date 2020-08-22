@@ -32,7 +32,7 @@ public class Pallet : MonoBehaviour
         {
             block = Instantiate(block, new Vector3(x,y,z), rotation);
             positionOffset = (block.transform.localScale.z + blockSpacing) * i; //Distance from midpoints, in units
-            block.transform.Translate(  new Vector3( 0f, 0f, positionOffset) );
+            block.transform.Translate(  new Vector3(positionOffset, 0f, 0f) );
             members.Add(block.GetComponent<Block>());
         }
     }
