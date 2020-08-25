@@ -7,6 +7,7 @@ public class Tower : MonoBehaviour
     public int nPallets;
     List<Pallet> palletStack = new List<Pallet>();
     public GameObject blockPrefab;
+    public GameObject center;
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class Tower : MonoBehaviour
             y = (i == 0) ? 0.5f : (i * (blockHeight)) + 0.2f;
             // spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(0, 90, 0) : Quaternion.identity;
             spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(90, 90, 90) : Quaternion.Euler(90, 0, 90);
-            Pallet pallet = new Pallet(blockPrefab, spawnRotation , 0, y, 0,3f, 0.05f);
+            Pallet pallet = new Pallet(blockPrefab, center, spawnRotation , 0, y, 0, 3f, 0.05f);
             palletStack.Add(pallet);
         }
     }
