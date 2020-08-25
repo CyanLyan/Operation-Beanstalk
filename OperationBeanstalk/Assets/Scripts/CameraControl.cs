@@ -5,25 +5,21 @@ using UnityEngine;
 public class CameraControl : MonoBehaviour
 {
     public Transform target;
-    private float speed = 1000f;
+    private float speed = 100f;
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
  
     void Update()
     {
         
-        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow))
         {
             Debug.Log("left");
             //transform.LookAt(target);
             //transform.Translate(Vector3.left * Time.deltaTime);
             transform.RotateAround(target.transform.position, new Vector3(0,1,0), speed * Time.deltaTime);
-        } else if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.RightArrow))
+        } else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow))
         {
             Debug.Log("right");
             //  transform.LookAt(target);
