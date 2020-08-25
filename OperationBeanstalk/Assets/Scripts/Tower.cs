@@ -8,6 +8,7 @@ public class Tower : MonoBehaviour
     List<Pallet> palletStack = new List<Pallet>();
     public GameObject blockPrefab;
     public GameObject center;
+    public float blockHeight;
 
     private void Awake()
     {
@@ -22,16 +23,21 @@ public class Tower : MonoBehaviour
 
         Quaternion spawnRotation;
         //Vector3 objectSize = Vector3.Scale(transform.localScale, GetComponent())
-        float blockHeight = blockPrefab.transform.localScale.y;
+        //float blockHeight = blockPrefab.transform.lossyScale.y;
+
+        float height = nPallets * blockHeight;
+        center.transform.position = new Vector3(gameObject.transform.position.x, height / 2f, gameObject.transform.position.z);
 
         for (float i = 0; i < nPallets; i++)
         {
-            y = (i == 0) ? 0.5f : (i * (blockHeight)) + 0.2f;
+            y = (i == 0) ? 0.5f : (i * blockHeight * 1.1f);
             // spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(0, 90, 0) : Quaternion.identity;
             spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(90, 90, 90) : Quaternion.Euler(90, 0, 90);
             Pallet pallet = new Pallet(blockPrefab, center, spawnRotation , 0, y, 0, 3f, 0.05f);
             palletStack.Add(pallet);
         }
+
+        Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
     }
     //Function to instantiate pallets vertically, to be written
 }

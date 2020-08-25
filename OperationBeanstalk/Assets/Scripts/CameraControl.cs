@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraControl : MonoBehaviour
 {
     public Transform target;
+    public float maxHeight;
     private float speed = 100f;
     // Start is called before the first frame update
 
@@ -32,12 +33,14 @@ public class CameraControl : MonoBehaviour
             //transform.LookAt(target);
             //transform.Translate(Vector3.left * Time.deltaTime);
             transform.Translate(Vector3.up * 0.5f, Space.World);
+            transform.position = (transform.position.y < maxHeight) ? transform.position : new Vector3(transform.position.x, maxHeight, transform.position.z);
         } else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             Debug.Log("down");
             //  transform.LookAt(target);
             //transform.Translate(Vector3.right * Time.deltaTime);
             transform.Translate(Vector3.down * 0.5f, Space.World);
+            transform.position = (transform.position.y > 0) ? transform.position : new Vector3(transform.position.x, 0, transform.position.z);
         } 
         transform.LookAt(target);
     }
