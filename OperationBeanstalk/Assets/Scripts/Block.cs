@@ -54,6 +54,7 @@ public class Block : MonoBehaviour
         return Camera.main.ScreenToViewportPoint(mousePoint);
     }
 
+    /**
     void OnMouseDrag()
     {
         Debug.Log("mouse drag");
@@ -71,4 +72,6 @@ public class Block : MonoBehaviour
             transform.Translate(new Vector3(0,1,0)* Input.GetAxis("Mouse ScrollWheel") * -1);
         }
     }
+
+    **/
 }
