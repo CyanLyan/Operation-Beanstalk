@@ -37,6 +37,8 @@ public class Block : MonoBehaviour
     private Vector3 mOffset;
     private float mZCoord;
 
+
+    /**
     void OnMouseDown()
     {
         Debug.Log("mouse down");
@@ -53,6 +55,9 @@ public class Block : MonoBehaviour
 
         return Camera.main.ScreenToViewportPoint(mousePoint);
     }
+
+    **/
+
 
     /**
     void OnMouseDrag()

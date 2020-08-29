@@ -66,6 +66,7 @@ public class DragBox : MonoBehaviour
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
         springJoint.connectedBody.drag = drag;
+        
         springJoint.connectedBody.angularDrag = angularDrag;
         mainCamera = FindCamera();
 
