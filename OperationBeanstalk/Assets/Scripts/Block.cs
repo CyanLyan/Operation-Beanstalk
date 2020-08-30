@@ -6,6 +6,8 @@ public class Block : MonoBehaviour
 {
     public bool hasBlockBeenMoved {get; set;} = false;
     public bool isBlockTouchingGround {get; set;} = false;
+
+    public bool blocksTouching { get; set; } = false;
     public static int nBlocksOnGround {get; set;} = 0;
 
     public BoxCollider towerZone;
@@ -17,21 +19,53 @@ public class Block : MonoBehaviour
 
     void Update()
     {
-        
+        if(!blocksTouching)
+        {
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+        } else
+        {
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            gameObject.transform.Rotate(0, 0, 0);
+        }
     }
 
-    void OnCollisionEnter(Collision other)
+    void OnCollisionStay(Collision other)
     {
-        if(other.gameObject.tag != "GroundPlane") return; //for now, drop this function for all collisions but that with the ground
-        isBlockTouchingGround = true;
-        nBlocksOnGround++;
+        /**
+        if(other.gameObject.tag != "GroundPlane" && other.gameObject.tag != "Block")
+        {
+            return;
+        } else 
+        **/
+        if(other.gameObject.tag == "GroundPlane")
+        {
+            isBlockTouchingGround = true;
+            nBlocksOnGround++;
+        } else if (other.gameObject.tag == "Block")
+        {
+            blocksTouching = true;
+        }
+
     }
 
     void OnCollisionExit(Collision other)
     {
-        if(other.gameObject.tag != "GroundPlane") return; //for now, drop this function for all collisions but that with the ground
-        isBlockTouchingGround = false;
-        if(nBlocksOnGround-- < 3); //Tower collapse condition
+        /**
+        if (other.gameObject.tag != "GroundPlane" && other.gameObject.tag != "Block")
+        {
+            return;
+        }
+        else 
+        **/
+        Debug.Log(other.gameObject.tag);
+        if (other.gameObject.tag == "GroundPlane")
+        {
+            isBlockTouchingGround = false;
+            nBlocksOnGround--;
+        } else if (other.gameObject.tag == "Block")
+        {
+            blocksTouching = false;
+        }
     }
 
     private Vector3 mOffset;
