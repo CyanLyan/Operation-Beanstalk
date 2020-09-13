@@ -57,7 +57,16 @@ public class DragBox : MonoBehaviour
         springJoint.damper = damper;
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
+        
+        /**
+        if (springJoint != null && springJoint.anchor != null && springJoint.connectedBody != null && springJoint.connectedBody.position != null)
+        { 
+            Debug.Log("DrawLine Running");
+            DrawLine.Draw(mainCamera.ScreenPointToRay(Input.mousePosition).GetPoint(distance), springJoint.connectedBody.position, Color.cyan, 0.1f);
+        }
+        **/
 
+        
         StartCoroutine("DragTheBox", hit.distance);
     }
 
@@ -74,6 +83,7 @@ public class DragBox : MonoBehaviour
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             springJoint.transform.position = ray.GetPoint(distance);
+            DrawLine.Draw(ray.GetPoint(distance), springJoint.connectedBody.position, Color.cyan, 0.1f);
             yield return distance;
         }
 
@@ -83,6 +93,7 @@ public class DragBox : MonoBehaviour
             springJoint.connectedBody.angularDrag = oldAngularDrag;
             springJoint.connectedBody = null;
         }
+
     }
 
     public Camera FindCamera()
