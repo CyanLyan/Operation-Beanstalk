@@ -19,13 +19,15 @@ public class Block : MonoBehaviour
 
     void Update()
     {
+        
         if(!blocksTouching)
         {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         } else
         {
+            
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-            gameObject.transform.Rotate(0, 0, 0);
+            //gameObject.transform.Rotate(0, 0, 0);
         }
     }
 
@@ -57,7 +59,7 @@ public class Block : MonoBehaviour
         }
         else 
         **/
-        Debug.Log(other.gameObject.tag);
+        Debug.Log("No touching");
         if (other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = false;
