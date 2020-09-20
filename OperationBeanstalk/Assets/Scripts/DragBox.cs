@@ -5,6 +5,7 @@ public class hitCoords: MonoBehaviour
 {
     public float distance { get; set; }
     public Rigidbody itemHit { get; set; }
+    public Rigidbody itemHitID { get; set; }
 }
 
 public class DragBox : MonoBehaviour
@@ -106,9 +107,9 @@ public class DragBox : MonoBehaviour
             //Vector3 attatchedItem = springJoint.connectedAnchor;
             Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
 
-            DrawLine.Draw(ray.GetPoint(distance), attatchedItem, Color.cyan, 0.1f);
-            Debug.Log(stuffToFollow.itemHit);
-            yield return distance;
+            DrawLine.Draw(attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, 0.1f);
+            Debug.Log(attatchedItem);
+            yield return stuffToFollow.distance;
         }
 
         if (springJoint.connectedBody)
