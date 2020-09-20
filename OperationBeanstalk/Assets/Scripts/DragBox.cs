@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public class hitCoords: MonoBehaviour
+{
+    public float distance { get; set; }
+    public Rigidbody itemHit { get; set; }
+}
+
 public class DragBox : MonoBehaviour
 {
     public float spring = 50.0f;
@@ -41,6 +47,8 @@ public class DragBox : MonoBehaviour
             body.isKinematic = true;
         }
 
+        //GameObject objHit = hit.collider.GetComponent<GameObject>();
+
         springJoint.transform.position = hit.point;
         if (attachToCenterOfMass)
         {
@@ -50,14 +58,23 @@ public class DragBox : MonoBehaviour
         }
         else
         {
-            springJoint.anchor = Vector3.zero;
+
+            springJoint.autoConfigureConnectedAnchor = true;
+            
+            //springJoint.anchor = Vector3.zero;
+            //springJoint.anchor = hit.point;
+            //Debug.Log(hit.point);
+            
+        //Debug.Log("Block Center hit: " + transform.TransformPoint(hit.collider.attachedRigidbody.position));
         }
+
+        Debug.Log(hit.collider.gameObject);
 
         springJoint.spring = spring;
         springJoint.damper = damper;
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
-        
+
         /**
         if (springJoint != null && springJoint.anchor != null && springJoint.connectedBody != null && springJoint.connectedBody.position != null)
         { 
@@ -66,11 +83,13 @@ public class DragBox : MonoBehaviour
         }
         **/
 
-        
-        StartCoroutine("DragTheBox", hit.distance);
+        hitCoords p = new hitCoords();
+        p.distance = hit.distance;
+        p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
+        StartCoroutine("DragTheBox", p);
     }
 
-    IEnumerator DragTheBox(float distance)
+    IEnumerator DragTheBox(hitCoords stuffToFollow)
     {
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
@@ -82,8 +101,13 @@ public class DragBox : MonoBehaviour
         while (Input.GetMouseButton(0))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            springJoint.transform.position = ray.GetPoint(distance);
-            DrawLine.Draw(ray.GetPoint(distance), springJoint.connectedBody.position, Color.cyan, 0.1f);
+            //springJoint.anchor = ray.GetPoint(distance);
+            springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
+            //Vector3 attatchedItem = springJoint.connectedAnchor;
+            Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
+
+            DrawLine.Draw(ray.GetPoint(distance), attatchedItem, Color.cyan, 0.1f);
+            Debug.Log(stuffToFollow.itemHit);
             yield return distance;
         }
 

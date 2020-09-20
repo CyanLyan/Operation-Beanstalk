@@ -15,6 +15,7 @@ public class Block : MonoBehaviour
     private void Awake()
     {
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
+        this.gameObject.name = "block" + GetInstanceID().ToString();
     }
 
     void Update()
@@ -22,11 +23,11 @@ public class Block : MonoBehaviour
         
         if(!blocksTouching)
         {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         } else
         {
             
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             //gameObject.transform.Rotate(0, 0, 0);
         }
     }
@@ -59,13 +60,13 @@ public class Block : MonoBehaviour
         }
         else 
         **/
-        Debug.Log("No touching");
         if (other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = false;
             nBlocksOnGround--;
         } else if (other.gameObject.tag == "Block")
         {
+            //Debug.Log("No touching");
             blocksTouching = false;
         }
     }
