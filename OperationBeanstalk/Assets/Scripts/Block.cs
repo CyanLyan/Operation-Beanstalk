@@ -16,29 +16,72 @@ public class Block : MonoBehaviour
 
     public bool isBeingNudged = false;
 
+    public float timeSpentNotTouching = 0f;
+
+    private Quaternion originalRotation;
+
+    private float rotationTransitionTime = 1f;
+
+    private bool rotating = false;
+
     private void Awake()
     {
+        this.originalRotation = transform.rotation;
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
         this.gameObject.name = "block" + GetInstanceID().ToString();
+
     }
 
     void Update()
     {
-        
+
+        /**
         if(!blocksTouching)
         {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         } else
         {
             
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             //gameObject.transform.Rotate(0, 0, 0);
         }
+        **/
 
-        if(!Input.GetMouseButtonDown(0))
+        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating)
+        {
+                if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
+                {
+                    var currentTime = Time.time;
+                    var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
+                    if (timeDiff > 2f)
+                    {
+                    StartCoroutine("Rotate", this.originalRotation.eulerAngles);
+                    }
+                }
+                else
+                {
+                    this.timeSpentNotTouching = Time.time;
+                }
+            }
+
+        if (!Input.GetMouseButtonDown(0))
         {
             this.isBeingNudged = false;
         }
+    }
+
+    private IEnumerator Rotate()
+    {
+        Debug.Log("Rotating");
+        rotating = true;
+        for (float t = 0; t < this.rotationTransitionTime; t += Time.deltaTime)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, this.originalRotation, t / this.rotationTransitionTime);
+            yield return null;
+        }
+        //transform.rotation = this.originalRotation;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+        rotating = false;
     }
 
     void OnCollisionStay(Collision other)
@@ -62,13 +105,10 @@ public class Block : MonoBehaviour
 
     void OnCollisionExit(Collision other)
     {
-        /**
-        if (other.gameObject.tag != "GroundPlane" && other.gameObject.tag != "Block")
-        {
-            return;
-        }
-        else 
-        **/
+
+     
+
+
         if (other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = false;
@@ -77,6 +117,7 @@ public class Block : MonoBehaviour
         {
             //Debug.Log("No touching");
             blocksTouching = false;
+
         }
     }
 

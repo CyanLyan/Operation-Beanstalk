@@ -55,8 +55,6 @@ public class DragBox : MonoBehaviour
             body.isKinematic = true;
         }
 
-        //GameObject objHit = hit.collider.GetComponent<GameObject>();
-
         springJoint.transform.position = hit.point;
         if (attachToCenterOfMass)
         {
@@ -68,28 +66,12 @@ public class DragBox : MonoBehaviour
         {
 
             springJoint.autoConfigureConnectedAnchor = true;
-
-            //springJoint.anchor = Vector3.zero;
-            //springJoint.anchor = hit.point;
-            //Debug.Log(hit.point);
-
-            //Debug.Log("Block Center hit: " + transform.TransformPoint(hit.collider.attachedRigidbody.position));
         }
-
-        Debug.Log(hit.collider.gameObject);
 
         springJoint.spring = spring;
         springJoint.damper = damper;
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
-
-        /**
-        if (springJoint != null && springJoint.anchor != null && springJoint.connectedBody != null && springJoint.connectedBody.position != null)
-        { 
-            Debug.Log("DrawLine Running");
-            DrawLine.Draw(mainCamera.ScreenPointToRay(Input.mousePosition).GetPoint(distance), springJoint.connectedBody.position, Color.cyan, 0.1f);
-        }
-        **/
 
         hitCoords p = new hitCoords();
         p.distance = hit.distance;
@@ -113,7 +95,7 @@ public class DragBox : MonoBehaviour
             Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
 
             DrawLine.Draw(attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan);
-            Debug.Log(springJoint.spring.ToString());
+            //Debug.Log(springJoint.spring.ToString());
             yield return stuffToFollow.distance;
         }
 
