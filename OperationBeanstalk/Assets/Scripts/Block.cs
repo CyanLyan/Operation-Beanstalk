@@ -12,6 +12,10 @@ public class Block : MonoBehaviour
 
     public BoxCollider towerZone;
 
+    private float nudgeForce = 2f;
+
+    public bool isBeingNudged = false;
+
     private void Awake()
     {
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
@@ -23,12 +27,17 @@ public class Block : MonoBehaviour
         
         if(!blocksTouching)
         {
-            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         } else
         {
             
-            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             //gameObject.transform.Rotate(0, 0, 0);
+        }
+
+        if(!Input.GetMouseButtonDown(0))
+        {
+            this.isBeingNudged = false;
         }
     }
 
@@ -71,49 +80,116 @@ public class Block : MonoBehaviour
         }
     }
 
-    private Vector3 mOffset;
-    private float mZCoord;
 
+    private float startTime;
 
-    /**
-    void OnMouseDown()
+    private void OnMouseDown()
     {
-        Debug.Log("mouse down");
-        mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
-        // Store offset = gameobject world pos - mouse world pos
-        mOffset = gameObject.transform.position - GetMouseWorldPos();
+        this.startTime = Time.time;
     }
 
-    private Vector3 GetMouseWorldPos()
+    private void OnMouseUp()
     {
-        Vector3 mousePoint = Input.mousePosition;
-
-        mousePoint.z = mZCoord;
-
-        return Camera.main.ScreenToViewportPoint(mousePoint);
-    }
-
-    **/
-
-
-    /**
-    void OnMouseDrag()
-    {
-        Debug.Log("mouse drag");
-        transform.position = GetMouseWorldPos() + mOffset;
-    }
-
-    private void OnMouseOver()
-    {
-        Debug.Log(Input.GetAxis("Mouse ScrollWheel"));
-        if (Input.GetAxis("Mouse ScrollWheel") > 0.0f)
+        if (this.startTime > 0)
         {
-            transform.Translate(new Vector3(0, -1, 0) * Input.GetAxis("Mouse ScrollWheel"));
-            //transform.position += (transform.forward * Input.GetAxis("Mouse ScrollWheel"));
-        } else if(Input.GetAxis("Mouse ScrollWheel") < 0.0f) {
-            transform.Translate(new Vector3(0,1,0)* Input.GetAxis("Mouse ScrollWheel") * -1);
+            var endTime = Time.time;
+            var timeDiff = Mathf.Abs(this.startTime - endTime);
+
+            if (timeDiff < 0.5f)
+            {
+                this.NudgeBlock();
+            }
+            Debug.Log(Mathf.Abs(this.startTime - endTime));
+
         }
     }
 
-    **/
+    private void NudgeBlock()
+    {
+        this.isBeingNudged = true;
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit ray;
+        Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
+        Debug.Log(this.GetHitFace(ray));
+        this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
+    }
+
+    public enum MCFace
+    {
+        None,
+        Up,
+        Down,
+        East,
+        West,
+        North,
+        South
+    }
+
+    public MCFace GetHitFace(RaycastHit hit)
+    {
+        Vector3 incomingVec = hit.normal - Vector3.up;
+        Vector3 roundedVec = new Vector3(Mathf.Round(incomingVec.x), Mathf.Round(incomingVec.y), Mathf.Round(incomingVec.z));
+        //Debug.Log(new Vector3(Mathf.Round(incomingVec.x), Mathf.Round(incomingVec.y), Mathf.Round(incomingVec.z)));
+
+        if (roundedVec == new Vector3(0, -1, -1))
+            return MCFace.South;
+
+        if (roundedVec == new Vector3(0, -1, 1))
+            return MCFace.North;
+
+        if (roundedVec == new Vector3(0, 0, 0))
+            return MCFace.Up;
+
+        if (roundedVec == new Vector3(1, 1, 1))
+            return MCFace.Down;
+
+        if (roundedVec == new Vector3(-1.0f, -1.0f, 0.0f))
+            return MCFace.West;
+
+        if (roundedVec == new Vector3(1, -1, 0))
+            return MCFace.East;
+
+        return MCFace.None;
+    }
+
+    private void NudgeBlockByFaceEdge(MCFace faceHit)
+    {
+        switch(faceHit)
+        {
+            case MCFace.South:
+                this.pushBlock(new Vector3(0, -1, 1));
+                break;
+
+            case MCFace.North:
+                this.pushBlock(new Vector3(0, -1, -1));
+                
+                break;
+
+            case MCFace.Up:
+                this.pushBlock(new Vector3(0, 0, 0));
+                break;
+
+            case MCFace.Down:
+                this.pushBlock(new Vector3(1, 1, 1));
+                break;
+
+            case MCFace.West:
+                this.pushBlock(new Vector3(1, -1, 0));
+                break;
+
+            case MCFace.East:
+                this.pushBlock(new Vector3(-1.0f, -1.0f, 0.0f));
+                break;
+
+        default:
+                break;
+                
+        }
+    }
+
+    private void pushBlock(Vector3 velocity)
+    {
+        var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
+        this.GetComponent<Rigidbody>().velocity = adjustedVelocity* this.nudgeForce;
+    }
 }

@@ -161,3 +161,5 @@ MonoBehaviour:
   distance: 0.2
   attachToCenterOfMass: 0
   mainCamera: {fileID: 0}
+  minForce: 0
+  maxForce: 1

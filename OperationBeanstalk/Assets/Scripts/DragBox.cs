@@ -20,11 +20,16 @@ public class DragBox : MonoBehaviour
 
     private SpringJoint springJoint;
 
+    public float minForce;
+    public float maxForce;
+
     void Update()
     {
         // Make sure the user pressed the mouse down
         if (!Input.GetMouseButtonDown(0))
             return;
+
+        if (transform.gameObject.GetComponent<Block>().isBeingNudged) return;
 
         mainCamera = FindCamera();
 
@@ -45,6 +50,8 @@ public class DragBox : MonoBehaviour
             GameObject go = new GameObject("Rigidbody dragger");
             Rigidbody body = go.AddComponent<Rigidbody>() as Rigidbody;
             springJoint = go.AddComponent<SpringJoint>() as SpringJoint;
+            springJoint.minDistance = this.minForce;
+            springJoint.maxDistance = this.maxForce;
             body.isKinematic = true;
         }
 
@@ -61,12 +68,12 @@ public class DragBox : MonoBehaviour
         {
 
             springJoint.autoConfigureConnectedAnchor = true;
-            
+
             //springJoint.anchor = Vector3.zero;
             //springJoint.anchor = hit.point;
             //Debug.Log(hit.point);
-            
-        //Debug.Log("Block Center hit: " + transform.TransformPoint(hit.collider.attachedRigidbody.position));
+
+            //Debug.Log("Block Center hit: " + transform.TransformPoint(hit.collider.attachedRigidbody.position));
         }
 
         Debug.Log(hit.collider.gameObject);
@@ -95,20 +102,18 @@ public class DragBox : MonoBehaviour
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
         springJoint.connectedBody.drag = drag;
-        
+
         springJoint.connectedBody.angularDrag = angularDrag;
         mainCamera = FindCamera();
 
         while (Input.GetMouseButton(0))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            //springJoint.anchor = ray.GetPoint(distance);
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
-            //Vector3 attatchedItem = springJoint.connectedAnchor;
             Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
 
-            DrawLine.Draw(attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, 0.1f);
-            Debug.Log(attatchedItem);
+            DrawLine.Draw(attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan);
+            Debug.Log(springJoint.spring.ToString());
             yield return stuffToFollow.distance;
         }
 
@@ -121,12 +126,8 @@ public class DragBox : MonoBehaviour
 
     }
 
-    public Camera FindCamera()
-    {
-        Camera camera = GetComponent<Camera>();
-        if (camera)
-            return camera;
-        else
-            return Camera.main;
+    public static Camera FindCamera()
+    { 
+        return Camera.main;
     }
 }
