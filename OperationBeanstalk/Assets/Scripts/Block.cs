@@ -24,28 +24,23 @@ public class Block : MonoBehaviour
 
     private bool rotating = false;
 
+    public bool userCanDrag = true;
+
+    private CameraControl cam;
+
+    private float startTime;
+
     private void Awake()
     {
         this.originalRotation = transform.rotation;
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
         this.gameObject.name = "block" + GetInstanceID().ToString();
+        this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
 
     }
 
     void Update()
     {
-
-        /**
-        if(!blocksTouching)
-        {
-            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-        } else
-        {
-            
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-            //gameObject.transform.Rotate(0, 0, 0);
-        }
-        **/
 
         if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating)
         {
@@ -55,7 +50,10 @@ public class Block : MonoBehaviour
                     var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
                     if (timeDiff > 2f)
                     {
+                    this.userCanDrag = false;
                     StartCoroutine("Rotate", this.originalRotation.eulerAngles);
+                    StartCoroutine("moveBlockToDropPosition");
+                    this.cam.pivotToDropView();
                     }
                 }
                 else
@@ -84,14 +82,15 @@ public class Block : MonoBehaviour
         rotating = false;
     }
 
+    private IEnumerator moveBlockToDropPosition()
+    {
+        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight + 10f, 0);
+        transform.position = dropPosition;
+        yield return null;
+    }
+
     void OnCollisionStay(Collision other)
     {
-        /**
-        if(other.gameObject.tag != "GroundPlane" && other.gameObject.tag != "Block")
-        {
-            return;
-        } else 
-        **/
         if(other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = true;
@@ -105,10 +104,6 @@ public class Block : MonoBehaviour
 
     void OnCollisionExit(Collision other)
     {
-
-     
-
-
         if (other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = false;
@@ -120,9 +115,6 @@ public class Block : MonoBehaviour
 
         }
     }
-
-
-    private float startTime;
 
     private void OnMouseDown()
     {

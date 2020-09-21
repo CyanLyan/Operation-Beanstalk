@@ -29,7 +29,7 @@ public class DragBox : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
 
-        if (transform.gameObject.GetComponent<Block>().isBeingNudged) return;
+        if (transform.gameObject.GetComponent<Block>().isBeingNudged || !transform.gameObject.GetComponent<Block>().userCanDrag) return;
 
         mainCamera = FindCamera();
 
