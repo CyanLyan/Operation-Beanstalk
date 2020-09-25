@@ -31,11 +31,13 @@ public class Block : MonoBehaviour
     private CameraControl cam;
     private Quaternion originalRotation;
 
+    private string blockObjTag = "Block";
+
     private void Awake()
     {
         this.originalRotation = transform.rotation;
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
-        this.gameObject.name = "block" + GetInstanceID().ToString();
+        this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
 
     }
@@ -103,7 +105,7 @@ public class Block : MonoBehaviour
         {
             isBlockTouchingGround = true;
             nBlocksOnGround++;
-        } else if (other.gameObject.tag == "Block")
+        } else if (other.gameObject.tag == this.blockObjTag)
         {
             blocksTouching = true;
             if(this.isBeingPlacedOnTop)
@@ -122,7 +124,7 @@ public class Block : MonoBehaviour
         {
             isBlockTouchingGround = false;
             nBlocksOnGround--;
-        } else if (other.gameObject.tag == "Block")
+        } else if (other.gameObject.tag == this.blockObjTag)
         {
             //Debug.Log("No touching");
             blocksTouching = false;
