@@ -8,27 +8,28 @@ public class Block : MonoBehaviour
     public bool isBlockTouchingGround {get; set;} = false;
 
     public bool blocksTouching { get; set; } = false;
+
+    public bool isBeingNudged = false;
+
+    private bool rotating = false;
+
+    public bool userCanDrag = true;
+    public bool isBeingPlacedOnTop = false;
     public static int nBlocksOnGround {get; set;} = 0;
 
     public BoxCollider towerZone;
 
     private float nudgeForce = 2f;
 
-    public bool isBeingNudged = false;
-
     public float timeSpentNotTouching = 0f;
 
-    private Quaternion originalRotation;
 
     private float rotationTransitionTime = 1f;
 
-    private bool rotating = false;
-
-    public bool userCanDrag = true;
+    private float startTime;
 
     private CameraControl cam;
-
-    private float startTime;
+    private Quaternion originalRotation;
 
     private void Awake()
     {
@@ -41,26 +42,30 @@ public class Block : MonoBehaviour
 
     void Update()
     {
-
-        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating)
+        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop)
         {
-                if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
+            if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
+            {
+                var currentTime = Time.time;
+                var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
+                if (timeDiff > 2f)
                 {
-                    var currentTime = Time.time;
-                    var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
-                    if (timeDiff > 2f)
-                    {
-                    this.userCanDrag = false;
-                    StartCoroutine("Rotate", this.originalRotation.eulerAngles);
-                    StartCoroutine("moveBlockToDropPosition");
-                    this.cam.pivotToDropView();
-                    }
+                this.userCanDrag = false;
+                StartCoroutine("Rotate", this.originalRotation.eulerAngles);
+                StartCoroutine("moveBlockToDropPosition");
+                this.cam.pivotToDropView();
                 }
-                else
-                {
-                    this.timeSpentNotTouching = Time.time;
-                }
+            } else {
+                this.timeSpentNotTouching = Time.time;
             }
+        } else if (this.isBeingPlacedOnTop) {
+            if(this.rotating)
+            {
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            this.userCanDrag = false;
+            }
+        }
+
 
         if (!Input.GetMouseButtonDown(0))
         {
@@ -78,14 +83,17 @@ public class Block : MonoBehaviour
             yield return null;
         }
         //transform.rotation = this.originalRotation;
-        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         rotating = false;
     }
 
     private IEnumerator moveBlockToDropPosition()
     {
-        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight + 10f, 0);
+        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight -1f, 0);
+        transform.position = new Vector3(transform.position.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
         transform.position = dropPosition;
+        this.isBeingPlacedOnTop = true;
+
+
         yield return null;
     }
 
@@ -98,6 +106,12 @@ public class Block : MonoBehaviour
         } else if (other.gameObject.tag == "Block")
         {
             blocksTouching = true;
+            if(this.isBeingPlacedOnTop)
+            {
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                this.isBeingPlacedOnTop = false;
+                this.cam.showDropPosition = false;
+            }
         }
 
     }
@@ -112,12 +126,16 @@ public class Block : MonoBehaviour
         {
             //Debug.Log("No touching");
             blocksTouching = false;
-
         }
     }
 
     private void OnMouseDown()
     {
+        if(!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
+        {
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            this.userCanDrag = true;
+        }
         this.startTime = Time.time;
     }
 
@@ -128,12 +146,20 @@ public class Block : MonoBehaviour
             var endTime = Time.time;
             var timeDiff = Mathf.Abs(this.startTime - endTime);
 
-            if (timeDiff < 0.5f)
+            if (timeDiff < 1f)
             {
                 this.NudgeBlock();
             }
             Debug.Log(Mathf.Abs(this.startTime - endTime));
 
+        }
+
+        if(this.userCanDrag)
+        {
+            if(this.isBeingPlacedOnTop)
+            {
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            }
         }
     }
 

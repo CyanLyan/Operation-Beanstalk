@@ -88,7 +88,7 @@ public class DragBox : MonoBehaviour
         springJoint.connectedBody.angularDrag = angularDrag;
         mainCamera = FindCamera();
 
-        while (Input.GetMouseButton(0))
+        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<Block>().userCanDrag)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);

@@ -37,6 +37,7 @@ public class Tower : MonoBehaviour
             palletStack.Add(pallet);
         }
 
+        GameObject.FindGameObjectWithTag("TowerTop").transform.position = new Vector3(0, height);
         Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
     }
     //Function to instantiate pallets vertically, to be written

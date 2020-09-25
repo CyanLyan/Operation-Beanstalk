@@ -6,6 +6,8 @@ TagManager:
   tags:
   - GroundPlane
   - TowerArea
+  - Block
+  - TowerTop
   layers:
   - Default
   - TransparentFX

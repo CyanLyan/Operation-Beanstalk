@@ -5,6 +5,9 @@ using UnityEngine;
 public class CameraControl : MonoBehaviour
 {
     public Transform target;
+    public Transform towerTop;
+
+    public bool showDropPosition;
     public float maxHeight;
     private float speed = 100f;
     public Vector3 dropView;
@@ -43,17 +46,28 @@ public class CameraControl : MonoBehaviour
             //transform.Translate(Vector3.right * Time.deltaTime);
             transform.Translate(Vector3.down * 0.5f, Space.World);
             transform.position = (transform.position.y > 0) ? transform.position : new Vector3(transform.position.x, 0, transform.position.z);
-        } 
-        transform.LookAt(target);
+        }
+
+        
+        //this.targetToLookAt.position = new Vector3(this.target.position.x, maxHeight / 2);
+        if(this.showDropPosition)
+        {
+            transform.LookAt(towerTop);
+            transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
+        } else
+        {
+            transform.LookAt(target);
+        }
     }
 
     public void pivotToDropView()
     {
-        this.dropView.y = this.maxHeight + 1;
+        this.showDropPosition = true;
+        //this.dropView.y = this.maxHeight + 1;
 
         //this.dropRotation.Set(26.6f, -0.75f, 0, 0f);
 
-        transform.position = new Vector3(0.27f, 13.72f, -7.8f);
-        transform.rotation = new Quaternion(49.681f, -2f, 0, 0f);
+        //transform.position = new Vector3(0.27f, this.dropView.y, -7.8f);
+        //transform.rotation = new Quaternion(49.681f, -2f, 0, 0f);
     }
 }
