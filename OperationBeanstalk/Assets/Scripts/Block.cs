@@ -19,7 +19,7 @@ public class Block : MonoBehaviour
 
     public BoxCollider towerZone;
 
-    private float nudgeForce = 2f;
+    public float nudgeForce = 2f;
 
     public float timeSpentNotTouching = 0f;
 
