@@ -46,7 +46,8 @@ public class Block : MonoBehaviour
     {
         if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop)
         {
-            if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
+            Debug.Log(Input.GetMouseButton(0));
+            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
             {
                 var currentTime = Time.time;
                 var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
