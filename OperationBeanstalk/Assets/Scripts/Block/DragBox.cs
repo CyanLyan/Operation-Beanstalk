@@ -1,4 +1,5 @@
 ﻿
+
 using UnityEngine;
 using System.Collections;
 
@@ -30,7 +31,7 @@ public class DragBox : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
 
-        if (transform.gameObject.GetComponent<Block>().isBeingNudged || !transform.gameObject.GetComponent<Block>().userCanDrag) return;
+        if (!transform.gameObject.GetComponent<BlockState>() || transform.gameObject.GetComponent<BlockState>().isBeingNudged || !transform.gameObject.GetComponent<BlockState>().userCanDrag) return;
 
         mainCamera = FindCamera();
 
@@ -89,7 +90,7 @@ public class DragBox : MonoBehaviour
         springJoint.connectedBody.angularDrag = angularDrag;
         mainCamera = FindCamera();
 
-        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<Block>().userCanDrag)
+        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<BlockState>().userCanDrag)
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);

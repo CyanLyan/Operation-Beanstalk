@@ -670,6 +670,22 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 817927300}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1101568645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101568644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12941aab7d3693e4aa9416d2390214cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBeingNudged: 0
+  rotating: 0
+  userCanDrag: 1
+  isBeingPlacedOnTop: 0
 --- !u!1 &1289162236 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 383be6f45bd90b340973088842edb45a,
@@ -709,9 +725,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7f5d358b09dec4a927c1318b3ceda3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBeingNudged: 0
-  userCanDrag: 1
-  isBeingPlacedOnTop: 0
   towerZone: {fileID: 0}
   nudgeForce: 10
   timeSpentNotTouching: 0
