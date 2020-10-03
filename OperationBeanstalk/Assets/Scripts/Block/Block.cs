@@ -11,6 +11,8 @@ public class Block : MonoBehaviour
 
     public bool isBeingNudged = false;
 
+    public bool blockIsInTowerZone { get; set; } = false;
+
     private bool rotating = false;
 
     public bool userCanDrag = true;
@@ -44,19 +46,21 @@ public class Block : MonoBehaviour
 
     void Update()
     {
-        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop)
+        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop && !this.blockIsInTowerZone)
         {
-            Debug.Log(Input.GetMouseButton(0));
-            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
+            //Debug.Log(Input.GetMouseButton(0));
+            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && (Input.GetMouseButton(0)) || this.isBeingNudged)
             {
                 var currentTime = Time.time;
                 var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
                 if (timeDiff > 2f)
                 {
-                this.userCanDrag = false;
-                StartCoroutine("Rotate", this.originalRotation.eulerAngles);
-                StartCoroutine("moveBlockToDropPosition");
-                this.cam.pivotToDropView();
+                    this.userCanDrag = false;
+                    gameObject.GetComponent<Collider>().enabled = false;
+                    StartCoroutine("Rotate", this.originalRotation.eulerAngles);
+                    StartCoroutine("moveBlockToDropPosition");
+                    this.cam.pivotToDropView();
+                    gameObject.GetComponent<Collider>().enabled = true;
                 }
             } else {
                 this.timeSpentNotTouching = Time.time;
@@ -70,9 +74,11 @@ public class Block : MonoBehaviour
         }
 
 
-        if (!Input.GetMouseButtonDown(0))
+        
+        if (!Input.GetMouseButtonDown(0) && this.isBeingNudged && (this.blocksTouching || this.isBlockTouchingGround))
         {
             this.isBeingNudged = false;
+            gameObject.GetComponent<Rigidbody>().drag = 0;
         }
     }
 
@@ -100,6 +106,7 @@ public class Block : MonoBehaviour
         yield return null;
     }
 
+    
     void OnCollisionStay(Collision other)
     {
         if(other.gameObject.tag == "GroundPlane")
@@ -116,7 +123,25 @@ public class Block : MonoBehaviour
                 this.cam.showDropPosition = false;
             }
         }
+    }
 
+
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "TowerArea")
+        {
+            this.blockIsInTowerZone = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "TowerArea")
+        {
+            Debug.Log("TowerExit");
+            this.blockIsInTowerZone = false;
+        }
     }
 
     void OnCollisionExit(Collision other)
@@ -129,7 +154,7 @@ public class Block : MonoBehaviour
         {
             //Debug.Log("No touching");
             blocksTouching = false;
-        }
+        } 
     }
 
     private void OnMouseDown()
@@ -153,7 +178,7 @@ public class Block : MonoBehaviour
             {
                 this.NudgeBlock();
             }
-            Debug.Log(Mathf.Abs(this.startTime - endTime));
+            //Debug.Log(Mathf.Abs(this.startTime - endTime));
 
         }
 
@@ -172,7 +197,7 @@ public class Block : MonoBehaviour
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
-        Debug.Log(this.GetHitFace(ray));
+        //Debug.Log(this.GetHitFace(ray));
         this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
     }
 
