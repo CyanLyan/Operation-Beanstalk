@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    public bool hasBlockBeenMoved {get; set;} = false;
-    public bool isBlockTouchingGround {get; set;} = false;
+    public bool hasBlockBeenMoved { get; set; } = false;
+    public bool isBlockTouchingGround { get; set; } = false;
 
     public bool blocksTouching { get; set; } = false;
 
     public bool isBeingNudged = false;
 
+    public bool blockIsInTowerZone { get; set; } = false;
+
     private bool rotating = false;
 
     public bool userCanDrag = true;
     public bool isBeingPlacedOnTop = false;
-    public static int nBlocksOnGround {get; set;} = 0;
+    public static int nBlocksOnGround { get; set; } = 0;
 
     public BoxCollider towerZone;
 
@@ -23,7 +25,6 @@ public class Block : MonoBehaviour
 
     public float timeSpentNotTouching = 0f;
 
-    private BlockState state;
 
     private float rotationTransitionTime = 1f;
 
@@ -34,104 +35,128 @@ public class Block : MonoBehaviour
 
     private string blockObjTag = "Block";
 
-    private void Start()
-    {
-        this.state = gameObject.GetComponent<BlockState>();
-    }
-
     private void Awake()
     {
         this.originalRotation = transform.rotation;
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
+
     }
 
     void Update()
     {
-        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop)
+        if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop && !this.blockIsInTowerZone)
         {
-            Debug.Log(Input.GetMouseButton(0));
-            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
+            //Debug.Log(Input.GetMouseButton(0));
+            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && (Input.GetMouseButton(0)) || this.isBeingNudged)
             {
-                //Debug.Log(Input.GetMouseButton(0));
-                if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && (Input.GetMouseButton(0)) || this.state.isBeingNudged)
+                var currentTime = Time.time;
+                var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
+                if (timeDiff > 2f)
                 {
+                    this.userCanDrag = false;
+                    gameObject.GetComponent<Collider>().enabled = false;
+                    StartCoroutine("Rotate", this.originalRotation.eulerAngles);
+                    StartCoroutine("moveBlockToDropPosition");
+                    this.cam.pivotToDropView();
+                    gameObject.GetComponent<Collider>().enabled = true;
+                }
+            }
+            else
+            {
+                this.timeSpentNotTouching = Time.time;
+            }
+        }
+        else if (this.isBeingPlacedOnTop)
+        {
+            if (this.rotating)
+            {
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                 this.userCanDrag = false;
-                StartCoroutine("Rotate", this.originalRotation.eulerAngles);
-                StartCoroutine("moveBlockToDropPosition");
-                this.cam.pivotToDropView();
-                }
             }
-            else if (this.state.isBeingPlacedOnTop)
-            {
-                if (this.state.rotating)
-                {
-                    GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-                    this.state.userCanDrag = false;
-                }
-            }
+        }
 
 
-        if (!Input.GetMouseButtonDown(0))
+
+        if (!Input.GetMouseButtonDown(0) && this.isBeingNudged && (this.blocksTouching || this.isBlockTouchingGround))
         {
             this.isBeingNudged = false;
+            gameObject.GetComponent<Rigidbody>().drag = 0;
         }
     }
 
     private IEnumerator Rotate()
     {
         Debug.Log("Rotating");
-        this.state.rotating = true;
+        rotating = true;
         for (float t = 0; t < this.rotationTransitionTime; t += Time.deltaTime)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, this.originalRotation, t / this.rotationTransitionTime);
             yield return null;
         }
         //transform.rotation = this.originalRotation;
-        this.state.rotating = false;
+        rotating = false;
     }
 
     private IEnumerator moveBlockToDropPosition()
     {
-        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight -1f, 0);
+        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
         transform.position = new Vector3(transform.position.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
         transform.position = dropPosition;
-        this.state.isBeingPlacedOnTop = true;
+        this.isBeingPlacedOnTop = true;
 
 
         yield return null;
     }
 
+
     void OnCollisionStay(Collision other)
     {
-        if(this.state)
+        if (other.gameObject.tag == "GroundPlane")
         {
-
-
-        if(other.gameObject.tag == "GroundPlane")
+            isBlockTouchingGround = true;
+            nBlocksOnGround++;
+        }
+        else if (other.gameObject.tag == this.blockObjTag)
         {
-            this.state.isBlockTouchingGround = true;
-            //nBlocksOnGround++;
-        } else if (other.gameObject.tag == this.blockObjTag)
-        {
-            this.state.blocksTouching = true;
-            if(this.state.isBeingPlacedOnTop)
+            blocksTouching = true;
+            if (this.isBeingPlacedOnTop)
             {
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-                this.state.isBeingPlacedOnTop = false;
+                this.isBeingPlacedOnTop = false;
                 this.cam.showDropPosition = false;
             }
         }
     }
 
+
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "TowerArea")
+        {
+            this.blockIsInTowerZone = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "TowerArea")
+        {
+            Debug.Log("TowerExit");
+            this.blockIsInTowerZone = false;
+        }
+    }
+
     void OnCollisionExit(Collision other)
     {
-        if (this.state)
+        if (other.gameObject.tag == "GroundPlane")
         {
             isBlockTouchingGround = false;
             nBlocksOnGround--;
-        } else if (other.gameObject.tag == this.blockObjTag)
+        }
+        else if (other.gameObject.tag == this.blockObjTag)
         {
             //Debug.Log("No touching");
             blocksTouching = false;
@@ -140,54 +165,45 @@ public class Block : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (this.state)
+        if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
         {
-
-            if (!this.state.userCanDrag && !this.state.rotating && this.state.isBeingPlacedOnTop)
-            {
-                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-                this.state.userCanDrag = true;
-            }
-            this.startTime = Time.time;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            this.userCanDrag = true;
         }
+        this.startTime = Time.time;
     }
 
     private void OnMouseUp()
     {
-        if (this.state)
+        if (this.startTime > 0)
         {
+            var endTime = Time.time;
+            var timeDiff = Mathf.Abs(this.startTime - endTime);
 
-            if (this.startTime > 0)
+            if (timeDiff < 1f)
             {
                 this.NudgeBlock();
             }
-            Debug.Log(Mathf.Abs(this.startTime - endTime));
+            //Debug.Log(Mathf.Abs(this.startTime - endTime));
 
-                if (timeDiff < 1f)
-                {
-                    this.NudgeBlock();
-                }
-                //Debug.Log(Mathf.Abs(this.startTime - endTime));
+        }
 
-            }
-
-            if (this.state.userCanDrag)
+        if (this.userCanDrag)
+        {
+            if (this.isBeingPlacedOnTop)
             {
-                if (this.state.isBeingPlacedOnTop)
-                {
-                    GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-                }
+                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             }
         }
     }
 
     private void NudgeBlock()
     {
-        this.state.isBeingNudged = true;
+        this.isBeingNudged = true;
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
-        Debug.Log(this.GetHitFace(ray));
+        //Debug.Log(this.GetHitFace(ray));
         this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
     }
 
@@ -231,7 +247,7 @@ public class Block : MonoBehaviour
 
     private void NudgeBlockByFaceEdge(MCFace faceHit)
     {
-        switch(faceHit)
+        switch (faceHit)
         {
             case MCFace.South:
                 this.pushBlock(new Vector3(0, -1, 1));
@@ -239,7 +255,7 @@ public class Block : MonoBehaviour
 
             case MCFace.North:
                 this.pushBlock(new Vector3(0, -1, -1));
-                
+
                 break;
 
             case MCFace.Up:
@@ -258,15 +274,15 @@ public class Block : MonoBehaviour
                 this.pushBlock(new Vector3(-1.0f, -1.0f, 0.0f));
                 break;
 
-        default:
+            default:
                 break;
-                
+
         }
     }
 
     private void pushBlock(Vector3 velocity)
     {
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
-        this.GetComponent<Rigidbody>().velocity = adjustedVelocity* this.nudgeForce;
+        this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
     }
 }
