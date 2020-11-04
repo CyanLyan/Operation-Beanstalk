@@ -49,8 +49,6 @@ public class Block : MonoBehaviour
         if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop && !this.blockIsInTowerZone)
         {
             if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
-
-            if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
             {
                 var currentTime = Time.time;
                 var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
