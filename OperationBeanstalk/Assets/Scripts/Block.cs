@@ -48,8 +48,12 @@ public class Block : MonoBehaviour
     {
         if (!this.blocksTouching && !this.isBlockTouchingGround && !this.rotating && !this.isBeingPlacedOnTop && !this.blockIsInTowerZone)
         {
+<<<<<<< HEAD
             //Debug.Log(Input.GetMouseButton(0));
             if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && (Input.GetMouseButton(0)) || this.isBeingNudged)
+=======
+            if (this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation)
+>>>>>>> parent of 320dbd7... Fixed Bug With Unselected Blocks Moving
             {
                 var currentTime = Time.time;
                 var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
