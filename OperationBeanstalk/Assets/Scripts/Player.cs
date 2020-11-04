@@ -9,6 +9,13 @@ public class Player : MonoBehaviour
     public string playerName { get; set; }
     public int score { get; set; }
 
+    public Player(Color color, string name, int score)
+    {
+        this.color = color;
+        this.playerName = name;
+        this.score = score;
+    }
+
     void Start()
     {
         
