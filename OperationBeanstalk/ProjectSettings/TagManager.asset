@@ -9,6 +9,7 @@ TagManager:
   - Block
   - TowerTop
   - UIText
+  - LineRenderer
   layers:
   - Default
   - TransparentFX

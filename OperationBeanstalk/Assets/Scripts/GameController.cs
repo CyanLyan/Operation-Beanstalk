@@ -18,19 +18,24 @@ public class GameController : MonoBehaviour
 
         this.turnIndex = 0;
         this.test2PlayerGame();
-        for(int i = 0; i < this.PlayerList.Count; i++)
+
+        GameObject newGO = new GameObject("myTextGO");
+        newGO.transform.SetParent(this.textUI.transform);
+
+        for (int i = 0; i < this.PlayerList.Count; i++)
         {
             Player currentPlayer = this.PlayerList[i];
-            this.addPlayer(currentPlayer);
+            GameObject textObj = new GameObject("p" + i.ToString() + "text");
+            this.addPlayer(currentPlayer, textObj);
         }
     }
 
-    void addPlayer(Player p)
+    void addPlayer(Player p, GameObject t)
     {
-        Transform t = textUI.transform.Find("P1Text");
-        t.GetComponent<Text>().text += p.playerName + ": " + p.score + "\n";
+        Text myText = t.AddComponent<Text>();
+        myText.text += p.playerName + ": " + p.score + "\n";
     }
-
+    
     // Update is called once per frame
     void Update()
     {

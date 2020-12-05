@@ -11,7 +11,7 @@ public class hitCoords: MonoBehaviour
 public class DragBox : MonoBehaviour
 {
     public float spring = 50.0f;
-    public float damper = 5.0f;
+    public float damper = 0.2f;
     public float drag = 10.0f;
     public float angularDrag = 5.0f;
     public float distance = 0.2f;
@@ -22,23 +22,27 @@ public class DragBox : MonoBehaviour
 
     public float minForce;
     public float maxForce;
-
+    public GameObject lineContainer;
     void Update()
     {
         // Make sure the user pressed the mouse down
         if (!Input.GetMouseButtonDown(0))
             return;
 
-        if (!transform.gameObject.GetComponent<BlockState>() || transform.gameObject.GetComponent<BlockState>().isBeingNudged || !transform.gameObject.GetComponent<BlockState>().userCanDrag) return;
-
-        mainCamera = FindCamera();
-
-        // We need to actually hit an object
+        hitCoords p = new hitCoords();
         RaycastHit hit;
+        // We need to actually hit an object
         if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))
         {
             return;
         }
+        p.distance = hit.distance;
+
+        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag) return;
+
+        p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
+        mainCamera = FindCamera();
+
         // We need to hit a rigidbody that is not kinematic
         if (!hit.rigidbody || hit.rigidbody.isKinematic)
         {
@@ -73,9 +77,6 @@ public class DragBox : MonoBehaviour
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
 
-        hitCoords p = new hitCoords();
-        p.distance = hit.distance;
-        p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
         StartCoroutine("DragTheBox", p);
     }
 
@@ -86,15 +87,16 @@ public class DragBox : MonoBehaviour
         springJoint.connectedBody.drag = drag;
 
         springJoint.connectedBody.angularDrag = angularDrag;
-        mainCamera = FindCamera();
+        lineContainer = GameObject.FindGameObjectWithTag("LineRenderer");
 
-        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<BlockState>().userCanDrag)
+        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<Block>().userCanDrag)
         {
+        Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
-            Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
 
-            DrawLine.Draw(attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan);
+            DrawLine.Draw(this.lineContainer, attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, (Time.deltaTime * 1.5f));
             //Debug.Log(springJoint.spring.ToString());
             yield return stuffToFollow.distance;
         }
@@ -105,6 +107,7 @@ public class DragBox : MonoBehaviour
             springJoint.connectedBody.angularDrag = oldAngularDrag;
             springJoint.connectedBody = null;
         }
+        DrawLine.ResetLine(this.lineContainer);
 
     }
 
