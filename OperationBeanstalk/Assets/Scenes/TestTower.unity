@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bc7d0ed094dbbe47b9210ab91660604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spring: 100000000
+  spring: 1000
   damper: 0.2
   drag: 10000
   angularDrag: 5
