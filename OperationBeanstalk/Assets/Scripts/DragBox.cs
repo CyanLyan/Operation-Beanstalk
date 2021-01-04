@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class hitCoords: MonoBehaviour
 {
@@ -108,11 +109,21 @@ public class DragBox : MonoBehaviour
             springJoint.connectedBody = null;
         }
         DrawLine.ResetLine(this.lineContainer);
-
+        destroyAllRigidBodies();
     }
 
     public static Camera FindCamera()
     { 
         return Camera.main;
+    }
+
+    public static void destroyAllRigidBodies()
+    {
+        var objects = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == "Rigidbody dragger");
+
+        foreach(var obj in objects) 
+        {
+            GameObject.Destroy(obj);
+        }
     }
 }

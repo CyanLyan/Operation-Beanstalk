@@ -31,7 +31,7 @@ public class Block : MonoBehaviour
 
     private float rotationTransitionTime = 1f;
 
-    //private float startTime;
+    private float startTime;
     private Vector3 mouseStartPos = new Vector3(0,0,0);
     public float mouseDriftPermittedToNudge = 10f;
 
@@ -169,12 +169,12 @@ public class Block : MonoBehaviour
 
     private void OnMouseDown()
     {
-        this.userCanDrag = true;
         if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
         {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            this.userCanDrag = true;
         }
-        this.mouseStartPos = Input.mousePosition;
+        this.startTime = Time.time;
     }
 
     public bool mouseMovedEnoughToDrag()
@@ -186,15 +186,19 @@ public class Block : MonoBehaviour
 
     private void OnMouseUp()
     {
-        this.userCanDrag = false;
-
-        //If the mouse moved more than the driftPermitted in any direction between mousedown and mouseUp, we can still nudge, otherwise the user was dragging.
-        if (!mouseMovedEnoughToDrag())
+        if (this.startTime > 0)
         {
-            this.isBeingNudged = true;
-            this.NudgeBlock();
-        } 
-        /**
+            var endTime = Time.time;
+            var timeDiff = Mathf.Abs(this.startTime - endTime);
+
+            if (timeDiff < 1f)
+            {
+                this.NudgeBlock();
+            }
+            Debug.Log(Mathf.Abs(this.startTime - endTime));
+
+        }
+
         if (this.userCanDrag)
         {
             if (this.isBeingPlacedOnTop)
@@ -202,7 +206,6 @@ public class Block : MonoBehaviour
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             }
         }
-        **/
     }
 
     private void NudgeBlock()
