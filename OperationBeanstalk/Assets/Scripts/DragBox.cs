@@ -29,7 +29,7 @@ public class DragBox : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
 
-        hitCoords p = new hitCoords();
+        hitCoords p = gameObject.AddComponent<hitCoords>();
         RaycastHit hit;
         // We need to actually hit an object
         if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))

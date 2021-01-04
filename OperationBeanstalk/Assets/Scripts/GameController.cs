@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
 
     void test2PlayerGame()
     {
-        this.PlayerList.Add(new Player(Color.red, "james", 0));
-        this.PlayerList.Add(new Player(Color.cyan, "cyan", 0));
+        //this.PlayerList.Add(new Player(Color.red, "james", 0));
+        //this.PlayerList.Add(new Player(Color.cyan, "cyan", 0));
     }
 }

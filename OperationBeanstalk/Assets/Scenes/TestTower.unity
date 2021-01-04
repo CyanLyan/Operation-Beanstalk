@@ -695,6 +695,16 @@ PrefabInstance:
       propertyPath: towerZone
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6750845200568785927, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: m_Mass
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6750845200568785927, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: m_Drag
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6750845200568785933, guid: 770ea8f73496d5a479e8e2557b96f2e1,
         type: 3}
       propertyPath: m_Name

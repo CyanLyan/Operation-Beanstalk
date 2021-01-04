@@ -15,7 +15,8 @@ public class Block : MonoBehaviour
 
     public bool rotating = false;
 
-    public bool userCanDrag = true;
+    public bool userCanDrag = false;
+    
     public bool isBeingPlacedOnTop = false;
 
     public bool blockIsBeingDragged = false;
@@ -23,14 +24,16 @@ public class Block : MonoBehaviour
 
     public BoxCollider towerZone;
 
-    public float nudgeForce = 2f;
+    public float nudgeForce = 500f;
 
     public float timeSpentNotTouching = 0f;
 
 
     private float rotationTransitionTime = 1f;
 
-    private float startTime;
+    //private float startTime;
+    private Vector3 mouseStartPos = new Vector3(0,0,0);
+    public float mouseDriftPermittedToNudge = 10f;
 
     private CameraControl cam;
     private Quaternion originalRotation;
@@ -59,12 +62,11 @@ public class Block : MonoBehaviour
                     if (timeDiff > 1.5f)
                     {
                         this.userCanDrag = false;
+
                         this.isBeingPlacedOnTop = true;
-                        //this.GetComponent<Rigidbody>().detectCollisions = false;
-                        //StartCoroutine("Rotate", this.originalRotation.eulerAngles);
-                        //StartCoroutine("moveBlockToDropPosition");
+                        
                         this.cam.pivotToDropView();
-                    };
+                    }
                 }
                 else
                 {
@@ -91,10 +93,15 @@ public class Block : MonoBehaviour
                 }
             }
 
-            if (!Input.GetMouseButtonDown(0))
+            if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
             {
                 this.isBeingNudged = false;
             }
+
+            if(!this.userCanDrag && this.mouseMovedEnoughToDrag())
+            {
+                this.userCanDrag = true;
+            } 
         }
     }
 
@@ -162,29 +169,32 @@ public class Block : MonoBehaviour
 
     private void OnMouseDown()
     {
+        this.userCanDrag = true;
         if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
         {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-            this.userCanDrag = true;
         }
-        this.startTime = Time.time;
+        this.mouseStartPos = Input.mousePosition;
+    }
+
+    public bool mouseMovedEnoughToDrag()
+    {
+        Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
+        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToNudge);
+        return mouseMovedEnough;
     }
 
     private void OnMouseUp()
     {
-        if (this.startTime > 0)
+        this.userCanDrag = false;
+
+        //If the mouse moved more than the driftPermitted in any direction between mousedown and mouseUp, we can still nudge, otherwise the user was dragging.
+        if (!mouseMovedEnoughToDrag())
         {
-            var endTime = Time.time;
-            var timeDiff = Mathf.Abs(this.startTime - endTime);
-
-            if (timeDiff < 1f)
-            {
-                this.NudgeBlock();
-            }
-            Debug.Log(Mathf.Abs(this.startTime - endTime));
-
-        }
-
+            this.isBeingNudged = true;
+            this.NudgeBlock();
+        } 
+        /**
         if (this.userCanDrag)
         {
             if (this.isBeingPlacedOnTop)
@@ -192,11 +202,11 @@ public class Block : MonoBehaviour
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             }
         }
+        **/
     }
 
     private void NudgeBlock()
     {
-        this.isBeingNudged = true;
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
@@ -220,7 +230,7 @@ public class Block : MonoBehaviour
         Vector3 incomingVec = hit.normal - Vector3.up;
         Vector3 roundedVec = new Vector3(Mathf.Round(incomingVec.x), Mathf.Round(incomingVec.y), Mathf.Round(incomingVec.z));
         //Debug.Log(new Vector3(Mathf.Round(incomingVec.x), Mathf.Round(incomingVec.y), Mathf.Round(incomingVec.z)));
-
+       
         if (roundedVec == new Vector3(0, -1, -1))
             return MCFace.South;
 
@@ -281,5 +291,6 @@ public class Block : MonoBehaviour
     {
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
         this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
+        //this.GetComponent<Rigidbody>().AddForce(adjustedVelocity * this.nudgeForce);
     }
 }
