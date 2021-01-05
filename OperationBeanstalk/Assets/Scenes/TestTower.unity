@@ -1032,6 +1032,8 @@ MonoBehaviour:
   towerZone: {fileID: 0}
   nudgeForce: 10
   timeSpentNotTouching: 0
+  mouseDriftPermittedToNudge: 10
+  text_debug: {fileID: 0}
 --- !u!64 &1289162242
 MeshCollider:
   m_ObjectHideFlags: 0

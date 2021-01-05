@@ -39,8 +39,18 @@ public class DragBox : MonoBehaviour
         }
         p.distance = hit.distance;
 
-        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag) return;
-
+        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged) return;
+        if(!hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged)
+        {
+            if (!hit.collider.gameObject.GetComponent<Block>().mouseMovedEnoughToDrag())
+            {
+                return;
+            }
+            else
+            {
+                hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged = true;
+            }
+        }
         p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
         mainCamera = FindCamera();
 
@@ -102,7 +112,7 @@ public class DragBox : MonoBehaviour
             yield return stuffToFollow.distance;
         }
 
-        if (springJoint.connectedBody)
+        if (springJoint != null && springJoint.connectedBody)
         {
             springJoint.connectedBody.drag = oldDrag;
             springJoint.connectedBody.angularDrag = oldAngularDrag;
@@ -110,6 +120,8 @@ public class DragBox : MonoBehaviour
         }
         DrawLine.ResetLine(this.lineContainer);
         destroyAllRigidBodies();
+        stuffToFollow.itemHit.gameObject.GetComponent<Block>().blockIsBeingDragged = false;
+
     }
 
     public static Camera FindCamera()
@@ -120,10 +132,12 @@ public class DragBox : MonoBehaviour
     public static void destroyAllRigidBodies()
     {
         var objects = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == "Rigidbody dragger");
-
-        foreach(var obj in objects) 
+        if(objects != null)
         {
-            GameObject.Destroy(obj);
+            foreach(var obj in objects) 
+            {
+                GameObject.Destroy(obj);
+            }
         }
     }
 }

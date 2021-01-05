@@ -33,12 +33,14 @@ public class Block : MonoBehaviour
 
     private float startTime;
     private Vector3 mouseStartPos = new Vector3(0,0,0);
-    public float mouseDriftPermittedToNudge = 10f;
+    public float mouseDriftPermittedToNudge = 100f;
 
     private CameraControl cam;
     private Quaternion originalRotation;
 
     private string blockObjTag = "Block";
+
+    public block_text_debug text_debug;
 
     private void Awake()
     {
@@ -46,6 +48,7 @@ public class Block : MonoBehaviour
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
+        this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
     }
 
     void Update()
@@ -54,7 +57,7 @@ public class Block : MonoBehaviour
         {
             if (!this.rotating && !this.isBeingPlacedOnTop)
             {
-                Debug.Log(Input.GetMouseButton(0));
+                //Debug.Log(Input.GetMouseButton(0));
                 if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
                 {
                     var currentTime = Time.time;
@@ -98,7 +101,7 @@ public class Block : MonoBehaviour
                 this.isBeingNudged = false;
             }
 
-            if(!this.userCanDrag && this.mouseMovedEnoughToDrag())
+            if(!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
             {
                 this.userCanDrag = true;
             } 
@@ -123,8 +126,6 @@ public class Block : MonoBehaviour
         Debug.Log("moving!");
         Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
         transform.position = Vector3.MoveTowards(transform.position, dropPosition, Time.deltaTime*10);
-        //transform.position = Vector3.MoveTowards(transform.position.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
-        //transform.position = dropPosition;
         this.isBeingPlacedOnTop = true;
 
 
@@ -162,7 +163,6 @@ public class Block : MonoBehaviour
         }
         else if (other.gameObject.tag == this.blockObjTag)
         {
-            //Debug.Log("No touching");
             blocksTouching = false;
         }
     }
@@ -172,15 +172,16 @@ public class Block : MonoBehaviour
         if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
         {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-            this.userCanDrag = true;
         }
         this.startTime = Time.time;
+        if(this.mouseStartPos == new Vector3(0,0,0)) this.mouseStartPos = Input.mousePosition;
     }
 
     public bool mouseMovedEnoughToDrag()
     {
         Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
         bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToNudge);
+        Debug.Log(changedMousePos);
         return mouseMovedEnough;
     }
 
@@ -193,9 +194,10 @@ public class Block : MonoBehaviour
 
             if (timeDiff < 1f)
             {
+                DragBox.destroyAllRigidBodies();
                 this.NudgeBlock();
             }
-            Debug.Log(Mathf.Abs(this.startTime - endTime));
+            //Debug.Log(Mathf.Abs(this.startTime - endTime));
 
         }
 
@@ -206,6 +208,8 @@ public class Block : MonoBehaviour
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             }
         }
+
+        this.mouseStartPos = new Vector3(0, 0, 0);
     }
 
     private void NudgeBlock()
@@ -213,7 +217,7 @@ public class Block : MonoBehaviour
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
-        Debug.Log(this.GetHitFace(ray));
+        //Debug.Log(this.GetHitFace(ray));
         this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
     }
 
@@ -293,7 +297,7 @@ public class Block : MonoBehaviour
     private void pushBlock(Vector3 velocity)
     {
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
+        //Debug.Log(this.nudgeForce);
         this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
-        //this.GetComponent<Rigidbody>().AddForce(adjustedVelocity * this.nudgeForce);
     }
 }
