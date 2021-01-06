@@ -50,12 +50,18 @@ public class Block : MonoBehaviour
         this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
     }
 
+    //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
+        //If the block isn't touching another block, or the ground
         if (!this.blocksTouching && !this.isBlockTouchingGround)
         {
+            //If block is not being rotated to a neutral position AND
+            //block is not being dropped from the top - another custom game state
             if (!this.rotating && !this.isBeingPlacedOnTop)
             {
+                //Check how long it's been since block has touched anything (ground, other blocks)
+                //If it's been longer than 1.5f (time), switch Main Camera to a drop view.
                 if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
                 {
                     var currentTime = Time.time;
@@ -72,10 +78,12 @@ public class Block : MonoBehaviour
                     this.timeSpentNotTouching = Time.time;
 
                 }
+            //Checks if block is being dropped on top of the tower
             }
             else if (this.isBeingPlacedOnTop)
 
             {
+                //I forget wtf this does but it could be important!?
                 if (transform.position != new Vector3(transform.position.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0))
                 {
                     transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
@@ -84,6 +92,8 @@ public class Block : MonoBehaviour
                 {
                     this.isBeingPlacedOnTop = false;
                 }
+
+                //Intended to stop collision between rigidbody and block, but idt it does anything yet
                 if (this.rotating)
                 {
                     GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -91,11 +101,14 @@ public class Block : MonoBehaviour
                 }
             }
 
+            //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
             if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
             {
                 this.isBeingNudged = false;
-            }
+            } 
 
+            //Else, we can nudge it!
+            //TODO - make this an else to the if above
             if(!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
             {
                 this.userCanDrag = true;
@@ -103,6 +116,8 @@ public class Block : MonoBehaviour
         }
     }
 
+    //This operates independantly of other code and will execute until the condition is met. This is intended to rotate the block to a neutral position
+    //so it can be dropped on top.
     private IEnumerator Rotate()
     {
         Debug.Log("Rotating");
@@ -115,6 +130,8 @@ public class Block : MonoBehaviour
         rotating = false;
     }
 
+    //Much like Rotate, this will move a block to the drop position uninterrupted.
+    //TODO - ensure the block's move path isn't THROUGH the tower
     private IEnumerator moveBlockToDropPosition()
     {
         Debug.Log("moving!");
@@ -126,6 +143,8 @@ public class Block : MonoBehaviour
         yield return null;
     }
 
+    //Event which triggers when collision state for a block's rigidbody doesn't change
+    //Changes state variables depending on what block keeps in contact with.
     void OnCollisionStay(Collision other)
     {
         if (other.gameObject.tag == "GroundPlane")
@@ -148,6 +167,7 @@ public class Block : MonoBehaviour
 
     }
 
+    //Event which triggers when block stops colliding with another object
     void OnCollisionExit(Collision other)
     {
         if (other.gameObject.tag == "GroundPlane")
@@ -161,6 +181,7 @@ public class Block : MonoBehaviour
         }
     }
 
+    //Event for when user clicks on block object
     private void OnMouseDown()
     {
         if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
@@ -171,6 +192,7 @@ public class Block : MonoBehaviour
         if(this.mouseStartPos == new Vector3(0,0,0)) this.mouseStartPos = Input.mousePosition;
     }
 
+    //Checks if the mouse has moved enough for the user to be able to drag it.
     public bool mouseMovedEnoughToDrag()
     {
         Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
@@ -179,6 +201,7 @@ public class Block : MonoBehaviour
         return mouseMovedEnough;
     }
 
+    //Event for when user releases mouse
     private void OnMouseUp()
     {
         if (this.startTime > 0)
@@ -204,6 +227,7 @@ public class Block : MonoBehaviour
         this.mouseStartPos = new Vector3(0, 0, 0);
     }
 
+    //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
     private void NudgeBlock()
     {
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -223,6 +247,7 @@ public class Block : MonoBehaviour
         South
     }
 
+    //Returns which face of a block was hit by the mouse. Uses enum defined above to define the 6 sides.
     public MCFace GetHitFace(RaycastHit hit)
     {
         Vector3 incomingVec = hit.normal - Vector3.up;
@@ -249,6 +274,8 @@ public class Block : MonoBehaviour
         return MCFace.None;
     }
 
+    //Pushes block based on which face was hit, in the direction OF that face.
+    //Think of it like a bullet going through something, where we determine the direction of the bullet coming out of the exit wound, based on where the entry wound is.
     private void NudgeBlockByFaceEdge(MCFace faceHit)
     {
         switch (faceHit)
@@ -284,6 +311,7 @@ public class Block : MonoBehaviour
         }
     }
 
+    //Adds force to rigidbody so that block is moved in a direction, like it's being shoved.
     private void pushBlock(Vector3 velocity)
     {
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
