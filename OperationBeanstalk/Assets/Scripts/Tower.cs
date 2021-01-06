@@ -37,7 +37,7 @@ public class Tower : MonoBehaviour
             palletStack.Add(pallet);
         }
 
-        GameObject.FindGameObjectWithTag("TowerTop").transform.position = new Vector3(gameObject.transform.position.x, height);
+        GameObject.FindGameObjectWithTag("TowerTop").transform.position = new Vector3(gameObject.transform.position.x, height+ 1f);
         Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
 
         GameObject.FindGameObjectWithTag("TowerArea").transform.position = new Vector3(0, height/2);

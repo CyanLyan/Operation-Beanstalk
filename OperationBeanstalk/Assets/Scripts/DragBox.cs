@@ -40,20 +40,6 @@ public class DragBox : MonoBehaviour
         p.distance = hit.distance;
 
         if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged) return;
-        /**
-        if(!hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged)
-        {
-            if (!hit.collider.gameObject.GetComponent<Block>().mouseMovedEnoughToDrag())
-            {
-                return;
-            }
-            else
-            {
-                hit.collider.gameObject.GetComponent<Block>().isBeingNudged = false;
-                hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged = true;
-            }
-        }
-    **/
         p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
         mainCamera = FindCamera();
 
@@ -111,7 +97,6 @@ public class DragBox : MonoBehaviour
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
 
             DrawLine.Draw(this.lineContainer, attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, (Time.deltaTime * 1.5f));
-            //Debug.Log(springJoint.spring.ToString());
             yield return stuffToFollow.distance;
         }
 

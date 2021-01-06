@@ -6,7 +6,6 @@ public class block_text_debug : MonoBehaviour
 {
     string myInfo = "5";
     public bool isBlockTouchingGround { get; set; } = false;
-
     public bool blocksTouching { get; set; } = false;
 
     public bool isBeingNudged = false;
@@ -21,7 +20,7 @@ public class block_text_debug : MonoBehaviour
 
     public bool blockIsBeingDragged = false;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         isBlockTouchingGround = GetComponentInParent<Block>().isBlockTouchingGround;
         blocksTouching = GetComponentInParent<Block>().blocksTouching;

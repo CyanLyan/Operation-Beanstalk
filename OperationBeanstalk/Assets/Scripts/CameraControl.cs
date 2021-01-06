@@ -49,11 +49,10 @@ public class CameraControl : MonoBehaviour
         }
 
         
-        //this.targetToLookAt.position = new Vector3(this.target.position.x, maxHeight / 2);
         if(this.showDropPosition)
         {
             transform.LookAt(towerTop);
-            transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
+            //transform.position = new Vector3(transform.position.x, maxHeight, transform.position.z);
         } else
         {
             transform.LookAt(target);
@@ -62,12 +61,16 @@ public class CameraControl : MonoBehaviour
 
     public void pivotToDropView()
     {
+        this.target = this.towerTop;
+        transform.LookAt(towerTop);
         this.showDropPosition = true;
-        //this.dropView.y = this.maxHeight + 1;
+        this.dropView.y = this.maxHeight + 1;
 
-        //this.dropRotation.Set(26.6f, -0.75f, 0, 0f);
+        this.dropRotation.Set(26.6f, -0.75f, 0, 0f);
 
-        //transform.position = new Vector3(0.27f, this.dropView.y, -7.8f);
-        //transform.rotation = new Quaternion(49.681f, -2f, 0, 0f);
+        //gameObject.transform.position = new Vector3(0.27f, -1000f, -7.8f); ;
+
+        gameObject.transform.position = new Vector3(0.27f, this.dropView.y, -7.8f);
+        gameObject.transform.rotation = new Quaternion(49.681f, -2f, 0, 0f);
     }
 }
