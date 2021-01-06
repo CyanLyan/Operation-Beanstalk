@@ -296,8 +296,10 @@ public class Block : MonoBehaviour
 
     private void pushBlock(Vector3 velocity)
     {
-        var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
-        //Debug.Log(this.nudgeForce);
-        this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
+        //if(this.isBeingNudged) {
+            var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
+            //Debug.Log(this.nudgeForce);
+            this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
+        //}
     }
 }

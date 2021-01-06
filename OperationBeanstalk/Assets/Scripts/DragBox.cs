@@ -40,6 +40,7 @@ public class DragBox : MonoBehaviour
         p.distance = hit.distance;
 
         if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged) return;
+        /**
         if(!hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged)
         {
             if (!hit.collider.gameObject.GetComponent<Block>().mouseMovedEnoughToDrag())
@@ -48,9 +49,11 @@ public class DragBox : MonoBehaviour
             }
             else
             {
+                hit.collider.gameObject.GetComponent<Block>().isBeingNudged = false;
                 hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged = true;
             }
         }
+    **/
         p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
         mainCamera = FindCamera();
 
