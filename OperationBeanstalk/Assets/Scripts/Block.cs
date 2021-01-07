@@ -32,6 +32,8 @@ public class Block : MonoBehaviour
 
     private float startTime;
     private Vector3 mouseStartPos = new Vector3(0,0,0);
+
+    private Vector3 blockStartPos;
     public float mouseDriftPermittedToNudge = 100f;
 
     private CameraControl cam;
@@ -43,13 +45,14 @@ public class Block : MonoBehaviour
 
     private void Awake()
     {
+        this.blockStartPos = gameObject.transform.position;
         this.originalRotation = transform.rotation;
         towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
     }
-
+        
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
@@ -86,17 +89,34 @@ public class Block : MonoBehaviour
                 //I forget wtf this does but it could be important!?
                 if (transform.position != new Vector3(transform.position.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0))
                 {
-                    transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
-                }
-                else
-                {
+                    //transform.position = Vector3.MoveTowards(transform.position, new Vector3((blockStartPos.x + transform.position.x), blockStartPos.y, 0), Time.deltaTime * -100);
+
+                    var dist = Vector3.Distance(transform.position, blockStartPos);
+
+                    if (dist < 5f)
+                    {
+                        //Calculate the vector between the object and the player
+                        Vector3 dir = transform.position - blockStartPos;
+                        //Cancel out the vertical difference
+                        dir.y = 0;
+                        //Translate the object in the direction of the vector
+                        //gameObject.transform.Translate(dir.normalized * 1f);
+                        gameObject.transform.position = Vector3.MoveTowards(transform.position, dir.normalized, Time.deltaTime * -10);
+                    }
+                    else
+                    {
+                        gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
+                        //transform.Translate(new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0).normalized);
+                    }
+                    //transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
+                } else {
                     this.isBeingPlacedOnTop = false;
                 }
 
                 //Intended to stop collision between rigidbody and block, but idt it does anything yet
                 if (this.rotating)
                 {
-                    GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+                    //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                     this.userCanDrag = false;
                 }
             }
@@ -132,9 +152,11 @@ public class Block : MonoBehaviour
 
     //Much like Rotate, this will move a block to the drop position uninterrupted.
     //TODO - ensure the block's move path isn't THROUGH the tower
-    private IEnumerator moveBlockToDropPosition()
+
+        /**
+    private IEnumerator moveBlockToDropPositionX()
     {
-        Debug.Log("moving!");
+        Debug.Log("movingX!");
         Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
         transform.position = Vector3.MoveTowards(transform.position, dropPosition, Time.deltaTime*10);
         this.isBeingPlacedOnTop = true;
@@ -142,6 +164,16 @@ public class Block : MonoBehaviour
 
         yield return null;
     }
+
+    private IEnumerator moveBlockToDropPositionY()
+    {
+        Debug.Log("movingY!");
+        Vector3 dropPosition = new Vector3((blockStartPos.x + transform.position.x) , blockStartPos.y, 0);
+        transform.position = Vector3.MoveTowards(transform.position, dropPosition, Time.deltaTime * 40);
+        this.isBeingPlacedOnTop = true;
+        yield return null;
+    }
+    **/
 
     //Event which triggers when collision state for a block's rigidbody doesn't change
     //Changes state variables depending on what block keeps in contact with.
@@ -156,7 +188,7 @@ public class Block : MonoBehaviour
         {
             if (this.isBeingPlacedOnTop)
             {
-                GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             } else {
                 this.cam.showDropPosition = false;
                 this.isBeingPlacedOnTop = false;
@@ -186,7 +218,7 @@ public class Block : MonoBehaviour
     {
         if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
         {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
         this.startTime = Time.time;
         if(this.mouseStartPos == new Vector3(0,0,0)) this.mouseStartPos = Input.mousePosition;
@@ -314,6 +346,7 @@ public class Block : MonoBehaviour
     //Adds force to rigidbody so that block is moved in a direction, like it's being shoved.
     private void pushBlock(Vector3 velocity)
     {
+        this.hasBlockBeenMoved = true;
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
         this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
     }

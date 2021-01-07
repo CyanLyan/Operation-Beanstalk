@@ -13,7 +13,7 @@ public class DragBox : MonoBehaviour
 {
     public float spring = 50.0f;
     public float damper = 0.2f;
-    public float drag = 10.0f;
+    public float drag = 0f;
     public float angularDrag = 5.0f;
     public float distance = 0.2f;
     public bool attachToCenterOfMass;
@@ -82,6 +82,7 @@ public class DragBox : MonoBehaviour
 
     IEnumerator DragTheBox(hitCoords stuffToFollow)
     {
+        stuffToFollow.itemHit.gameObject.GetComponent<Block>().hasBlockBeenMoved = true;
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
         springJoint.connectedBody.drag = drag;
@@ -102,8 +103,8 @@ public class DragBox : MonoBehaviour
 
         if (springJoint != null && springJoint.connectedBody)
         {
-            springJoint.connectedBody.drag = oldDrag;
-            springJoint.connectedBody.angularDrag = oldAngularDrag;
+            springJoint.connectedBody.drag = 1f;
+            springJoint.connectedBody.angularDrag = 0.05f;
             springJoint.connectedBody = null;
         }
         DrawLine.ResetLine(this.lineContainer);

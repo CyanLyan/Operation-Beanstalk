@@ -35,9 +35,9 @@ public class block_text_debug : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        blockIsBeingDragged = GetComponentInParent<Block>().blockIsBeingDragged;
-        if(blockIsBeingDragged)
+        if(GetComponentInParent<Block>().hasBlockBeenMoved)
         {
+            blockIsBeingDragged = GetComponentInParent<Block>().blockIsBeingDragged;
             isBlockTouchingGround = GetComponentInParent<Block>().isBlockTouchingGround;
             blocksTouching = GetComponentInParent<Block>().blocksTouching;
             isBeingNudged = GetComponentInParent<Block>().isBeingNudged;
