@@ -65,11 +65,11 @@ public class Block : MonoBehaviour
             {
                 //Check how long it's been since block has touched anything (ground, other blocks)
                 //If it's been longer than 1.5f (time), switch Main Camera to a drop view.
-                if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation) && Input.GetMouseButton(0))
+                if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation))
                 {
                     var currentTime = Time.time;
                     var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
-                    if (timeDiff > 1.5f)
+                    if (timeDiff > 0.1f)
                     {
                         this.userCanDrag = false;
                         this.isBeingPlacedOnTop = true;
@@ -106,9 +106,7 @@ public class Block : MonoBehaviour
                     else
                     {
                         gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
-                        //transform.Translate(new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0).normalized);
                     }
-                    //transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
                 } else {
                     this.isBeingPlacedOnTop = false;
                 }
@@ -116,7 +114,6 @@ public class Block : MonoBehaviour
                 //Intended to stop collision between rigidbody and block, but idt it does anything yet
                 if (this.rotating)
                 {
-                    //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                     this.userCanDrag = false;
                 }
             }
@@ -149,32 +146,7 @@ public class Block : MonoBehaviour
         }
         rotating = false;
     }
-
-    //Much like Rotate, this will move a block to the drop position uninterrupted.
-    //TODO - ensure the block's move path isn't THROUGH the tower
-
-        /**
-    private IEnumerator moveBlockToDropPositionX()
-    {
-        Debug.Log("movingX!");
-        Vector3 dropPosition = new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0);
-        transform.position = Vector3.MoveTowards(transform.position, dropPosition, Time.deltaTime*10);
-        this.isBeingPlacedOnTop = true;
-
-
-        yield return null;
-    }
-
-    private IEnumerator moveBlockToDropPositionY()
-    {
-        Debug.Log("movingY!");
-        Vector3 dropPosition = new Vector3((blockStartPos.x + transform.position.x) , blockStartPos.y, 0);
-        transform.position = Vector3.MoveTowards(transform.position, dropPosition, Time.deltaTime * 40);
-        this.isBeingPlacedOnTop = true;
-        yield return null;
-    }
-    **/
-
+    
     //Event which triggers when collision state for a block's rigidbody doesn't change
     //Changes state variables depending on what block keeps in contact with.
     void OnCollisionStay(Collision other)
@@ -210,6 +182,9 @@ public class Block : MonoBehaviour
         else if (other.gameObject.tag == this.blockObjTag)
         {
             blocksTouching = false;
+        } else
+        {
+            Debug.Log(other.ToString());
         }
     }
 
