@@ -157,6 +157,7 @@ MonoBehaviour:
   blockPrefab: {fileID: 1101568644}
   center: {fileID: 664150049}
   blockHeight: 0.6
+  blockIndex: 0
 --- !u!23 &183593128
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -695,6 +696,16 @@ PrefabInstance:
       propertyPath: towerZone
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6750845200568785926, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: tower
+      value: 
+      objectReference: {fileID: 183593127}
+    - target: {fileID: 6750845200568785926, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 960258030}
     - target: {fileID: 6750845200568785927, guid: 770ea8f73496d5a479e8e2557b96f2e1,
         type: 3}
       propertyPath: m_Mass
@@ -864,7 +875,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9725f12b3c4bcfb4481b62a4893e8aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 664150050}
+  towerCenter: {fileID: 664150050}
   towerTop: {fileID: 407044567}
   showDropPosition: 0
   maxHeight: 0
@@ -1038,12 +1049,14 @@ MonoBehaviour:
   rotating: 0
   userCanDrag: 1
   isBeingPlacedOnTop: 0
+  isInDropPosition: 0
   blockIsBeingDragged: 0
   towerZone: {fileID: 0}
   nudgeForce: 10
   timeSpentNotTouching: 0
   mouseDriftPermittedToNudge: 10
   text_debug: {fileID: 0}
+  tower: {fileID: 0}
 --- !u!64 &1289162242
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    public Transform target;
+    public Transform towerCenter;
+
     public Transform towerTop;
 
     public bool showDropPosition;
+
+    public Vector3 initCameraPosition;
+    public Quaternion initCameraRotation;
+
     public float maxHeight;
     private float speed = 100f;
     public Vector3 dropView;
@@ -15,19 +20,19 @@ public class CameraControl : MonoBehaviour
     // Start is called before the first frame update
 
     // Update is called once per frame
- 
-    //Primarily controls where camera is, based on which keys are pressed by a user every frame.
+
+        //Primarily controls where camera is, based on which keys are pressed by a user every frame.
     void Update()
     {
         
         if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow))
         {
             Debug.Log("left");
-            transform.RotateAround(target.transform.position, new Vector3(0,1,0), speed * Time.deltaTime);
+            transform.RotateAround(towerCenter.transform.position, new Vector3(0,1,0), speed * Time.deltaTime);
         } else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow))
         {
             Debug.Log("right");
-            transform.RotateAround(target.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
+            transform.RotateAround(towerCenter.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
         } 
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
@@ -44,24 +49,26 @@ public class CameraControl : MonoBehaviour
         
         if(this.showDropPosition)
         {
-            transform.LookAt(towerTop);
+            //transform.LookAt(this.towerTop);
         } else
         {
-            transform.LookAt(target);
+            if (this.initCameraRotation != null && this.initCameraRotation != new Quaternion(0, 0, 0, 0)) this.initCameraRotation = this.initCameraRotation;
+            transform.LookAt(this.towerCenter);
         }
     }
 
     //Moves camera to a view atop the current jenga tower where we can see the tower top & the block being placed.
     public void pivotToDropView()
     {
-        this.target = this.towerTop;
-        transform.LookAt(towerTop);
+        this.initCameraPosition = transform.position;
+        this.initCameraRotation = transform.rotation;
+        transform.LookAt(this.towerTop);
         this.showDropPosition = true;
         this.dropView.y = this.maxHeight + 1;
 
         this.dropRotation.Set(26.6f, -0.75f, 0, 0f);
 
         gameObject.transform.position = new Vector3(0.27f, this.dropView.y, -7.8f);
-        gameObject.transform.rotation = new Quaternion(49.681f, -2f, 0, 0f);
+        transform.rotation = new Quaternion(26.6f, -0.75f, 0, 0f);
     }
 }

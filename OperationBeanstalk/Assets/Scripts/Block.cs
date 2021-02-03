@@ -45,6 +45,8 @@ public class Block : MonoBehaviour
 
     public block_text_debug text_debug;
 
+    public Tower tower;
+
     private void Awake()
     {
         this.blockStartPos = gameObject.transform.position;
@@ -76,7 +78,6 @@ public class Block : MonoBehaviour
                         this.userCanDrag = false;
                         this.isBeingPlacedOnTop = true;
                         this.cam.pivotToDropView();
-                        //gameObject.GetComponent<Rigidbody>().useGravity = false;
                     }
                 }
                 else
@@ -91,14 +92,11 @@ public class Block : MonoBehaviour
             {
            
                 var distToDropPos = Vector3.Distance(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0));
-                //Debug.Log(distToDropPos);
                 if((distToDropPos > 1f || Quaternion.Angle(transform.rotation, this.originalRotation) > 1f))
                 {
 
                     if (distToDropPos > 1f)
                     {
-                        //transform.position = Vector3.MoveTowards(transform.position, new Vector3((blockStartPos.x + transform.position.x), blockStartPos.y, 0), Time.deltaTime * -100);
-
                         var dist = Vector3.Distance(transform.position, blockStartPos);
 
                         if (dist < 5f)
@@ -108,26 +106,20 @@ public class Block : MonoBehaviour
                             //Cancel out the vertical difference
                             dir.y = 0;
                             //Translate the object in the direction of the vector
-
-                            //gameObject.transform.position = Vector3.MoveTowards(transform.position, dir.normalized, Time.deltaTime * -10);
-
                             gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(dir.normalized.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
                         }
 
                     
                         else
-                        {
-                            //gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), Time.deltaTime * 10);
-                       
+                        {                       
                             gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
                         }
-                        //this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0,0);
 
                     } else {
                         this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
                     }
 
-                    Debug.Log(Quaternion.Angle(transform.rotation, new Quaternion(0, 0, 0, 0)));
+                    Debug.Log(Quaternion.Angle(transform.rotation, this.tower.getSpawnRotation(this.tower.blockIndex)));
                     if (Quaternion.Angle(transform.rotation, this.originalRotation) > 1f)
                     {
                         gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, this.originalRotation, 100f);
@@ -135,12 +127,7 @@ public class Block : MonoBehaviour
                     else
                     {
                         this.rotating = false;
-                        //transform.rotation = this.originalRotation;
-                        //this.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
-                        //this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
                         this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-                        //this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-
                     }
 
                     //Intended to stop collision between rigidbody and block, but idt it does anything yet
@@ -174,26 +161,17 @@ public class Block : MonoBehaviour
         }
     }
 
-    //This operates independantly of other code and will execute until the condition is met. This is intended to rotate the block to a neutral position
-    //so it can be dropped on top.
-    private IEnumerator Rotate()
+    private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Rotating");
-        while(transform.rotation != this.originalRotation)
+        if ((collision.gameObject.tag == this.blockObjTag) && this.isInDropPosition)
         {
-            transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.rotation.eulerAngles, this.originalRotation.eulerAngles, 0f, 10f));
-            yield return null;
+            this.cam.GetComponent<CameraControl>().showDropPosition = false;
+            this.isBeingPlacedOnTop = false;
+            blocksTouching = true;
+            this.isInDropPosition = false;
         }
-        /**
-        for (float t = 0; t < this.rotationTransitionTime; t += Time.deltaTime)
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, this.originalRotation, t / this.rotationTransitionTime);
-            yield return null;
-        }
-    **/
-        rotating = false;
     }
-    
+
     //Event which triggers when collision state for a block's rigidbody doesn't change
     //Changes state variables depending on what block keeps in contact with.
     void OnCollisionStay(Collision other)
@@ -209,8 +187,8 @@ public class Block : MonoBehaviour
             {
                 //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             } else {
-                this.cam.showDropPosition = false;
-                this.isBeingPlacedOnTop = false;
+                //this.cam.showDropPosition = false;
+                //this.isBeingPlacedOnTop = false;
                 blocksTouching = true;
 
             }

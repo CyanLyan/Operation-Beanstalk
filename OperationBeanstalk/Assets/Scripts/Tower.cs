@@ -10,6 +10,8 @@ public class Tower : MonoBehaviour
     public GameObject center;
     public float blockHeight;
 
+    public float blockIndex = 0;
+
     private void Awake()
     {
         createTower();
@@ -22,20 +24,20 @@ public class Tower : MonoBehaviour
         float z;
 
         Quaternion spawnRotation;
-        //Vector3 objectSize = Vector3.Scale(transform.localScale, GetComponent())
-        //float blockHeight = blockPrefab.transform.lossyScale.y;
 
         float height = nPallets * blockHeight;
         center.transform.position = new Vector3(gameObject.transform.position.x, height / 2f, gameObject.transform.position.z);
-
-        for (float i = 0; i < nPallets; i++)
+        float i;
+        for (i = 0; i < nPallets; i++)
         {
             y = (i == 0) ? 0.5f : (i * blockHeight * 1.1f);
             // spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(0, 90, 0) : Quaternion.identity;
-            spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(90, 90, 90) : Quaternion.Euler(90, 0, 90);
+            spawnRotation = this.getSpawnRotation(i);
             Pallet pallet = new Pallet(blockPrefab, center, spawnRotation, 0, y, 0, 3f, 0.005f);
             palletStack.Add(pallet);
         }
+
+        blockIndex = i;
 
         GameObject.FindGameObjectWithTag("TowerTop").transform.position = new Vector3(gameObject.transform.position.x, height+ 1f);
         Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
@@ -44,4 +46,16 @@ public class Tower : MonoBehaviour
         GameObject.FindGameObjectWithTag("TowerArea").transform.localScale = new Vector3(3f - 0.1f, height, 3f - 0.1f);
     }
     //Function to instantiate pallets vertically, to be written
+
+    public Quaternion getSpawnRotation(float i)
+    {
+        var spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(90, 90, 90) : Quaternion.Euler(90, 0, 90);
+        return spawnRotation;
+    }
+
+    public Vector3 getSpawnPosition(float i, Block block)
+    {
+        float positionOffset = (block.transform.localScale.z + 0.005f) * i; //Distance from midpoints, in units
+        return new Vector3(positionOffset, 0f, 0f);
+    }
 }
