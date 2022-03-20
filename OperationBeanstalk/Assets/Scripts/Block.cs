@@ -65,116 +65,109 @@ public class Block : MonoBehaviour
         {
             //If block is not being rotated to a neutral position AND
             //block is not being dropped from the top - another custom game state
-            if (!this.rotating && !this.isBeingPlacedOnTop && !this.isInDropPosition)
-            {
-                //Check how long it's been since block has touched anything (ground, other blocks)
-                //If it's been longer than 1.5f (time), switch Main Camera to a drop view.
-                if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation))
-                {
-                    var currentTime = Time.time;
-                    var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
-                    if (timeDiff > 0.1f)
-                    {
-                        this.userCanDrag = false;
-                        this.isBeingPlacedOnTop = true;
-                        StartCoroutine(this.cam.pivotToDropView());
-                    }
-                }
-                else
-                {
-                    this.timeSpentNotTouching = Time.time;
-
-                }
-            //Checks if block is being dropped on top of the tower
-            }
-            else if (this.isBeingPlacedOnTop)
-
-            {
-                if(this.cam.CameraIsInDropView())
-                {
-                    this.GetComponent<Rigidbody>().useGravity = true;
-                } else {
-                    this.GetComponent<Rigidbody>().useGravity = false;
-                }
-
-                var distToDropPos = Vector3.Distance(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0));
-                if((distToDropPos > 1f || Quaternion.Angle(transform.rotation, this.originalRotation) > 1f))
-                {
-
-                    if (distToDropPos > 1f)
-                    {
-                        var dist = Vector3.Distance(transform.position, blockStartPos);
-
-                        if (dist < 5f)
-                        {
-                            //Calculate the vector between the object and the player
-                            Vector3 dir = transform.position - blockStartPos;
-                            //Cancel out the vertical difference
-                            dir.y = 0;
-                            //Translate the object in the direction of the vector
-                            gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(dir.normalized.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
-                        }
-
-                    
-                        else
-                        {                       
-                            gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
-                        }
-
-                    } else {
-                        this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-                    }
-
-                    Debug.Log(Quaternion.Angle(transform.rotation, this.tower.getSpawnRotation(this.tower.blockIndex)));
-                    if (Quaternion.Angle(transform.rotation, this.originalRotation) > 1f)
-                    {
-                        gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, this.originalRotation, 100f);
-                    }
-                    else
-                    {
-                        this.rotating = false;
-                        this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-                    }
-
-                    //Intended to stop collision between rigidbody and block, but idt it does anything yet
-                    if (this.rotating)
-                    {
-                        this.userCanDrag = false;
-                    }
-                }
-                else
-                {
-                    this.isBeingPlacedOnTop = false;
-                    this.isInDropPosition = true;
-                    this.userCanDrag = true;
-                    this.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
-                    this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-                }
-            }
+            this.HandleBlockTouchingNothing();
 
             //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
             if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
             {
                 this.isBeingNudged = false;
-            } 
+            }
 
             //Else, we can nudge it!
             //TODO - make this an else to the if above
-            if(!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
+            if (!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
             {
                 this.userCanDrag = true;
-            } 
+            }
+        }
+    }
+
+    public void HandleBlockTouchingNothing()
+    {
+        if (!this.rotating && !this.isBeingPlacedOnTop && !this.isInDropPosition)
+        {
+            //Check how long it's been since block has touched anything (ground, other blocks)
+            //If it's been longer than 1.5f (time), switch Main Camera to a drop view.
+            if ((this.timeSpentNotTouching > 0 && transform.rotation != this.originalRotation))
+            {
+                var currentTime = Time.time;
+                var timeDiff = Mathf.Abs(this.timeSpentNotTouching - currentTime);
+                if (timeDiff > 0.1f)
+                {
+                    this.userCanDrag = false;
+                    this.isBeingPlacedOnTop = true;
+                    StartCoroutine(this.cam.pivotToDropView());
+                }
+            }
+            else
+            {
+                this.timeSpentNotTouching = Time.time;
+            }
+        }
+        else if (this.isBeingPlacedOnTop)
+        {
+            this.GetComponent<Rigidbody>().useGravity = false;
+            PlaceBlockOnTopOfTower();
+        }
+    }
+
+    public void PlaceBlockOnTopOfTower()
+    {
+        var distToDropPos = Vector3.Distance(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0));
+        if ((distToDropPos > 1f || Quaternion.Angle(transform.rotation, this.originalRotation) > 1f))
+        {
+            if (distToDropPos > 1f)
+            {
+                var dist = Vector3.Distance(transform.position, blockStartPos);
+                if (dist < 5f)
+                {
+                    //Calculate the vector between the object and the player
+                    Vector3 dir = transform.position - blockStartPos;
+                    //Cancel out the vertical difference
+                    dir.y = 0;
+                    //Translate the object in the direction of the vector
+                    gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(dir.normalized.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
+                } else {
+                    gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
+                }
+            } else {
+                this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            }
+
+            if (Quaternion.Angle(transform.rotation, this.originalRotation) > 1f)
+            {
+                gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, this.originalRotation, 100f);
+            }
+            else
+            {
+                this.rotating = false;
+                this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            }
+            //Intended to stop collision between rigidbody and block, but idt it does anything yet
+            if (this.rotating)
+            {
+                this.userCanDrag = false;
+            }
+        }
+        else
+        {
+            this.isBeingPlacedOnTop = false;
+            this.isInDropPosition = true;
+            this.userCanDrag = true;
+            this.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
+            this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        //If block is being dropped from top, and has been placed on the tower...
         if ((collision.gameObject.tag == this.blockObjTag) && this.isInDropPosition)
         {
-            this.cam.GetComponent<CameraControl>().showDropPosition = false;
             this.isBeingPlacedOnTop = false;
             blocksTouching = true;
             this.isInDropPosition = false;
+            StartCoroutine(this.cam.pivotBackToPreviousView());
         }
     }
 
@@ -222,8 +215,9 @@ public class Block : MonoBehaviour
     //Event for when user clicks on block object
     private void OnMouseDown()
     {
-        if (!this.userCanDrag && !this.rotating && this.isBeingPlacedOnTop)
+        if (!this.rotating && this.isInDropPosition) 
         {
+            this.GetComponent<Rigidbody>().useGravity = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
         this.startTime = Time.time;
