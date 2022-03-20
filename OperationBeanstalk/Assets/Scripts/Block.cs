@@ -77,7 +77,7 @@ public class Block : MonoBehaviour
                     {
                         this.userCanDrag = false;
                         this.isBeingPlacedOnTop = true;
-                        this.cam.pivotToDropView();
+                        StartCoroutine(this.cam.pivotToDropView());
                     }
                 }
                 else
@@ -87,10 +87,16 @@ public class Block : MonoBehaviour
                 }
             //Checks if block is being dropped on top of the tower
             }
-            else if (this.isBeingPlacedOnTop )
+            else if (this.isBeingPlacedOnTop)
 
             {
-           
+                if(this.cam.CameraIsInDropView())
+                {
+                    this.GetComponent<Rigidbody>().useGravity = true;
+                } else {
+                    this.GetComponent<Rigidbody>().useGravity = false;
+                }
+
                 var distToDropPos = Vector3.Distance(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0));
                 if((distToDropPos > 1f || Quaternion.Angle(transform.rotation, this.originalRotation) > 1f))
                 {
