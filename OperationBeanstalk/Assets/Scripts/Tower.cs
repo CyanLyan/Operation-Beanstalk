@@ -12,9 +12,13 @@ public class Tower : MonoBehaviour
 
     public float blockIndex = 0;
 
+    public float TowerSetUpWaitTime = 0.5f;
+    public bool TowerIsReady = false;
+
     private void Awake()
     {
         createTower();
+        TowerIsReady = true;
     }
 
     public void createTower()

@@ -12,8 +12,6 @@ public class block_text_debug : MonoBehaviour
 
     public bool blockIsInTowerZone = true;
 
-    private bool rotating = false;
-
     public bool userCanDrag = true;
 
     public bool isBeingPlacedOnTop = false;
@@ -26,7 +24,6 @@ public class block_text_debug : MonoBehaviour
         blocksTouching = GetComponentInParent<Block>().blocksTouching;
         isBeingNudged = GetComponentInParent<Block>().isBeingNudged;
         blockIsInTowerZone = GetComponentInParent<Block>().blockIsInTowerZone;
-        rotating = GetComponentInParent<Block>().rotating;
         userCanDrag = GetComponentInParent<Block>().userCanDrag;
         isBeingPlacedOnTop = GetComponentInParent<Block>().isBeingPlacedOnTop;
         blockIsBeingDragged = GetComponentInParent<Block>().blockIsBeingDragged;
@@ -42,7 +39,6 @@ public class block_text_debug : MonoBehaviour
             blocksTouching = GetComponentInParent<Block>().blocksTouching;
             isBeingNudged = GetComponentInParent<Block>().isBeingNudged;
             blockIsInTowerZone = GetComponentInParent<Block>().blockIsInTowerZone;
-            rotating = GetComponentInParent<Block>().rotating;
             userCanDrag = GetComponentInParent<Block>().userCanDrag;
             isBeingPlacedOnTop = GetComponentInParent<Block>().isBeingPlacedOnTop;
 
@@ -50,7 +46,6 @@ public class block_text_debug : MonoBehaviour
             debugText += (blocksTouching) ? "" : " Not Touching Blocks\n";
             debugText += (isBeingNudged) ? " Nudging\n" : "";
             debugText += (blockIsInTowerZone) ? "" : " Outside Tower\n";
-            debugText += (rotating) ? " Rotating\n" : "";
             debugText += (isBeingNudged) ? " Placing On Top\n" : "";
             transform.GetComponent<TextMesh>().text = "" + debugText;
         } else

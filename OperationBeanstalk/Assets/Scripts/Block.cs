@@ -4,24 +4,25 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
+    // Block states
     public bool hasBlockBeenMoved { get; set; } = false;
     public bool isBlockTouchingGround { get; set; } = false;
-
     public bool blocksTouching { get; set; } = false;
-
+    
     public bool isBeingNudged = false;
-
+    
     public bool blockIsInTowerZone = true;
-
-    public bool rotating = false;
-
-    public bool userCanDrag = false;
     
     public bool isBeingPlacedOnTop = false;
-
+   
     public bool isInDropPosition = false;
 
     public bool blockIsBeingDragged = false;
+    
+    
+    // 
+    public bool userCanDrag = true;
+    public bool userCanNudge = true;
     public static int nBlocksOnGround { get; set; } = 0;
 
     public BoxCollider towerZone;
@@ -47,11 +48,15 @@ public class Block : MonoBehaviour
 
     public Tower tower;
 
+    public GameController gameController;
+
     private void Awake()
     {
+        this.tower = GameObject.Find("Tower").GetComponent<Tower>();
+        this.gameController = GameObject.Find("GameController").GetComponent<GameController>();
         this.blockStartPos = gameObject.transform.position;
         this.originalRotation = transform.rotation;
-        towerZone = GameObject.Find("Tower").GetComponent<BoxCollider>();
+        towerZone = tower.GetComponent<BoxCollider>();
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
@@ -60,8 +65,8 @@ public class Block : MonoBehaviour
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
-        //If the block isn't touching another block, or the ground
-        if (!this.blocksTouching && !this.isBlockTouchingGround)
+        //If the block isn't touching another block, or the ground, and not being set up
+        if (this.tower.TowerIsReady && !this.blocksTouching && !this.isBlockTouchingGround)
         {
             //If block is not being rotated to a neutral position AND
             //block is not being dropped from the top - another custom game state
@@ -79,12 +84,14 @@ public class Block : MonoBehaviour
             {
                 this.userCanDrag = true;
             }
-        }
+        }            
     }
 
     public void HandleBlockTouchingNothing()
     {
-        if (!this.rotating && !this.isBeingPlacedOnTop && !this.isInDropPosition)
+        if (this.gameController.CurrentTurnState != TurnState.PlaceBlock &&
+            !this.isBeingPlacedOnTop && 
+            !this.isInDropPosition)
         {
             //Check how long it's been since block has touched anything (ground, other blocks)
             //If it's been longer than 1.5f (time), switch Main Camera to a drop view.
@@ -96,6 +103,7 @@ public class Block : MonoBehaviour
                 {
                     this.userCanDrag = false;
                     this.isBeingPlacedOnTop = true;
+                    this.gameController.GoToTurnState(TurnState.PlaceBlock);
                     StartCoroutine(this.cam.pivotToDropView());
                 }
             }
@@ -140,22 +148,21 @@ public class Block : MonoBehaviour
             }
             else
             {
-                this.rotating = false;
                 this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
             }
             //Intended to stop collision between rigidbody and block, but idt it does anything yet
-            if (this.rotating)
-            {
-                this.userCanDrag = false;
-            }
         }
         else
         {
             this.isBeingPlacedOnTop = false;
             this.isInDropPosition = true;
             this.userCanDrag = true;
+            this.userCanNudge = false;
+            this.GetComponent<Rigidbody>().useGravity = false;
             this.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
             this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            this.GetComponent<Rigidbody>().angularDrag = 0.05f;
+            this.GetComponent<Rigidbody>().drag = 1f;
         }
     }
 
@@ -167,6 +174,8 @@ public class Block : MonoBehaviour
             this.isBeingPlacedOnTop = false;
             blocksTouching = true;
             this.isInDropPosition = false;
+            this.gameController.GoToTurnState(TurnState.GetBlock);
+            this.userCanDrag = false;
             StartCoroutine(this.cam.pivotBackToPreviousView());
         }
     }
@@ -208,14 +217,14 @@ public class Block : MonoBehaviour
             blocksTouching = false;
         } else
         {
-            Debug.Log(other.ToString());
+            //Debug.Log(other.ToString());
         }
     }
 
     //Event for when user clicks on block object
     private void OnMouseDown()
     {
-        if (!this.rotating && this.isInDropPosition) 
+        if (this.isInDropPosition) 
         {
             this.GetComponent<Rigidbody>().useGravity = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
@@ -236,15 +245,18 @@ public class Block : MonoBehaviour
     //Event for when user releases mouse
     private void OnMouseUp()
     {
-        if (this.startTime > 0)
+        if (this.userCanNudge)
         {
-            var endTime = Time.time;
-            var timeDiff = Mathf.Abs(this.startTime - endTime);
-
-            if (timeDiff < 1f)
+            if (this.startTime > 0)
             {
-                DragBox.destroyAllRigidBodies();
-                this.NudgeBlock();
+                var endTime = Time.time;
+                var timeDiff = Mathf.Abs(this.startTime - endTime);
+
+                if (timeDiff < 1f)
+                {
+                    DragBox.destroyAllRigidBodies();
+                    this.NudgeBlock();
+                }
             }
         }
 

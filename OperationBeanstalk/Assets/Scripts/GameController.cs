@@ -10,6 +10,10 @@ public class GameController : MonoBehaviour
 
     private float turnIndex;
 
+    public Player CurrentPlayer;
+
+    public TurnState CurrentTurnState;
+
     public Canvas textUI;
 
     // Start is called before the first frame update
@@ -28,6 +32,9 @@ public class GameController : MonoBehaviour
             GameObject textObj = new GameObject("p" + i.ToString() + "text");
             this.addPlayer(currentPlayer, textObj);
         }
+        this.turnIndex = 0;
+        CurrentPlayer = this.PlayerList[0];
+        CurrentTurnState = TurnState.GetBlock;
     }
 
     void addPlayer(Player p, GameObject t)
@@ -44,7 +51,19 @@ public class GameController : MonoBehaviour
 
     void test2PlayerGame()
     {
-        //this.PlayerList.Add(new Player(Color.red, "james", 0));
-        //this.PlayerList.Add(new Player(Color.cyan, "cyan", 0));
+        this.PlayerList.Add(new Player(Color.red, "james", 0));
+        this.PlayerList.Add(new Player(Color.cyan, "cyan", 0));
     }
+
+    public void GoToTurnState(TurnState state)
+    {
+        this.CurrentTurnState = state;
+    }
+}
+
+
+public enum TurnState {
+    Mgmt,
+    GetBlock,
+    PlaceBlock
 }
