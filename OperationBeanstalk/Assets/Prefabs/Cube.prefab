@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6750845200568785923}
   - component: {fileID: 6750845200568785926}
   - component: {fileID: 6750845200568785927}
-  - component: {fileID: 2129253795571410949}
   - component: {fileID: 4877898027268558377}
   m_Layer: 0
   m_Name: Cube
@@ -97,13 +96,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBeingNudged: 0
   blockIsInTowerZone: 1
-  rotating: 0
-  userCanDrag: 1
   isBeingPlacedOnTop: 0
+  isInDropPosition: 0
   blockIsBeingDragged: 0
+  userCanDrag: 1
+  userCanNudge: 0
   towerZone: {fileID: 0}
   nudgeForce: 2
   timeSpentNotTouching: 0
+  mouseDriftPermittedToNudge: 100
+  text_debug: {fileID: 0}
+  tower: {fileID: 0}
+  gameController: {fileID: 0}
 --- !u!54 &6750845200568785927
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -120,21 +124,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 3
---- !u!114 &2129253795571410949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6750845200568785933}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0.8666667, g: 0.26666665, b: 0.6372627, a: 0.5}
-  m_EffectDistance: {x: 1, y: -1}
-  m_UseGraphicAlpha: 1
 --- !u!64 &4877898027268558377
 MeshCollider:
   m_ObjectHideFlags: 0

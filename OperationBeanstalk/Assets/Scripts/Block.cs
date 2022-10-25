@@ -5,19 +5,19 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     // Block states
-    public bool hasBlockBeenMoved { get; set; } = false;
+    public bool hasBlockBeenMovedByPlayerRecently { get; set; } = false;
     public bool isBlockTouchingGround { get; set; } = false;
     public bool blocksTouching { get; set; } = false;
     
     public bool isBeingNudged = false;
-    
+
     public bool blockIsInTowerZone = true;
     
     public bool isBeingPlacedOnTop = false;
    
     public bool isInDropPosition = false;
 
-    public bool blockIsBeingDragged = false;
+    public bool isBeingDragged = false;
     
     
     // 
@@ -68,6 +68,7 @@ public class Block : MonoBehaviour
         //If the block isn't touching another block, or the ground, and not being set up
         if (this.tower.TowerIsReady && !this.blocksTouching && !this.isBlockTouchingGround)
         {
+            checkOutlineState();
             //If block is not being rotated to a neutral position AND
             //block is not being dropped from the top - another custom game state
             this.HandleBlockTouchingNothing();
@@ -75,6 +76,7 @@ public class Block : MonoBehaviour
             //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
             if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
             {
+                this.hasBlockBeenMovedByPlayerRecently = true;
                 this.isBeingNudged = false;
             }
 
@@ -84,7 +86,7 @@ public class Block : MonoBehaviour
             {
                 this.userCanDrag = true;
             }
-        }            
+        } 
     }
 
     public void HandleBlockTouchingNothing()
@@ -102,9 +104,14 @@ public class Block : MonoBehaviour
                 if (timeDiff > 0.1f)
                 {
                     this.userCanDrag = false;
-                    this.isBeingPlacedOnTop = true;
-                    this.gameController.GoToTurnState(TurnState.PlaceBlock);
-                    StartCoroutine(this.cam.pivotToDropView());
+
+                    // Only move block to tower top IF player moved it
+                    if(this.hasBlockBeenMovedByPlayerRecently)
+                    {
+                        this.isBeingPlacedOnTop = true;
+                        this.gameController.GoToTurnState(TurnState.PlaceBlock);
+                        StartCoroutine(this.cam.pivotToDropView());
+                    }
                 }
             }
             else
@@ -163,6 +170,8 @@ public class Block : MonoBehaviour
             this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
             this.GetComponent<Rigidbody>().angularDrag = 0.05f;
             this.GetComponent<Rigidbody>().drag = 1f;
+
+            this.hasBlockBeenMovedByPlayerRecently = false;
         }
     }
 
@@ -233,6 +242,19 @@ public class Block : MonoBehaviour
         if(this.mouseStartPos == new Vector3(0,0,0)) this.mouseStartPos = Input.mousePosition;
     }
 
+    private void OnMouseOver()
+    {
+        this.GetComponent<Outline>().updateOutlineState(CollisionColourState.blue);
+    }
+
+    private void OnMouseExit()
+    {
+        if (!this.isBeingNudged && !this.isBeingDragged)
+        {
+            this.GetComponent<Outline>().updateOutlineState(CollisionColourState.none);
+        }
+    }
+
     //Checks if the mouse has moved enough for the user to be able to drag it.
     public bool mouseMovedEnoughToDrag()
     {
@@ -268,13 +290,14 @@ public class Block : MonoBehaviour
             }
         }
 
+        this.GetComponent<Outline>().updateOutlineState(CollisionColourState.none);
+
         this.mouseStartPos = new Vector3(0, 0, 0);
     }
 
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
     private void NudgeBlock()
     {
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
         this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
@@ -358,8 +381,27 @@ public class Block : MonoBehaviour
     //Adds force to rigidbody so that block is moved in a direction, like it's being shoved.
     private void pushBlock(Vector3 velocity)
     {
-        this.hasBlockBeenMoved = true;
+        this.hasBlockBeenMovedByPlayerRecently = true;
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
         this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
+    }
+
+    private void checkOutlineState()
+    {
+        if (this.blocksTouching) return;
+
+        var outline = this.GetComponent<Outline>();
+        if (this.isBlockTouchingGround) outline.updateOutlineState(CollisionColourState.red);
+
+        //outline.updateOutlineState(CollisionColourState.blue);
+    }
+
+    public enum CollisionColourState
+    {
+        none,
+        blue, //000BFF
+        yellow, //FFEB00
+        orange, //FF7D00
+        red //FF0500
     }
 }

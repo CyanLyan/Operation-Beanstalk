@@ -39,7 +39,7 @@ public class DragBox : MonoBehaviour
         }
         p.distance = hit.distance;
 
-        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().blockIsBeingDragged) return;
+        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().isBeingDragged) return;
         p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
         mainCamera = FindCamera();
 
@@ -77,12 +77,14 @@ public class DragBox : MonoBehaviour
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
 
+        hit.collider.gameObject.GetComponent<Block>().isBeingDragged = true;
+
         StartCoroutine("DragTheBox", p);
     }
 
     IEnumerator DragTheBox(hitCoords stuffToFollow)
     {
-        stuffToFollow.itemHit.gameObject.GetComponent<Block>().hasBlockBeenMoved = true;
+        stuffToFollow.itemHit.gameObject.GetComponent<Block>().hasBlockBeenMovedByPlayerRecently = true;
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
         springJoint.connectedBody.drag = drag;
@@ -109,7 +111,7 @@ public class DragBox : MonoBehaviour
         }
         DrawLine.ResetLine(this.lineContainer);
         destroyAllRigidBodies();
-        stuffToFollow.itemHit.gameObject.GetComponent<Block>().blockIsBeingDragged = false;
+        stuffToFollow.itemHit.gameObject.GetComponent<Block>().isBeingDragged = false;
 
     }
 

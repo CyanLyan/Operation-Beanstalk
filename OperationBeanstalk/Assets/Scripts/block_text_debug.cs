@@ -26,15 +26,15 @@ public class block_text_debug : MonoBehaviour
         blockIsInTowerZone = GetComponentInParent<Block>().blockIsInTowerZone;
         userCanDrag = GetComponentInParent<Block>().userCanDrag;
         isBeingPlacedOnTop = GetComponentInParent<Block>().isBeingPlacedOnTop;
-        blockIsBeingDragged = GetComponentInParent<Block>().blockIsBeingDragged;
+        blockIsBeingDragged = GetComponentInParent<Block>().isBeingDragged;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(GetComponentInParent<Block>().hasBlockBeenMoved)
+        if(GetComponentInParent<Block>().hasBlockBeenMovedByPlayerRecently)
         {
-            blockIsBeingDragged = GetComponentInParent<Block>().blockIsBeingDragged;
+            blockIsBeingDragged = GetComponentInParent<Block>().isBeingDragged;
             isBlockTouchingGround = GetComponentInParent<Block>().isBlockTouchingGround;
             blocksTouching = GetComponentInParent<Block>().blocksTouching;
             isBeingNudged = GetComponentInParent<Block>().isBeingNudged;
