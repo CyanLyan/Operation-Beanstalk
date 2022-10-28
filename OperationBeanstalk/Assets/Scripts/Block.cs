@@ -48,6 +48,8 @@ public class Block : MonoBehaviour
 
     public Tower tower;
 
+    private Outline outline;
+
     public GameController gameController;
 
     private void Awake()
@@ -60,6 +62,9 @@ public class Block : MonoBehaviour
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
+
+        this.outline = this.GetComponent<Outline>();
+        //this.text_debug.enabled = false;
     }
         
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
@@ -244,7 +249,10 @@ public class Block : MonoBehaviour
 
     private void OnMouseOver()
     {
-        this.GetComponent<Outline>().updateOutlineState(CollisionColourState.blue);
+        
+        if (Input.GetMouseButton(0) && !this.isBeingDragged) return;
+       
+        this.outline.updateOutlineState(CollisionColourState.blue);
     }
 
     private void OnMouseExit()
@@ -273,7 +281,6 @@ public class Block : MonoBehaviour
             {
                 var endTime = Time.time;
                 var timeDiff = Mathf.Abs(this.startTime - endTime);
-
                 if (timeDiff < 1f)
                 {
                     DragBox.destroyAllRigidBodies();
