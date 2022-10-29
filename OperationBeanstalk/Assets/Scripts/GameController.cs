@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        Cursor.visible = false;
         this.turnIndex = 0;
         this.test2PlayerGame();
 

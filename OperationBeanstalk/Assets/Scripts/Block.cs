@@ -18,9 +18,9 @@ public class Block : MonoBehaviour
     public bool isInDropPosition = false;
 
     public bool isBeingDragged = false;
-    
-    
-    // 
+
+    public bool isActive = false;
+
     public bool userCanDrag = true;
     public bool userCanNudge = true;
     public static int nBlocksOnGround { get; set; } = 0;
@@ -70,28 +70,31 @@ public class Block : MonoBehaviour
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
-        //If the block isn't touching another block, or the ground, and not being set up
-        if (this.tower.TowerIsReady && !this.blocksTouching && !this.isBlockTouchingGround)
+        checkOutlineState();
+        if(this.isActive)
         {
-            checkOutlineState();
-            //If block is not being rotated to a neutral position AND
-            //block is not being dropped from the top - another custom game state
-            this.HandleBlockTouchingNothing();
-
-            //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
-            if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
+            //If the block isn't touching another block, or the ground, and not being set up
+            if (this.tower.TowerIsReady && !this.blocksTouching && !this.isBlockTouchingGround)
             {
-                this.hasBlockBeenMovedByPlayerRecently = true;
-                this.isBeingNudged = false;
-            }
+                //If block is not being rotated to a neutral position AND
+                //block is not being dropped from the top - another custom game state
+                this.HandleBlockTouchingNothing();
 
-            //Else, we can nudge it!
-            //TODO - make this an else to the if above
-            if (!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
-            {
-                this.userCanDrag = true;
-            }
-        } 
+                //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
+                if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
+                {
+                    this.hasBlockBeenMovedByPlayerRecently = true;
+                    this.isBeingNudged = false;
+                }
+
+                //Else, we can nudge it!
+                //TODO - make this an else to the if above
+                if (!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
+                {
+                    this.userCanDrag = true;
+                }
+            } 
+        }
     }
 
     public void HandleBlockTouchingNothing()
@@ -249,17 +252,17 @@ public class Block : MonoBehaviour
 
     private void OnMouseOver()
     {
-        
+        this.isActive = true;
+
         if (Input.GetMouseButton(0) && !this.isBeingDragged) return;
-       
-        this.outline.updateOutlineState(CollisionColourState.blue);
     }
 
     private void OnMouseExit()
     {
         if (!this.isBeingNudged && !this.isBeingDragged)
         {
-            this.GetComponent<Outline>().updateOutlineState(CollisionColourState.none);
+            this.isActive = false;
+            if (this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
         }
     }
 
@@ -297,7 +300,7 @@ public class Block : MonoBehaviour
             }
         }
 
-        this.GetComponent<Outline>().updateOutlineState(CollisionColourState.none);
+        if(this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
 
         this.mouseStartPos = new Vector3(0, 0, 0);
     }
@@ -395,12 +398,17 @@ public class Block : MonoBehaviour
 
     private void checkOutlineState()
     {
-        if (this.blocksTouching) return;
+        if (this.isActive)
+        {
+            //if (this.blocksTouching) return;
 
-        var outline = this.GetComponent<Outline>();
-        if (this.isBlockTouchingGround) outline.updateOutlineState(CollisionColourState.red);
+            var outline = this.GetComponent<Outline>();
 
-        //outline.updateOutlineState(CollisionColourState.blue);
+            outline.updateOutlineState(CollisionColourState.blue);
+        } else
+        {
+            //if (this.isBlockTouchingGround) outline.updateOutlineState(CollisionColourState.red);
+        }
     }
 
     public enum CollisionColourState
