@@ -51,6 +51,7 @@ public class Block : MonoBehaviour
     private Outline outline;
 
     public GameController gameController;
+    public GameObject lineRenderer;
 
     private void Awake()
     {
@@ -81,7 +82,7 @@ public class Block : MonoBehaviour
                 this.HandleBlockTouchingNothing();
 
                 //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
-                if (!Input.GetMouseButtonDown(0) || this.mouseMovedEnoughToDrag())
+                if (!Input.GetMouseButtonDown(0) || (this.mouseMovedEnoughToDrag() && !enoughTimeHasEllapsed()))
                 {
                     this.hasBlockBeenMovedByPlayerRecently = true;
                     this.isBeingNudged = false;
@@ -89,7 +90,7 @@ public class Block : MonoBehaviour
 
                 //Else, we can nudge it!
                 //TODO - make this an else to the if above
-                if (!this.userCanDrag && Input.GetMouseButtonDown(0) && this.mouseMovedEnoughToDrag())
+                if (!this.userCanDrag && Input.GetMouseButtonDown(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
                 {
                     this.userCanDrag = true;
                 }
@@ -275,29 +276,26 @@ public class Block : MonoBehaviour
         return mouseMovedEnough;
     }
 
+    public bool enoughTimeHasEllapsed()
+    {
+        if (this.startTime == 0) return false;
+        var endTime = Time.time;
+        var timeDiff = Mathf.Abs(this.startTime - endTime);
+        Debug.Log(timeDiff);
+        return timeDiff > 1f;
+    }
+
     //Event for when user releases mouse
     private void OnMouseUp()
     {
-        if (this.userCanNudge)
+        if (this.userCanNudge && !enoughTimeHasEllapsed())
         {
-            if (this.startTime > 0)
-            {
-                var endTime = Time.time;
-                var timeDiff = Mathf.Abs(this.startTime - endTime);
-                if (timeDiff < 1f)
-                {
-                    DragBox.destroyAllRigidBodies();
-                    this.NudgeBlock();
-                }
-            }
+            DragBox.destroyAllRigidBodies();
+            this.NudgeBlock();
         }
 
-        if (this.userCanDrag)
-        {
-            if (this.isBeingPlacedOnTop)
-            {
+        if (this.userCanDrag && this.isBeingPlacedOnTop) {
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-            }
         }
 
         if(this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
@@ -311,6 +309,25 @@ public class Block : MonoBehaviour
         RaycastHit ray;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ray);
         this.NudgeBlockByFaceEdge(this.GetHitFace(ray));
+    }
+
+    
+    IEnumerator DrawNudgeTrajectory(float timeLimit, RaycastHit hit, Ray ray, Vector3 traj)
+    {
+        // This will wait 1 second like Invoke could do, remove this if you don't need it
+        yield return new WaitForSeconds(1);
+
+
+        float timePassed = 0;
+        while (timePassed < timeLimit)
+        {
+            // Code to go left here
+
+            DrawLine.Draw(this.lineRenderer, traj, ray.GetPoint(10f), Color.cyan, (Time.deltaTime * 3f));
+            timePassed += Time.deltaTime;
+
+            yield return null;
+        }
     }
 
     public enum MCFace
@@ -329,10 +346,11 @@ public class Block : MonoBehaviour
     {
         Vector3 incomingVec = hit.normal - Vector3.up;
         Vector3 roundedVec = new Vector3(Mathf.Round(incomingVec.x), Mathf.Round(incomingVec.y), Mathf.Round(incomingVec.z));
-       
+
         if (roundedVec == new Vector3(0, -1, -1))
             return MCFace.South;
 
+        //East
         if (roundedVec == new Vector3(0, -1, 1))
             return MCFace.North;
 
@@ -349,8 +367,8 @@ public class Block : MonoBehaviour
             return MCFace.East;
 
         return MCFace.None;
-    }
 
+    }
     //Pushes block based on which face was hit, in the direction OF that face.
     //Think of it like a bullet going through something, where we determine the direction of the bullet coming out of the exit wound, based on where the entry wound is.
     private void NudgeBlockByFaceEdge(MCFace faceHit)
@@ -382,17 +400,18 @@ public class Block : MonoBehaviour
                 this.pushBlock(new Vector3(-1.0f, -1.0f, 0.0f));
                 break;
 
-            default:
-                break;
-
         }
     }
 
     //Adds force to rigidbody so that block is moved in a direction, like it's being shoved.
     private void pushBlock(Vector3 velocity)
     {
+        Debug.Log("Nudge");
         this.hasBlockBeenMovedByPlayerRecently = true;
-        var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y * this.nudgeForce, velocity.z * this.nudgeForce);
+
+        var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y, velocity.z * this.nudgeForce);
+
+        //StartCoroutine(DrawNudgeTrajectory())
         this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
     }
 
@@ -400,11 +419,9 @@ public class Block : MonoBehaviour
     {
         if (this.isActive)
         {
-            //if (this.blocksTouching) return;
-
             var outline = this.GetComponent<Outline>();
 
-            outline.updateOutlineState(CollisionColourState.blue);
+            if(outline) outline.updateOutlineState(CollisionColourState.blue);
         } else
         {
             //if (this.isBlockTouchingGround) outline.updateOutlineState(CollisionColourState.red);
