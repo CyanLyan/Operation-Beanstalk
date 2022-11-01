@@ -15,6 +15,8 @@ public class Tower : MonoBehaviour
     public float TowerSetUpWaitTime = 0.5f;
     public bool TowerIsReady = false;
 
+    public float blockRandomnessIndex = 0f;
+
     private void Awake()
     {
         createTower();
@@ -37,7 +39,7 @@ public class Tower : MonoBehaviour
             y = (i == 0) ? 0.5f : (i * blockHeight * 1.1f);
             // spawnRotation = (((i + 1) % 2) == 0) ? Quaternion.Euler(0, 90, 0) : Quaternion.identity;
             spawnRotation = this.getSpawnRotation(i);
-            Pallet pallet = new Pallet(blockPrefab, center, spawnRotation, 0, y, 0, 3f, 0.005f);
+            Pallet pallet = new Pallet(blockPrefab, center, spawnRotation, 0, y, 0, 3f, 0.005f, this.blockRandomnessIndex);
             palletStack.Add(pallet);
         }
 

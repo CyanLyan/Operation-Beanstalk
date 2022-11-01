@@ -11,6 +11,8 @@ TagManager:
   - UIText
   - LineRenderer
   - DropView
+  - FxTemporaire
+  - Cursor
   layers:
   - Default
   - TransparentFX

@@ -192,6 +192,7 @@ MonoBehaviour:
   blockIndex: 0
   TowerSetUpWaitTime: 0.5
   TowerIsReady: 0
+  blockRandomnessIndex: 1
 --- !u!23 &183593128
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1040,6 +1041,7 @@ MonoBehaviour:
   tower: {fileID: 0}
   gameController: {fileID: 0}
   lineRenderer: {fileID: 0}
+  cursorInstance: {fileID: 0}
 --- !u!64 &1289162242
 MeshCollider:
   m_ObjectHideFlags: 0
