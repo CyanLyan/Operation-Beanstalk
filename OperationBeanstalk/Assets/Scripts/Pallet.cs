@@ -39,16 +39,32 @@ public class Pallet : MonoBehaviour
     public GameObject randomizeBlockDimensions(GameObject block)
     {
         var randomWeightModifierMaxVariation = this.RandomnessIndex / 10;
+        var randomScaleModifierMaxVariation = this.RandomnessIndex / 100;
         float randomWeightModifier = Random.Range(0, randomWeightModifierMaxVariation);
+        float randomScaleModifier = Random.Range(0, randomScaleModifierMaxVariation);
 
-        //Do coin flip
+
+        block.GetComponent<Rigidbody>().mass = GenerateRandomDeviation(block.GetComponent<Rigidbody>().mass, randomWeightModifier);
+        Vector3 randomScaleDimensions = new Vector3(GenerateRandomDeviation(block.transform.localScale.x, randomScaleModifier),
+            GenerateRandomDeviation(block.transform.localScale.y, randomScaleModifier), GenerateRandomDeviation(block.transform.localScale.z, randomScaleModifier));
+        block.transform.localScale = randomScaleDimensions;
+
+        return block;
+    }
+
+    private float GenerateRandomDeviation(float dimensionToDeviate, float randomWeightModifierMaxVariation)
+    {
+        float randomModifier = Random.Range(0, randomWeightModifierMaxVariation);
+        
+    //Do coin flip
         if (Mathf.Round(Random.Range(0, 2)) == 1)
         {
-            block.GetComponent<Rigidbody>().mass = block.GetComponent<Rigidbody>().mass + randomWeightModifier;
-        } else
-        {
-            block.GetComponent<Rigidbody>().mass = block.GetComponent<Rigidbody>().mass - randomWeightModifier;
+            dimensionToDeviate = dimensionToDeviate + randomModifier;
         }
-        return block;
+        else
+        {
+            dimensionToDeviate = dimensionToDeviate - randomModifier; 
+        }
+        return dimensionToDeviate;
     }
 }
