@@ -118,6 +118,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 198177623946738332, guid: 250e86a7819757142b6510e936ec4abf,
         type: 3}
+      propertyPath: CollisionModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198177623946738332, guid: 250e86a7819757142b6510e936ec4abf,
+        type: 3}
       propertyPath: ShapeModule.m_Rotation.x
       value: -90
       objectReference: {fileID: 0}
@@ -186,6 +191,11 @@ PrefabInstance:
       propertyPath: InitialModule.startLifetime.minScalar
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 198177623946738332, guid: 250e86a7819757142b6510e936ec4abf,
+        type: 3}
+      propertyPath: CollisionModule.m_EnergyLossOnCollision.scalar
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 199645219012319512, guid: 250e86a7819757142b6510e936ec4abf,
         type: 3}
       propertyPath: m_Materials.Array.size
@@ -226,6 +236,11 @@ PrefabInstance:
       propertyPath: particleSystemInstance
       value: 
       objectReference: {fileID: 934670400476818715}
+    - target: {fileID: 5169388776914804077, guid: 457c0a03d51b1f74c8b418aeac937fab,
+        type: 3}
+      propertyPath: m_TagString
+      value: Cursor
+      objectReference: {fileID: 0}
     - target: {fileID: 7648211467745372168, guid: 457c0a03d51b1f74c8b418aeac937fab,
         type: 3}
       propertyPath: m_Name

@@ -322,6 +322,11 @@ public class Outline : MonoBehaviour {
                 OutlineColor = Color.red;
                 break;
 
+            case Block.CollisionColourState.green:
+                this.enabled = true;
+                OutlineColor = Color.green;
+                break;
+
             default:
                 this.enabled = false;
                 break;
