@@ -112,6 +112,7 @@ public class DragBox : MonoBehaviour
         DrawLine.ResetLine(this.lineContainer);
         destroyAllRigidBodies();
         stuffToFollow.itemHit.gameObject.GetComponent<Block>().isBeingDragged = false;
+        stuffToFollow.itemHit.gameObject.GetComponent<Block>().isActive = false;
 
     }
 

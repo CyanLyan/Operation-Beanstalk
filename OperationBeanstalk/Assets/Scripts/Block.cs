@@ -271,6 +271,7 @@ public class Block : MonoBehaviour
         if (!this.isBeingNudged && !this.isBeingDragged)
         {
             this.isActive = false;
+            this.startTime = 0;
         }
     }
 
@@ -308,6 +309,7 @@ public class Block : MonoBehaviour
         if(this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
 
         this.mouseStartPos = new Vector3(0, 0, 0);
+        if(this.isActive) this.isActive = false;
     }
 
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
@@ -315,29 +317,28 @@ public class Block : MonoBehaviour
     {
         RaycastHit hit;
         Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit);
-        this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
-        DoCursorNudgeEffect(hit);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            GameObject blockHit = hit.collider.gameObject;
+            if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
+            {
+                this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
+                DoCursorNudgeEffect(hit);
+            }
+        }
     }
 
 
     private void DoCursorNudgeEffect(RaycastHit hit)
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
+        if (this.cursorInstance == null) this.cursorInstance = GameObject.FindGameObjectWithTag("Cursor");
 
-                if(this.cursorInstance == null) this.cursorInstance = GameObject.FindGameObjectWithTag("Cursor");
-
-                var particleSystemInstance = this.cursorInstance.GetComponent<CursorController>().particleSystemInstance;
-                var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-                // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit                
-                var localInstance = Object.Instantiate(particleSystemInstance, hit.point, cursorRotation);
-                localInstance.SetActive(true);
-
-            }
-        }
+        var particleSystemInstance = this.cursorInstance.GetComponent<CursorController>().particleSystemInstance;
+        var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+        // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit                
+        var localInstance = Object.Instantiate(particleSystemInstance, hit.point, cursorRotation);
+        localInstance.SetActive(true);
     }
     
     IEnumerator DrawNudgeTrajectory(float timeLimit, RaycastHit hit, Ray ray, Vector3 traj)
