@@ -716,6 +716,8 @@ MonoBehaviour:
     type: 3}
   CurrentTurnState: 0
   textUI: {fileID: 515430410}
+  cursorInstance: {fileID: 8003141204144494819, guid: d27a0b600ec22d64f813daa6c902a662,
+    type: 3}
 --- !u!4 &725078023
 Transform:
   m_ObjectHideFlags: 0

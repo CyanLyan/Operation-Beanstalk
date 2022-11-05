@@ -5,6 +5,11 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    public GameObject cursorControllerObj;
+
+    public CursorController cursorController;
+
     public Color color { get; set; }
     public string playerName { get; set; }
     public int score { get; set; }
@@ -18,7 +23,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        
+        this.cursorControllerObj = Instantiate(cursorControllerObj);
+        this.cursorController = cursorControllerObj.GetComponentInChildren<CursorController>();
     }
 
     // Update is called once per frame

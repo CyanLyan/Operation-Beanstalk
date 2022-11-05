@@ -26,6 +26,8 @@ public class GameController : MonoBehaviour
 
     public Canvas textUI;
 
+    public GameObject cursorInstance;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,12 +45,15 @@ public class GameController : MonoBehaviour
         var gameReady = this.tower.GenerateTower(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 15);
         if(gameReady)
         {
-            for (int i = 0; i < this.PlayerList.Count; i++)
-            {
-                Player currentPlayer = this.PlayerList[i];
-                GameObject textObj = new GameObject("p" + i.ToString() + "text");
-                this.addPlayer(currentPlayer, textObj);
-            }
+            //for (int i = 0; i < this.PlayerList.Count; i++)
+            //{
+            //    Player currentPlayer = this.PlayerList[i];
+            //    GameObject textObj = new GameObject("p" + i.ToString() + "text");
+            //}
+
+            Player currentPlayer = this.PlayerList[0];
+            GameObject textObj = new GameObject("p0" + "text");
+            this.addPlayer(this.PlayerList[0], textObj);
         }
     }
 
@@ -56,7 +61,7 @@ public class GameController : MonoBehaviour
     {
         Text myText = t.AddComponent<Text>();
         myText.text += p.playerName + ": " + p.score + "\n";
-        var newPlayer = Instantiate(PlayerPrefab);
+        var newPlayer = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
     }
     
     // Update is called once per frame
