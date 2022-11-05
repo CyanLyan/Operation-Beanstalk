@@ -233,6 +233,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1321976908392453951, guid: 457c0a03d51b1f74c8b418aeac937fab,
         type: 3}
+      propertyPath: cursorEffectDelay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1321976908392453951, guid: 457c0a03d51b1f74c8b418aeac937fab,
+        type: 3}
       propertyPath: particleSystemInstance
       value: 
       objectReference: {fileID: 934670400476818715}

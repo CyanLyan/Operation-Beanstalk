@@ -53,7 +53,11 @@ public class Block : MonoBehaviour
     public GameController gameController;
     public GameObject lineRenderer;
 
-    public GameObject cursorInstance;
+    public GameObject cursorParent;
+    private CursorController cursorInstance;
+
+
+    public AudioSource soundEmitter;
 
     private void Awake()
     {
@@ -66,6 +70,8 @@ public class Block : MonoBehaviour
         this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
         this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
 
+        cursorInstance = this.cursorParent.GetComponentInChildren<CursorController>();
+
         this.outline = this.GetComponent<Outline>();
         //this.text_debug.enabled = false;
     }
@@ -77,7 +83,7 @@ public class Block : MonoBehaviour
         if(this.isActive)
         {
             //If the block isn't touching another block, or the ground, and not being set up
-            if (this.tower.TowerIsReady && !this.blocksTouching && !this.isBlockTouchingGround)
+            if (!this.blocksTouching && !this.isBlockTouchingGround)
             {
                 //If block is not being rotated to a neutral position AND
                 //block is not being dropped from the top - another custom game state
@@ -255,9 +261,6 @@ public class Block : MonoBehaviour
 
     private void OnMouseOver()
     {
-        //Debug.Log(Input.GetMouseButton(0));
-        //Debug.Log("Dragged:" + this.isBeingDragged);
-        //Debug.Log("Nudged:" + this.isBeingNudged);
         if ((!Input.GetMouseButton(0) && !this.isBeingDragged && !this.isBeingNudged) ||
             (Input.GetMouseButton(0) && (this.isBeingDragged || this.isBeingNudged)))
         {
@@ -324,23 +327,12 @@ public class Block : MonoBehaviour
             if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
             {
                 this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
-                DoCursorNudgeEffect(hit);
+                this.cursorInstance.DoCursorNudgeEffect(hit);
+                this.cursorInstance.playSoundAfterDelay(this.soundEmitter);
             }
         }
     }
 
-
-    private void DoCursorNudgeEffect(RaycastHit hit)
-    {
-        if (this.cursorInstance == null) this.cursorInstance = GameObject.FindGameObjectWithTag("Cursor");
-
-        var particleSystemInstance = this.cursorInstance.GetComponent<CursorController>().particleSystemInstance;
-        var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-        // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit                
-        var localInstance = Object.Instantiate(particleSystemInstance, hit.point, cursorRotation);
-        localInstance.SetActive(true);
-    }
-    
     IEnumerator DrawNudgeTrajectory(float timeLimit, RaycastHit hit, Ray ray, Vector3 traj)
     {
         // This will wait 1 second like Invoke could do, remove this if you don't need it
@@ -451,7 +443,7 @@ public class Block : MonoBehaviour
     {
         if (this.isActive)
         {
-            if (this.outline == null) this.outline = this.GetComponent<Outline>();
+            if (this.outline == null || this.outline is null) this.outline = this.GetComponent<Outline>();
             if((this.isBeingDragged || this.isBeingNudged))
             {
                 this.outline.updateOutlineState(CollisionColourState.green);

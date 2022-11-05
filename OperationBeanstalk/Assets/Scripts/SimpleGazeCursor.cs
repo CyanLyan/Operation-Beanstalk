@@ -4,7 +4,7 @@ using System;
 
 public class SimpleGazeCursor : MonoBehaviour
 {
-    public Camera viewCamera;
+    private Camera viewCamera;
     public GameObject cursorPrefab;
     public float maxCursorDistance = 30;
 
@@ -13,6 +13,7 @@ public class SimpleGazeCursor : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        viewCamera = Camera.main;
         cursorInstance = Instantiate(cursorPrefab);
     }
 

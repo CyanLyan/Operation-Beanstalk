@@ -8,7 +8,17 @@ public class GameController : MonoBehaviour
 
     public List<Player> PlayerList = new List<Player>();
 
+    public Tower tower;
+
+    public List<KeyValuePair<string, GameSettings>> gameSettings = new List<KeyValuePair<string, GameSettings>>();
+
+    public GameObject gameSettingsObj;
+
+    public GameObject blockPrefab;
+
     private float turnIndex;
+
+    public GameObject PlayerPrefab;
 
     public Player CurrentPlayer;
 
@@ -25,21 +35,28 @@ public class GameController : MonoBehaviour
         GameObject newGO = new GameObject("myTextGO");
         newGO.transform.SetParent(this.textUI.transform);
 
-        for (int i = 0; i < this.PlayerList.Count; i++)
-        {
-            Player currentPlayer = this.PlayerList[i];
-            GameObject textObj = new GameObject("p" + i.ToString() + "text");
-            this.addPlayer(currentPlayer, textObj);
-        }
+        
         this.turnIndex = 0;
         CurrentPlayer = this.PlayerList[0];
         CurrentTurnState = TurnState.GetBlock;
+
+        var gameReady = this.tower.GenerateTower(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 15);
+        if(gameReady)
+        {
+            for (int i = 0; i < this.PlayerList.Count; i++)
+            {
+                Player currentPlayer = this.PlayerList[i];
+                GameObject textObj = new GameObject("p" + i.ToString() + "text");
+                this.addPlayer(currentPlayer, textObj);
+            }
+        }
     }
 
     void addPlayer(Player p, GameObject t)
     {
         Text myText = t.AddComponent<Text>();
         myText.text += p.playerName + ": " + p.score + "\n";
+        var newPlayer = Instantiate(PlayerPrefab);
     }
     
     // Update is called once per frame
