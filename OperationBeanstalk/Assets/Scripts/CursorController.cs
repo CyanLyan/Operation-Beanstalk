@@ -13,11 +13,19 @@ public class CursorController : MonoBehaviour
     private RaycastHit hit;
     public Quaternion cursorRotation;
 
+    public GameObject laserBeam;
+
     public float cursorEffectDelay;
 
     //public GameObject cursorPrefab;
     public float maxCursorDistance = 30;
 
+    public bool gunActive = false;
+    public GameObject gunPrefab;
+
+    public float distanceAwayFromSurface = 3f;
+
+    public bool InGunDisplayLoop { get; private set; }
 
     public CursorController()
     {
@@ -33,6 +41,9 @@ public class CursorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        gunActive = Input.GetMouseButton(1);
+        gunPrefab.SetActive(gunActive);
+        if (gunActive) DrawLaserBeam();
         UpdateCursorBasedOnMouse();
     }
 
@@ -60,30 +71,61 @@ public class CursorController : MonoBehaviour
 
     private void UpdateCursorBasedOnMouse()
     {
-
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            Debug.Log("Hit");
-            // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit
-            gameObject.transform.position = hit.point;
+            // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit       
             gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-            DisplayCursor(true);
+            gameObject.transform.position = hit.point;
+            DisplayDefaultCursor(true);
             Cursor.visible = false;
         }
         else
         {
-            Debug.Log("Miss");
             // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
             gameObject.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
             gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
-            DisplayCursor(false);
+            DisplayDefaultCursor(false);
             Cursor.visible = true;
         }
     }
 
-    private void DisplayCursor(bool a)
+    private void DrawLaserBeam()
+    {
+        Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        //while (Input.GetMouseButton(1)) {
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            {
+            // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit
+            //Draw line with LineRenderer from hit backwards a fixed amt to gun
+
+                Debug.Log(hit.normal);
+                var newGunRotation = Quaternion.FromToRotation(Vector3.zero, hit.normal);
+                newGunRotation.x = 0;
+                //gunPrefab.transform.rotation = newGunRotation;
+                //Debug.Log(newGunRotation);
+                
+                DrawLine.Draw(this.laserBeam, hit.point, hit.point, Color.cyan, (Time.deltaTime * 1.5f));
+                gunPrefab.transform.position = hit.point + hit.normal * distanceAwayFromSurface;
+                //gunPrefab.transform.rotation = Quaternion.FromToRotation(gunPrefab.transform.position, hit.normal);
+                Cursor.visible = false;
+            }
+            else
+            {
+                // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
+                gameObject.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
+                gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
+                DisplayDefaultCursor(false);
+                Cursor.visible = true;
+            }
+            //yield return null;
+        //}
+        //this.InGunDisplayLoop = false;
+    }
+
+    private void DisplayDefaultCursor(bool a)
     {
         CursorParts.ForEach(part => part.SetActive(a));
     }
