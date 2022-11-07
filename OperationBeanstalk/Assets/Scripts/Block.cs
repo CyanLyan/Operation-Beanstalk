@@ -31,8 +31,6 @@ public class Block : MonoBehaviour
 
     public float timeSpentNotTouching = 0f;
 
-    private float rotationTransitionTime = 0.3f;
-
     private float startTime;
     private Vector3 mouseStartPos = new Vector3(0,0,0);
 
@@ -44,38 +42,34 @@ public class Block : MonoBehaviour
 
     private string blockObjTag = "Block";
 
-    public block_text_debug text_debug;
-
-    public Tower tower;
-
     private Outline outline;
 
     public GameController gameController;
     public GameObject lineRenderer;
 
-    public GameObject cursorParent;
-    private CursorController cursorInstance;
-
-
     public AudioSource soundEmitter;
 
-    private void Awake()
+    private CursorController cursorInstance;
+
+    private Rigidbody rigidbody;
+
+    private void Awake() { }
+
+    //Function to call instead of Awake/Start, should be faster as it already has access to these components
+    public void Init(GameController gameController, 
+                 CameraControl cam,
+                 CursorController cursorInstance)
     {
-        this.tower = GameObject.Find("Tower").GetComponent<Tower>();
-        this.gameController = GameObject.Find("GameController").GetComponent<GameController>();
+        this.gameController = gameController;
         this.blockStartPos = gameObject.transform.position;
         this.originalRotation = transform.rotation;
-        towerZone = tower.GetComponent<BoxCollider>();
-        this.gameObject.name = blockObjTag + GetInstanceID().ToString();
-        this.cam = GameObject.Find("Main Camera").GetComponent<CameraControl>();
-        this.text_debug = gameObject.GetComponentInChildren<block_text_debug>();
-
-        cursorInstance = this.cursorParent.GetComponentInChildren<CursorController>();
-
+        this.cam = cam;
         this.outline = this.GetComponent<Outline>();
-        //this.text_debug.enabled = false;
+        this.cursorInstance = cursorInstance;
+        this.rigidbody = this.GetComponent<Rigidbody>();
+        this.gameObject.name = blockObjTag + GetInstanceID().ToString();
     }
-        
+
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
@@ -138,7 +132,7 @@ public class Block : MonoBehaviour
         }
         else if (this.isBeingPlacedOnTop)
         {
-            this.GetComponent<Rigidbody>().useGravity = false;
+            this.rigidbody.useGravity = false;
             PlaceBlockOnTopOfTower();
         }
     }
@@ -163,7 +157,7 @@ public class Block : MonoBehaviour
                     gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
                 }
             } else {
-                this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+                this.rigidbody.constraints = RigidbodyConstraints.FreezePosition;
             }
 
             if (Quaternion.Angle(transform.rotation, this.originalRotation) > 1f)
@@ -172,7 +166,7 @@ public class Block : MonoBehaviour
             }
             else
             {
-                this.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+                this.rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             }
             //Intended to stop collision between rigidbody and block, but idt it does anything yet
         }
@@ -182,11 +176,11 @@ public class Block : MonoBehaviour
             this.isInDropPosition = true;
             this.userCanDrag = true;
             this.userCanNudge = false;
-            this.GetComponent<Rigidbody>().useGravity = false;
-            this.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
-            this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-            this.GetComponent<Rigidbody>().angularDrag = 0.05f;
-            this.GetComponent<Rigidbody>().drag = 1f;
+            this.rigidbody.useGravity = false;
+            this.rigidbody.angularVelocity = new Vector3(0, 0, 0);
+            this.rigidbody.velocity = new Vector3(0, 0, 0);
+            this.rigidbody.angularDrag = 0.05f;
+            this.rigidbody.drag = 1f;
 
             this.hasBlockBeenMovedByPlayerRecently = false;
         }
@@ -252,7 +246,7 @@ public class Block : MonoBehaviour
     {
         if (this.isInDropPosition) 
         {
-            this.GetComponent<Rigidbody>().useGravity = true;
+            this.rigidbody.useGravity = true;
             //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
         this.startTime = Time.time;
@@ -436,14 +430,13 @@ public class Block : MonoBehaviour
         var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y, velocity.z * this.nudgeForce);
 
         //StartCoroutine(DrawNudgeTrajectory())
-        this.GetComponent<Rigidbody>().velocity = adjustedVelocity * this.nudgeForce;
+        this.rigidbody.velocity = adjustedVelocity * this.nudgeForce;
     }
 
     private void checkOutlineState()
     {
         if (this.isActive)
         {
-            if (this.outline == null || this.outline is null) this.outline = this.GetComponent<Outline>();
             if((this.isBeingDragged || this.isBeingNudged))
             {
                 this.outline.updateOutlineState(CollisionColourState.green);

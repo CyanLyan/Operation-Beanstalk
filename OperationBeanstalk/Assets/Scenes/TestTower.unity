@@ -186,6 +186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {fileID: 664150049}
+  towerTop: {fileID: 407044566}
   TowerSetUpWaitTime: 0.5
 --- !u!23 &183593128
 MeshRenderer:
@@ -716,8 +717,9 @@ MonoBehaviour:
     type: 3}
   CurrentTurnState: 0
   textUI: {fileID: 515430410}
-  cursorInstance: {fileID: 8003141204144494819, guid: d27a0b600ec22d64f813daa6c902a662,
+  cursorControllerObj: {fileID: 9126710567471718061, guid: 457c0a03d51b1f74c8b418aeac937fab,
     type: 3}
+  camerControllerObj: {fileID: 960258024}
 --- !u!4 &725078023
 Transform:
   m_ObjectHideFlags: 0
@@ -803,7 +805,7 @@ PrefabInstance:
         type: 3}
       propertyPath: cursorParent
       value: 
-      objectReference: {fileID: 8003141204144494819, guid: d27a0b600ec22d64f813daa6c902a662,
+      objectReference: {fileID: 9126710567471718061, guid: 457c0a03d51b1f74c8b418aeac937fab,
         type: 3}
     - target: {fileID: 6750845200568785926, guid: 770ea8f73496d5a479e8e2557b96f2e1,
         type: 3}
@@ -1227,12 +1229,8 @@ MonoBehaviour:
   nudgeForce: 10
   timeSpentNotTouching: 0
   mouseDriftPermittedToNudge: 10
-  text_debug: {fileID: 0}
-  tower: {fileID: 0}
   gameController: {fileID: 0}
   lineRenderer: {fileID: 0}
-  cursorParent: {fileID: 8003141204144494819, guid: d27a0b600ec22d64f813daa6c902a662,
-    type: 3}
   soundEmitter: {fileID: 0}
 --- !u!64 &1289162242
 MeshCollider:

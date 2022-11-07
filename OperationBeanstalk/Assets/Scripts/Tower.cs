@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static BlockBuilder;
 
 public class Tower : MonoBehaviour
 {   
     public GameObject center;
+    public GameObject towerTop;
 
     public float TowerSetUpWaitTime = 0.5f;
 
@@ -13,10 +16,22 @@ public class Tower : MonoBehaviour
     {        
     }
 
-    public bool GenerateTower(BlockSettings blockSettings, int nPallets)
+    public bool GenerateTower(TowerInitDetails initDetails)
     {
-        TowerBuilder.createTower(blockSettings, this.center, nPallets, center.transform);
-        return true;
+        try
+        {
+            initDetails.towerCenter = this.center;
+            initDetails.towerArea = gameObject;
+            initDetails.towerTop = this.towerTop;
+            initDetails.nPallets = 15;
+            TowerBuilder.createTower(initDetails);
+            return true;
+
+        } catch (Exception e)
+        {
+            Debug.LogError(e.Message);
+            return false;
+        }
     }
 
     

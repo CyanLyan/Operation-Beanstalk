@@ -8,7 +8,7 @@ public class CursorController : MonoBehaviour
     public GameObject particleSystemInstance;
 
     public List<GameObject> CursorParts;
-    GameObject localInstance;
+    public GameObject defaultCursorObj;
     private Camera viewCamera;
     private RaycastHit hit;
     public Quaternion cursorRotation;
@@ -22,9 +22,7 @@ public class CursorController : MonoBehaviour
 
     public bool gunActive = false;
     public GameObject gunPrefab;
-
     public float distanceAwayFromSurface = 3f;
-
     public bool InGunDisplayLoop { get; private set; }
 
     public CursorController()
@@ -43,8 +41,8 @@ public class CursorController : MonoBehaviour
     {
         gunActive = Input.GetMouseButton(1);
         gunPrefab.SetActive(gunActive);
-        if (gunActive) DrawLaserBeam();
         UpdateCursorBasedOnMouse();
+        if (gunActive) PointGunAtBlock();
     }
 
     public void DoCursorNudgeEffect(RaycastHit hit)
@@ -76,50 +74,45 @@ public class CursorController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit       
-            gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-            gameObject.transform.position = hit.point;
+            defaultCursorObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            defaultCursorObj.transform.position = hit.point;
             DisplayDefaultCursor(true);
             Cursor.visible = false;
         }
         else
         {
             // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
-            gameObject.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
-            gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
+            defaultCursorObj.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
+            defaultCursorObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
             DisplayDefaultCursor(false);
             Cursor.visible = true;
         }
     }
 
-    private void DrawLaserBeam()
+    private void PointGunAtBlock()
     {
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        //while (Input.GetMouseButton(1)) {
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-            // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit
-            //Draw line with LineRenderer from hit backwards a fixed amt to gun
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            Quaternion newGunRotation = Quaternion.FromToRotation(Vector3.zero, hit.normal);
 
-                Debug.Log(hit.normal);
-                var newGunRotation = Quaternion.FromToRotation(Vector3.zero, hit.normal);
-                newGunRotation.x = 0;
-                //gunPrefab.transform.rotation = newGunRotation;
-                //Debug.Log(newGunRotation);
-                
-                DrawLine.Draw(this.laserBeam, hit.point, hit.point, Color.cyan, (Time.deltaTime * 1.5f));
-                gunPrefab.transform.position = hit.point + hit.normal * distanceAwayFromSurface;
-                //gunPrefab.transform.rotation = Quaternion.FromToRotation(gunPrefab.transform.position, hit.normal);
-                Cursor.visible = false;
-            }
-            else
-            {
-                // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
-                gameObject.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
-                gameObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
-                DisplayDefaultCursor(false);
-                Cursor.visible = true;
-            }
+            DrawLine.Draw(this.laserBeam, hit.point, hit.point, Color.cyan, (Time.deltaTime * 1.5f));
+            gunPrefab.transform.position = hit.point + hit.normal * distanceAwayFromSurface;
+ 
+            gunPrefab.transform.rotation = Quaternion.FromToRotation(Vector3.forward, hit.point - gunPrefab.transform.position);
+
+
+            Cursor.visible = false;
+        }
+        else
+        {
+            // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
+            gunPrefab.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
+            gunPrefab.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
+            DisplayDefaultCursor(false);
+            Cursor.visible = true;
+        }
             //yield return null;
         //}
         //this.InGunDisplayLoop = false;

@@ -14,17 +14,18 @@ public class Player : MonoBehaviour
     public string playerName { get; set; }
     public int score { get; set; }
 
-    public Player(Color color, string name, int score)
+    public Player(Color color, string name, int score, GameObject cursorControllerObj)
     {
         this.color = color;
         this.playerName = name;
         this.score = score;
+        this.cursorControllerObj = Instantiate(cursorControllerObj);
+        this.cursorController = cursorControllerObj.GetComponent<CursorController>();
     }
 
     void Start()
     {
-        this.cursorControllerObj = Instantiate(cursorControllerObj);
-        this.cursorController = cursorControllerObj.GetComponentInChildren<CursorController>();
+        //this.cursorControllerObj = Instantiate(cursorControllerObj);
     }
 
     // Update is called once per frame

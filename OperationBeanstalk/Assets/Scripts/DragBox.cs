@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Linq;
 
-public class hitCoords: MonoBehaviour
+public class ItemHitDetails: MonoBehaviour
 {
     public float distance { get; set; }
-    public Rigidbody itemHit { get; set; }
-    public Rigidbody itemHitID { get; set; }
+    public Rigidbody itemHitRigidBody { get; set; }
+    public Block block { get; set; }
 }
 
 public class DragBox : MonoBehaviour
@@ -30,17 +30,20 @@ public class DragBox : MonoBehaviour
         if (!Input.GetMouseButtonDown(0))
             return;
 
-        hitCoords p = gameObject.AddComponent<hitCoords>();
+        ItemHitDetails itemHit = gameObject.AddComponent<ItemHitDetails>();
         RaycastHit hit;
         // We need to actually hit an object
         if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))
         {
             return;
         }
-        p.distance = hit.distance;
+        itemHit.distance = hit.distance;
 
-        if (!hit.collider.gameObject.GetComponent<Block>() || hit.collider.gameObject.GetComponent<Block>().isBeingNudged || !hit.collider.gameObject.GetComponent<Block>().userCanDrag || hit.collider.gameObject.GetComponent<Block>().isBeingDragged) return;
-        p.itemHit = hit.collider.gameObject.GetComponent<Rigidbody>();
+        var hitBlock = hit.collider.gameObject.GetComponent<Block>();
+
+        if (!hitBlock || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
+        itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
+        itemHit.block = hitBlock;
         mainCamera = FindCamera();
 
         // We need to hit a rigidbody that is not kinematic
@@ -77,14 +80,14 @@ public class DragBox : MonoBehaviour
         springJoint.maxDistance = distance;
         springJoint.connectedBody = hit.rigidbody;
 
-        hit.collider.gameObject.GetComponent<Block>().isBeingDragged = true;
+        hitBlock.isBeingDragged = true;
 
-        StartCoroutine("DragTheBox", p);
+        StartCoroutine("DragTheBox", itemHit);
     }
 
-    IEnumerator DragTheBox(hitCoords stuffToFollow)
+    IEnumerator DragTheBox(ItemHitDetails stuffToFollow)
     {
-        stuffToFollow.itemHit.gameObject.GetComponent<Block>().hasBlockBeenMovedByPlayerRecently = true;
+        stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().hasBlockBeenMovedByPlayerRecently = true;
         float oldDrag = springJoint.connectedBody.drag;
         float oldAngularDrag = springJoint.connectedBody.angularDrag;
         springJoint.connectedBody.drag = drag;
@@ -92,9 +95,9 @@ public class DragBox : MonoBehaviour
         springJoint.connectedBody.angularDrag = angularDrag;
         lineContainer = GameObject.FindGameObjectWithTag("LineRenderer");
 
-        while (Input.GetMouseButton(0) && stuffToFollow.itemHit.gameObject.GetComponent<Block>().userCanDrag)
+        while (Input.GetMouseButton(0) && stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().userCanDrag)
         {
-        Vector3 attatchedItem = stuffToFollow.itemHit.transform.TransformPoint(springJoint.connectedAnchor);
+        Vector3 attatchedItem = stuffToFollow.itemHitRigidBody.transform.TransformPoint(springJoint.connectedAnchor);
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
@@ -111,8 +114,8 @@ public class DragBox : MonoBehaviour
         }
         DrawLine.ResetLine(this.lineContainer);
         destroyAllRigidBodies();
-        stuffToFollow.itemHit.gameObject.GetComponent<Block>().isBeingDragged = false;
-        stuffToFollow.itemHit.gameObject.GetComponent<Block>().isActive = false;
+        stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isBeingDragged = false;
+        stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isActive = false;
 
     }
 

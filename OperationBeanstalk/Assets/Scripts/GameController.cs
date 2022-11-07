@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static BlockBuilder;
 
 public class GameController : MonoBehaviour
 {
@@ -26,7 +27,11 @@ public class GameController : MonoBehaviour
 
     public Canvas textUI;
 
-    public GameObject cursorInstance;
+    private CursorController cursorInstance;
+    
+    public GameObject cursorControllerObj;
+
+    public GameObject camerControllerObj;
 
     // Start is called before the first frame update
     void Start()
@@ -39,29 +44,35 @@ public class GameController : MonoBehaviour
 
         
         this.turnIndex = 0;
-        CurrentPlayer = this.PlayerList[0];
+        GameObject textObj = new GameObject("p1 text");
+        //var localPlayer = this.addPlayer(this.PlayerList[0], textObj);
+
+        //CurrentPlayer = this.PlayerList.GetComponent<Player>();
+
+        //for (int i = 0; i < this.PlayerList.Count; i++)
+        //{
+        //    Player currentPlayer = this.PlayerList[i];
+        //}
+        this.cursorInstance = this.PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
+        var cameraController = camerControllerObj.GetComponent<CameraControl>();
 
-        var gameReady = this.tower.GenerateTower(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 15);
-        if(gameReady)
-        {
-            //for (int i = 0; i < this.PlayerList.Count; i++)
-            //{
-            //    Player currentPlayer = this.PlayerList[i];
-            //    GameObject textObj = new GameObject("p" + i.ToString() + "text");
-            //}
+        //cursorInstance = cursorControllerObj.GetComponent<CursorController>();
 
-            Player currentPlayer = this.PlayerList[0];
-            GameObject textObj = new GameObject("p0" + "text");
-            this.addPlayer(this.PlayerList[0], textObj);
-        }
+        TowerInitDetails details = new TowerInitDetails(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 
+                                                        cameraController, 
+                                                        this, 
+                                                        cursorInstance);
+
+        var gameReady = this.tower.GenerateTower(details);
     }
 
-    void addPlayer(Player p, GameObject t)
+    GameObject addPlayer(Player p, GameObject t)
     {
         Text myText = t.AddComponent<Text>();
         myText.text += p.playerName + ": " + p.score + "\n";
         var newPlayer = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+        return newPlayer;
     }
     
     // Update is called once per frame
@@ -72,8 +83,8 @@ public class GameController : MonoBehaviour
 
     void test2PlayerGame()
     {
-        this.PlayerList.Add(new Player(Color.red, "james", 0));
-        this.PlayerList.Add(new Player(Color.cyan, "cyan", 0));
+        this.PlayerList.Add(new Player(Color.red, "james", 0, this.cursorControllerObj));
+        this.PlayerList.Add(new Player(Color.cyan, "cyan", 0, this.cursorControllerObj));
     }
 
     public void GoToTurnState(TurnState state)

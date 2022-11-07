@@ -61,4 +61,49 @@ public static class BlockBuilder
         block = SetRigidBodyDimensions(block, blockSettings);
         return block;
     }
+
+    public static GameObject InitializeBlockParamsAndSetTransform(TowerInitDetails initDetails, GameObject block, float palletCreatorIndex)
+    {
+        
+        var positionOffset = (block.transform.localScale.z + initDetails.blockSettings.BlockSpacing) * palletCreatorIndex; //Distance from midpoints, in units
+        block.transform.Translate(new Vector3(positionOffset, 0f, 0f));
+        block = BlockBuilder.randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
+        block.transform.parent = initDetails.towerCenter.transform;
+        block.GetComponent<Block>().Init(initDetails.gameController, initDetails.cam, initDetails.cursorController);
+        return block;
+    }
+
+
+    //This started as a way to reduce arguments for tower & block creation functions but it's a bit bloated and basically a global variable holder
+    //TODO: See if this can be cleaned up, some functions are basically unreadable due to this
+    public struct TowerInitDetails
+    {
+        public BlockSettings blockSettings { get; set; }
+        public GameObject initBlockPrefab { get; set; }
+        public CameraControl cam { get; set; }
+        public GameController gameController { get; set; }
+        public GameObject towerCenter { get; set; }
+        public GameObject towerTop { get; set; }
+        public GameObject towerArea { get; set; }
+        public int nPallets { get; set; }
+
+        public CursorController cursorController { get; set; }
+
+        public TowerInitDetails(BlockSettings blockSettings, 
+                                CameraControl cameraController, 
+                                GameController gameController, 
+                                CursorController cursorController,
+                                int nPallets = 0, 
+                                GameObject blockPrefab = null) : this()
+        {
+            this.blockSettings = blockSettings;
+            this.initBlockPrefab = blockPrefab;
+            this.cam = cameraController;
+            this.gameController = gameController;
+            this.nPallets = nPallets;
+            this.cursorController = cursorController;
+        }
+
+       
+    }
 }
