@@ -30,8 +30,6 @@ public class TowerBuilder: MonoBehaviour {
             palletStack.Add(pallet);
         }
 
-        //blockIndex = i;
-
         initDetails.towerTop.transform.position = new Vector3(initDetails.towerCenter.transform.position.x, height + 1f);
         Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
 
@@ -54,8 +52,6 @@ public class TowerBuilder: MonoBehaviour {
         }
         return members;
     }
-
-
 
     //Function to instantiate pallets vertically, to be written
 

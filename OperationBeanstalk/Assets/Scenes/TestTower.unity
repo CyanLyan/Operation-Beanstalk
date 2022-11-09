@@ -1291,6 +1291,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1233955661}
+  - {fileID: 2145774392}
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1306,7 +1307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 901ee572d66494d4a86d9fdffd2e7e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blockSettingsObject: {fileID: 1233955660}
+  _blockSettingsObject: {fileID: 2145774391}
   _PlayerNudgeForce: 2
 --- !u!1 &1390471192
 GameObject:
@@ -2126,3 +2127,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1939188193}
   m_CullTransparentMesh: 0
+--- !u!1 &2145774391
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2145774392}
+  - component: {fileID: 2145774393}
+  m_Layer: 0
+  m_Name: BlockSettings - Better Physics
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2145774392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145774391}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1363392477}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2145774393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145774391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f0a639d7c294ec4a8235a3550104309, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mass: 40
+  _drag: 1
+  _blockHeight: 1
+  _angularDrag: 0.05
+  _blockSpacing: 0.005
+  _nBlocks: 3
+  _randomnessIndex: 0.5
+  _blockPrefab: {fileID: 1101568644}

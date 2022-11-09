@@ -22,6 +22,7 @@ public class CursorController : MonoBehaviour
 
     public bool gunActive = false;
     public GameObject gunPrefab;
+    public GameObject gunParticleSystemObj;
     public float distanceAwayFromSurface = 3f;
     public bool InGunDisplayLoop { get; private set; }
 
@@ -42,7 +43,10 @@ public class CursorController : MonoBehaviour
         gunActive = Input.GetMouseButton(1);
         gunPrefab.SetActive(gunActive);
         UpdateCursorBasedOnMouse();
-        if (gunActive) PointGunAtBlock();
+        if (gunActive)
+        {
+            PointGunAtBlock();
+        }
     }
 
     public void DoCursorNudgeEffect(RaycastHit hit)
@@ -54,6 +58,9 @@ public class CursorController : MonoBehaviour
         var main = particalSystem.main;
         main.startDelay = cursorEffectDelay;
         localInstance.SetActive(true);
+
+        gunParticleSystemObj.ToString();
+        if(gunActive) gunParticleSystemObj.SetActive(true);
     }
 
     public void playSoundAfterDelay(AudioSource audioSource)
@@ -102,20 +109,15 @@ public class CursorController : MonoBehaviour
  
             gunPrefab.transform.rotation = Quaternion.FromToRotation(Vector3.forward, hit.point - gunPrefab.transform.position);
 
-
             Cursor.visible = false;
         }
         else
         {
-            // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
             gunPrefab.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
             gunPrefab.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);
             DisplayDefaultCursor(false);
             Cursor.visible = true;
         }
-            //yield return null;
-        //}
-        //this.InGunDisplayLoop = false;
     }
 
     private void DisplayDefaultCursor(bool a)

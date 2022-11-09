@@ -38,8 +38,6 @@ public class CameraControl : MonoBehaviour
         this.mainView = GameObject.Find("MainView").gameObject;
         this.previousViewPosition = Vector3.zero;
         this.previousViewRotation = new Quaternion(0,0,0,0);
-        //this.dropView = GameObject.Find("DropView1").gameObject;
-        //this.dropView.transform.rotation = transform.rotation;
     }
 
     void Update()
@@ -56,22 +54,18 @@ public class CameraControl : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            //Debug.Log("left");
             this.mainView.transform.RotateAround(towerCenter.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            //Debug.Log("right");
             this.mainView.transform.RotateAround(towerCenter.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
-            //Debug.Log("up");
             this.mainView.transform.position = Vector3.Lerp(this.mainView.transform.position, new Vector3(this.mainView.transform.position.x, maxHeight, this.mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
         }
         else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
-            //Debug.Log("down");
             this.mainView.transform.position = Vector3.Lerp(this.mainView.transform.position, new Vector3(this.mainView.transform.position.x, 0, this.mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
         }
 
@@ -88,7 +82,6 @@ public class CameraControl : MonoBehaviour
         var closest90DegreeAngle = Mathf.Round((dropBlockRotation*100) / 90) * 90;
         var dropView = FindClosest(dropViews, closest90DegreeAngle);
          
-        //var dropView = FindClosest();
         return dropView.transform;
     }
 
@@ -173,8 +166,6 @@ public class CameraControl : MonoBehaviour
 
     public void rotateCameraBetween2Points(float duration, Quaternion newRotation)
     {
-        //Quaternion toRotation = Quaternion.FromToRotation(transform.position, this.towerTop.position);
-        //transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, duration);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, duration);
     }
 }

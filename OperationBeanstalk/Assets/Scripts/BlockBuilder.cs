@@ -13,13 +13,12 @@ public static class BlockBuilder
 
 
         block.GetComponent<Rigidbody>().mass = GenerateRandomDeviation(block.GetComponent<Rigidbody>().mass, randomWeightModifier);
-        //Vector3 randomScaleDimensions = new Vector3(GenerateRandomDeviation(block.transform.localScale.x, randomScaleModifier),
-        //    GenerateRandomDeviation(block.transform.localScale.y, randomScaleModifier), GenerateRandomDeviation(block.transform.localScale.z, randomScaleModifier));
-        //block.transform.localScale = randomScaleDimensions;
+        
 
         return block;
     }
 
+    //When we randomize some transform part of the block, deviations should always result in blocks being smaller & looser
     private static float GenerateRandomDeviation(float dimensionToDeviate, float randomWeightModifierMaxVariation)
     {
         float randomModifier = Random.Range(0, randomWeightModifierMaxVariation);
@@ -29,13 +28,11 @@ public static class BlockBuilder
         {
             dimensionToDeviate = dimensionToDeviate - randomModifier;
         }
-        //else
-        //{
-        //    dimensionToDeviate = dimensionToDeviate - randomModifier; 
-        //}
         return dimensionToDeviate;
     }
 
+
+    //TODO - look into randomizing mass and other stuff
     private static GameObject SetRigidBodyDimensions(GameObject block, BlockSettings blockSettings)
     {
         var rigidBody = block.GetComponent<Rigidbody>();
@@ -43,6 +40,13 @@ public static class BlockBuilder
         rigidBody.drag = blockSettings.Drag;
         rigidBody.angularDrag = blockSettings.AngularDrag;
         rigidBody.useGravity = true;
+        return block;
+    }
+
+    private static GameObject SetRandomScaleDimensions(GameObject block, BlockSettings blockSettings) {
+        var localScale = block.transform.localScale;
+        Vector3 randomScaleDimensions = new Vector3(GenerateRandomDeviation(localScale.x, randomScaleModifier), GenerateRandomDeviation(localScale.y, randomScaleModifier), GenerateRandomDeviation(localScale.z, randomScaleModifier));
+        localScale = randomScaleDimensions;
         return block;
     }
 

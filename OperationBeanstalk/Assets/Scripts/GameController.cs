@@ -45,25 +45,13 @@ public class GameController : MonoBehaviour
         
         this.turnIndex = 0;
         GameObject textObj = new GameObject("p1 text");
-        //var localPlayer = this.addPlayer(this.PlayerList[0], textObj);
-
-        //CurrentPlayer = this.PlayerList.GetComponent<Player>();
-
-        //for (int i = 0; i < this.PlayerList.Count; i++)
-        //{
-        //    Player currentPlayer = this.PlayerList[i];
-        //}
         this.cursorInstance = this.PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
         var cameraController = camerControllerObj.GetComponent<CameraControl>();
-
-        //cursorInstance = cursorControllerObj.GetComponent<CursorController>();
-
         TowerInitDetails details = new TowerInitDetails(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 
                                                         cameraController, 
                                                         this, 
                                                         cursorInstance);
-
         var gameReady = this.tower.GenerateTower(details);
     }
 
@@ -75,12 +63,6 @@ public class GameController : MonoBehaviour
         return newPlayer;
     }
     
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void test2PlayerGame()
     {
         this.PlayerList.Add(new Player(Color.red, "james", 0, this.cursorControllerObj));
@@ -92,7 +74,6 @@ public class GameController : MonoBehaviour
         this.CurrentTurnState = state;
     }
 }
-
 
 public enum TurnState {
     Mgmt,
