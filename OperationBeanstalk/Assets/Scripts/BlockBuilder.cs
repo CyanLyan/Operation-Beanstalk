@@ -43,7 +43,7 @@ public static class BlockBuilder
         return block;
     }
 
-    private static GameObject SetRandomScaleDimensions(GameObject block, BlockSettings blockSettings) {
+    private static GameObject SetRandomScaleDimensions(GameObject block, BlockSettings blockSettings, float randomScaleModifier) {
         var localScale = block.transform.localScale;
         Vector3 randomScaleDimensions = new Vector3(GenerateRandomDeviation(localScale.x, randomScaleModifier), GenerateRandomDeviation(localScale.y, randomScaleModifier), GenerateRandomDeviation(localScale.z, randomScaleModifier));
         localScale = randomScaleDimensions;
@@ -72,7 +72,7 @@ public static class BlockBuilder
         var positionOffset = (block.transform.localScale.z + initDetails.blockSettings.BlockSpacing) * palletCreatorIndex; //Distance from midpoints, in units
         block.transform.Translate(new Vector3(positionOffset, 0f, 0f));
         block = BlockBuilder.randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
-        block.transform.parent = initDetails.towerCenter.transform;
+        block.transform.parent = initDetails.TowerCollisionBox.transform;
         block.GetComponent<Block>().Init(initDetails.gameController, initDetails.cam, initDetails.cursorController);
         return block;
     }
@@ -86,10 +86,12 @@ public static class BlockBuilder
         public GameObject initBlockPrefab { get; set; }
         public CameraControl cam { get; set; }
         public GameController gameController { get; set; }
-        public GameObject towerCenter { get; set; }
+        public GameObject TowerCollisionBox { get; set; }
         public GameObject towerTop { get; set; }
         public GameObject towerArea { get; set; }
         public int nPallets { get; set; }
+
+        public Vector3 dropZonePosition { get; set; }
 
         public CursorController cursorController { get; set; }
 
@@ -108,6 +110,14 @@ public static class BlockBuilder
             this.cursorController = cursorController;
         }
 
-       
+        public void SetTowerCollisionBoxAndDropZone(GameObject box)
+        {
+            TowerCollisionBox = box;
+            var height = nPallets * blockSettings.BlockHeight;
+            dropZonePosition = new Vector3(TowerCollisionBox.transform.position.x, height);
+            towerTop.transform.position = new Vector3(TowerCollisionBox.transform.position.x, height + 1f);
+            dropZonePosition = new Vector3(TowerCollisionBox.transform.position.x, height);
+            TowerCollisionBox.transform.position = new Vector3(TowerCollisionBox.transform.position.x, height / 2f, TowerCollisionBox.transform.position.z);
+        }
     }
 }

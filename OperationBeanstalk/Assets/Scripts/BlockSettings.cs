@@ -25,7 +25,7 @@ public class BlockSettings : MonoBehaviour
         BlockHeight = blockHeight;
         AngularDrag = angularDrag;
         BlockSpacing = blockSpacing;
-        NBlocks = nBlocks;
+        NBlocksPerPallet = nBlocks;
         RandomnessIndex = randomnessIndex;
         BlockPrefab = blockPrefab;
     }
@@ -51,7 +51,7 @@ public class BlockSettings : MonoBehaviour
 	public float BlockSpacing { 
 		get { return _blockSpacing; } 
 		set { _blockSpacing = value; } }
-	public float NBlocks { 
+	public float NBlocksPerPallet { 
 		get { return _nBlocks; }
         set
         {

@@ -9,7 +9,7 @@ public class ItemHitDetails: MonoBehaviour
     public Block block { get; set; }
 }
 
-public class DragBox : MonoBehaviour
+public class DragBoxTool : MonoBehaviour
 {
     public float spring = 50.0f;
     public float damper = 0.2f;
@@ -24,6 +24,8 @@ public class DragBox : MonoBehaviour
     public float minForce;
     public float maxForce;
     public GameObject lineContainer;
+
+    public bool dragBlockByPoint = false;
     void Update()
     {
         // Make sure the user pressed the mouse down
@@ -81,15 +83,15 @@ public class DragBox : MonoBehaviour
         springJoint.connectedBody = hit.rigidbody;
 
         hitBlock.isBeingDragged = true;
-
         StartCoroutine("DragTheBox", itemHit);
     }
 
     IEnumerator DragTheBox(ItemHitDetails stuffToFollow)
     {
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().hasBlockBeenMovedByPlayerRecently = true;
-        float oldDrag = springJoint.connectedBody.drag;
-        float oldAngularDrag = springJoint.connectedBody.angularDrag;
+
+        stuffToFollow.itemHitRigidBody.GetComponent<Rigidbody>().freezeRotation = !dragBlockByPoint;
+        
         springJoint.connectedBody.drag = drag;
 
         springJoint.connectedBody.angularDrag = angularDrag;
@@ -97,7 +99,7 @@ public class DragBox : MonoBehaviour
 
         while (Input.GetMouseButton(0) && stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().userCanDrag)
         {
-        Vector3 attatchedItem = stuffToFollow.itemHitRigidBody.transform.TransformPoint(springJoint.connectedAnchor);
+            Vector3 attatchedItem = stuffToFollow.itemHitRigidBody.transform.TransformPoint(springJoint.connectedAnchor);
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
@@ -112,10 +114,13 @@ public class DragBox : MonoBehaviour
             springJoint.connectedBody.angularDrag = 0.05f;
             springJoint.connectedBody = null;
         }
+
         DrawLine.ResetLine(this.lineContainer);
         destroyAllRigidBodies();
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isBeingDragged = false;
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isActive = false;
+
+        if (dragBlockByPoint) stuffToFollow.itemHitRigidBody.freezeRotation = false;
 
     }
 

@@ -11,7 +11,9 @@ public class GameController : MonoBehaviour
 
     public Tower tower;
 
-    public List<KeyValuePair<string, GameSettings>> gameSettings = new List<KeyValuePair<string, GameSettings>>();
+    public List<KeyValuePair<string, GameSettings>> gameSettingsList = new List<KeyValuePair<string, GameSettings>>();
+
+    public GameSettings currentGameSettings;
 
     public GameObject gameSettingsObj;
 
@@ -32,10 +34,15 @@ public class GameController : MonoBehaviour
     public GameObject cursorControllerObj;
 
     public GameObject camerControllerObj;
+    
+    //TODO - create tool/toggle for point drag vs. frozen rotation drag
+    public GameObject dragBoxToolObj;
 
     // Start is called before the first frame update
     void Start()
     {
+
+        this.currentGameSettings = gameSettingsObj.GetComponent<GameSettings>();
         this.turnIndex = 0;
         this.test2PlayerGame();
 
@@ -48,11 +55,11 @@ public class GameController : MonoBehaviour
         this.cursorInstance = this.PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
         var cameraController = camerControllerObj.GetComponent<CameraControl>();
-        TowerInitDetails details = new TowerInitDetails(gameSettingsObj.GetComponent<GameSettings>().BlockSettings, 
+        TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
                                                         this, 
                                                         cursorInstance);
-        var gameReady = this.tower.GenerateTower(details);
+        var gameReady = this.tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
     }
 
     GameObject addPlayer(Player p, GameObject t)
@@ -72,6 +79,23 @@ public class GameController : MonoBehaviour
     public void GoToTurnState(TurnState state)
     {
         this.CurrentTurnState = state;
+    }
+
+    public void DropState()
+    {
+        this.tower.ActivateTowerDropZone();
+    }
+
+    public void FinishTurn()
+    {
+        turnIndex++;
+        if(turnIndex == 1 || turnIndex%2 == 0)
+        {
+            this.currentGameSettings.NPalletsHigh++;
+            this.tower.towerCollisionBox.UpdateTowerBoxBounds(this.currentGameSettings.NPalletsHigh);
+            var newYPosition = this.currentGameSettings.NPalletsHigh * this.currentGameSettings.BlockSettings.BlockHeight;
+            this.tower.UpdateDropZonePosition(newYPosition);
+        }
     }
 }
 

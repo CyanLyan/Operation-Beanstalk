@@ -185,9 +185,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afff18cfdf20db84f928d7f09f37b6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  center: {fileID: 664150049}
+  towerCollisionBoxObj: {fileID: 664150049}
+  towerCollisionBox: {fileID: 0}
   towerTop: {fileID: 407044566}
+  towerDropZone: {fileID: 2058243247}
   TowerSetUpWaitTime: 0.5
+  BlocksInTower: []
 --- !u!23 &183593128
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -317,7 +320,7 @@ GameObject:
   - component: {fileID: 369392696}
   - component: {fileID: 369392695}
   m_Layer: 0
-  m_Name: DragBox
+  m_Name: DragBoxTool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -345,6 +348,7 @@ MonoBehaviour:
   minForce: 0.2
   maxForce: 1
   lineContainer: {fileID: 0}
+  dragBlockByPoint: 0
 --- !u!4 &369392696
 Transform:
   m_ObjectHideFlags: 0
@@ -657,8 +661,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 664150050}
+  - component: {fileID: 664150051}
+  - component: {fileID: 664150052}
   m_Layer: 2
-  m_Name: TowerCenter
+  m_Name: TowerCollisionBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -678,6 +684,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &664150051
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664150049}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &664150052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664150049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9c5a4cbf37031d4bb25f389999ebbcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentTowerHeightInBlocks: 0
 --- !u!1 &725078021
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,7 +722,7 @@ GameObject:
   - component: {fileID: 725078022}
   m_Layer: 0
   m_Name: GameController
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -709,6 +741,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerList: []
   tower: {fileID: 183593127}
+  currentGameSettings: {fileID: 0}
   gameSettingsObj: {fileID: 1363392476}
   blockPrefab: {fileID: 1101568644}
   PlayerPrefab: {fileID: 7074757317386603303, guid: a71615ca6ab4bf44b9120b02a76110c7,
@@ -720,6 +753,7 @@ MonoBehaviour:
   cursorControllerObj: {fileID: 9126710567471718061, guid: 457c0a03d51b1f74c8b418aeac937fab,
     type: 3}
   camerControllerObj: {fileID: 960258024}
+  dragBoxToolObj: {fileID: 369392694}
 --- !u!4 &725078023
 Transform:
   m_ObjectHideFlags: 0
@@ -1014,7 +1048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9725f12b3c4bcfb4481b62a4893e8aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCenter: {fileID: 664150050}
+  towerCollisionBox: {fileID: 0}
   towerTop: {fileID: 407044567}
   showDropPosition: 0
   initCameraPosition: {x: 0, y: 0, z: 0}
@@ -1171,7 +1205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mass: 40
   _drag: 1
-  _blockHeight: 1
+  _blockHeight: 0.6
   _angularDrag: 0.05
   _blockSpacing: 0.005
   _nBlocks: 3
@@ -1205,6 +1239,7 @@ MonoBehaviour:
   minForce: 0
   maxForce: 0
   lineContainer: {fileID: 0}
+  dragBlockByPoint: 0
 --- !u!114 &1289162241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1293,7 +1328,7 @@ Transform:
   - {fileID: 1233955661}
   - {fileID: 2145774392}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1363392478
 MonoBehaviour:
@@ -1308,6 +1343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockSettingsObject: {fileID: 2145774391}
+  _nPalletsHigh: 15
   _PlayerNudgeForce: 2
 --- !u!1 &1390471192
 GameObject:
@@ -2127,6 +2163,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1939188193}
   m_CullTransparentMesh: 0
+--- !u!1 &2058243247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2058243249}
+  - component: {fileID: 2058243248}
+  - component: {fileID: 2058243250}
+  m_Layer: 0
+  m_Name: DropZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &2058243248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058243247}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0.06, y: 0, z: 0.03}
+--- !u!4 &2058243249
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058243247}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.04, y: 0, z: -0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2058243250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058243247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a0554706204e214ca8588d57cc0ab05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TowerDropZoneIsReady: 0
 --- !u!1 &2145774391
 GameObject:
   m_ObjectHideFlags: 0
@@ -2172,7 +2266,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mass: 40
   _drag: 1
-  _blockHeight: 1
+  _blockHeight: 0.6
   _angularDrag: 0.05
   _blockSpacing: 0.005
   _nBlocks: 3

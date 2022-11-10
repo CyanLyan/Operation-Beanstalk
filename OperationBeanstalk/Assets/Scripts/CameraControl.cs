@@ -6,7 +6,7 @@ using System;
 
 public class CameraControl : MonoBehaviour
 {
-    public Transform towerCenter;
+    public Transform towerCollisionBox;
 
     public Transform towerTop;
 
@@ -27,17 +27,21 @@ public class CameraControl : MonoBehaviour
     private Vector3 previousViewPosition;
     private Quaternion previousViewRotation;
     public bool userCanMoveCamera = true;
-    private float initDistanceFromTowerCenter;
+
+    public Transform CurrentCameraFocus;
+    private float initDistanceFromTowerCollisionBox;
     private GameObject mainView;
     private GameObject dropView;
 
     //Primarily controls where camera is, based on which keys are pressed by a user every frame.
     private void Awake()
     {
-        this.initDistanceFromTowerCenter = Vector3.Distance(transform.position, GameObject.Find("EventSystem").transform.position);
+        this.initDistanceFromTowerCollisionBox = Vector3.Distance(transform.position, GameObject.Find("EventSystem").transform.position);
         this.mainView = GameObject.Find("MainView").gameObject;
         this.previousViewPosition = Vector3.zero;
         this.previousViewRotation = new Quaternion(0,0,0,0);
+
+        this.CurrentCameraFocus = towerCollisionBox;
     }
 
     void Update()
@@ -54,11 +58,11 @@ public class CameraControl : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            this.mainView.transform.RotateAround(towerCenter.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
+            this.mainView.transform.RotateAround(this.CurrentCameraFocus.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            this.mainView.transform.RotateAround(towerCenter.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
+            this.mainView.transform.RotateAround(this.CurrentCameraFocus.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
@@ -141,6 +145,7 @@ public class CameraControl : MonoBehaviour
         }
         this.userCanMoveCamera = true;
         this.cameraIsInDropView = true;
+        this.CurrentCameraFocus = dropView;
     }
 
     //Returns camera to previous camera position

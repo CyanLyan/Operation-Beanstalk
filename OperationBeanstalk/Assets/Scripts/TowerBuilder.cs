@@ -4,9 +4,9 @@ using UnityEngine;
 using static BlockBuilder;
 
 public class TowerBuilder: MonoBehaviour {
-    public static List<List<Block>> createTower(TowerInitDetails initDetails)
+    public static List<GameObject> createTower(TowerInitDetails initDetails)
     {
-        List<List<Block>> palletStack = new List<List<Block>>();
+        List<GameObject> palletStack = new List<GameObject>();
 
         float x;
         float y;
@@ -15,7 +15,7 @@ public class TowerBuilder: MonoBehaviour {
         Quaternion spawnRotation;
         Vector3 spawnPosition;
         float height = initDetails.nPallets * initDetails.blockSettings.BlockHeight;
-        initDetails.towerCenter.transform.position = new Vector3(initDetails.towerCenter.transform.position.x, height / 2f, initDetails.towerCenter.transform.position.z);
+        
         float i;
 
         //Set universal settings for all blocks so we don't need a repeat
@@ -26,11 +26,10 @@ public class TowerBuilder: MonoBehaviour {
             spawnRotation = getSpawnRotation(i);
             spawnPosition = new Vector3(0, y, 0);
 
-            List<Block> pallet = createPallet(initDetails, block, spawnPosition, spawnRotation);
-            palletStack.Add(pallet);
+            List<GameObject> pallet = createPallet(initDetails, block, spawnPosition, spawnRotation);
+            palletStack.AddRange(pallet);
         }
 
-        initDetails.towerTop.transform.position = new Vector3(initDetails.towerCenter.transform.position.x, height + 1f);
         Camera.main.GetComponent<CameraControl>().maxHeight = height * 1.4f;
 
         initDetails.towerArea.transform.position = new Vector3(0, height / 2);
@@ -40,15 +39,15 @@ public class TowerBuilder: MonoBehaviour {
     }
 
     // Create a full row of blocks for one layer of a tower (like a loading pallet)
-    public static List<Block> createPallet(TowerInitDetails initDetails, GameObject block, Vector3 spawnPosition, Quaternion spawnRotation)
+    public static List<GameObject> createPallet(TowerInitDetails initDetails, GameObject block, Vector3 spawnPosition, Quaternion spawnRotation)
     {
-        List<Block> members = new List<Block>();
-        float start = (initDetails.blockSettings.NBlocks / 2f) - 0.5f; //Distance from midpoint of furthest block to center, in blocks
+        List<GameObject> members = new List<GameObject>();
+        float start = (initDetails.blockSettings.NBlocksPerPallet / 2f) - 0.5f; //Distance from midpoint of furthest block to center, in blocks
         for (float i = -start; i <= start; i += 1f)
         {
             block = Instantiate(block, spawnPosition, spawnRotation);
             InitializeBlockParamsAndSetTransform(initDetails, block, i);
-            members.Add(block.GetComponent<Block>());
+            members.Add(block);
         }
         return members;
     }
