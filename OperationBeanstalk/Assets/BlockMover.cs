@@ -57,7 +57,7 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(this.cam.pivotToDropView());
         this.midwayBlockMovePoint.transform.position = Vector3.zero;
 
-        StartCoroutine(MoveBlockToPoint1Then2(block, point1, point2));
+        StartCoroutine(MoveBlockToDropPosition(block));
         StartCoroutine(MoveBlockToDropRotation(block));
         StartCoroutine(WaitForBlockToBePositionedAndRotated(block));
     }
@@ -76,6 +76,31 @@ public class BlockMover : MonoBehaviour
         block.GetComponent<Rigidbody>().drag = 1f;
     }
 
+    public IEnumerator MoveBlockToDropPosition(Block block)
+    {
+        this.donePositioning = false;
+        while ((this.towerDropZone.transform.position.y - block.transform.position.y > 1))
+        {
+            var dist = Vector3.Distance(block.transform.position, block.blockStartPos);
+            if (dist < 5f)
+            {
+                //Calculate the vector between the object and the player
+                Vector3 dir = block.transform.position - block.blockStartPos;
+                //Cancel out the vertical difference
+                dir.y = 0;
+                //Translate the object in the direction of the vector
+                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, this.towerDropZone.transform.position.y, 0), 5f);
+            }
+            else
+            {
+                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
+            }
+            yield return 0;
+        }
+        this.donePositioning = true;
+    }
+
+    //TODO - get this mess working
     public IEnumerator MoveBlockToPoint1Then2(Block block, Vector3 point1, Vector3 point2)
     {
         this.donePositioning = false;
@@ -98,7 +123,6 @@ public class BlockMover : MonoBehaviour
         }
     }
 
-
     public IEnumerator MoveBlockToPoint(Block block, Vector3 point, float distanceToPointNeeded, bool pointReached)
 
     {
@@ -106,21 +130,7 @@ public class BlockMover : MonoBehaviour
         Debug.Log(blockPositionInWorld);
         while ((point.y - block.transform.position.y) > distanceToPointNeeded)
         {
-            //var dist = Vector3.Distance(gameObject.transform.TransformPoint(block.transform.position), point);
-            //if (dist < (distanceToPointNeeded/2))
-            //{
-            //    //Calculate the vector between the object and the player
-            //    Vector3 dir = point - block.blockStartPos;
-            //    //Cancel out the vertical difference
-            //    dir.y = 0;
-            //    //Translate the object in the direction of the vector
-            //    block.gameObject.transform.position = Vector3.MoveTowards(block.transform.TransformPoint(point), new Vector3(dir.normalized.x, point.y, 0), 5f);
-            //}
-            //else
-            //{
-            //gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
             block.gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, point, 5f);
-            //}
             yield return 0;
         }
         pointReached = true;
@@ -129,9 +139,9 @@ public class BlockMover : MonoBehaviour
     public IEnumerator MoveBlockToDropRotation(Block block)
     {
         this.doneRotating = false;
-        while (Quaternion.Angle(transform.rotation, block.originalRotation) > 1f)
+        while (Quaternion.Angle(block.transform.rotation, block.originalRotation) > 1f)
         {
-            block.gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, block.originalRotation, 100f);
+            block.gameObject.transform.rotation = Quaternion.RotateTowards(block.transform.rotation, block.originalRotation, 100f);
             yield return 0;
         }
         this.doneRotating = true;

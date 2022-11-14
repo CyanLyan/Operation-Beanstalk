@@ -91,33 +91,6 @@ public class Block : MonoBehaviour
         checkOutlineState();
         if(this.isActive)
         {
-            //If the block isn't touching another block, or the ground, and not being set up
-            //if (!this.blocksTouching && !this.isBlockTouchingGround)
-            //{
-            //If block is not being rotated to a neutral position AND
-            //block is not being dropped from the top - another custom game state
-
-            //TODO - see if this condition below is redundant
-            //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
-            //if (!Input.GetMouseButton(0) || (this.mouseMovedEnoughToDrag() && !enoughTimeHasEllapsed()))
-            //{
-            //    this.hasBlockBeenMovedByPlayerRecently = true;
-            //    this.isBeingNudged = false;
-            //}
-
-            //Else, we can nudge it!
-            //TODO - make this an else to the if above
-            //if (Input.GetMouseButton(0))
-            //{
-            //    Debug.Log(!this.userCanDrag && Input.GetMouseButton(0));
-            //    Debug.Log(this.mouseMovedEnoughToDrag());
-            //    Debug.Log(enoughTimeHasEllapsed());
-            //}
-            //}
-            //if(this.isBeingNudged)
-            //{
-            //    Debug.Log(this.rigidbody.velocity.magnitude);
-            //}
             if (!this.userCanDrag && !this.isBeingPlacedOnTop & Input.GetMouseButton(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
             {
                 Debug.Log("UserCanDrag");
