@@ -26,10 +26,12 @@ public class DragBoxTool : MonoBehaviour
     public GameObject lineContainer;
 
     public bool dragBlockByPoint = false;
+
+    public bool isDragging;
     void Update()
     {
         // Make sure the user pressed the mouse down
-        if (!Input.GetMouseButtonDown(0))
+        if (!Input.GetMouseButton(0))
             return;
 
         ItemHitDetails itemHit = gameObject.AddComponent<ItemHitDetails>();
@@ -43,7 +45,7 @@ public class DragBoxTool : MonoBehaviour
 
         var hitBlock = hit.collider.gameObject.GetComponent<Block>();
 
-        if (!hitBlock || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
+        if (!hitBlock || hitBlock.hasBeenPlaced || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
         itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
         itemHit.block = hitBlock;
         mainCamera = FindCamera();
@@ -83,6 +85,7 @@ public class DragBoxTool : MonoBehaviour
         springJoint.connectedBody = hit.rigidbody;
 
         hitBlock.isBeingDragged = true;
+        isDragging = true;
         StartCoroutine("DragTheBox", itemHit);
     }
 
@@ -119,7 +122,7 @@ public class DragBoxTool : MonoBehaviour
         destroyAllRigidBodies();
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isBeingDragged = false;
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isActive = false;
-
+        isDragging = false;
         if (dragBlockByPoint) stuffToFollow.itemHitRigidBody.freezeRotation = false;
 
     }

@@ -10,8 +10,13 @@ public class BlockSettings : MonoBehaviour
 	public float _blockSpacing;
 	public float _nBlocks;
 	public float _randomnessIndex;
-	public GameObject _blockPrefab;
-	public BlockSettings(GameObject blockPrefab,
+    
+    public float DistanceNeededForMouseDrag;
+    public float TimeOnMouseDownNeededForDrag;
+
+    public GameObject _blockPrefab;
+
+    public BlockSettings(GameObject blockPrefab,
                          float mass,
                          float drag,
                          float blockHeight,
@@ -66,4 +71,6 @@ public class BlockSettings : MonoBehaviour
 		get { return _blockPrefab; }
 		set { _blockPrefab = value; }
     }
+
+    //public float DistanceNeededForMouseNudge { get; set; }
 }

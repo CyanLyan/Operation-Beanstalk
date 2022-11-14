@@ -14,14 +14,20 @@ public class Block : MonoBehaviour
     public bool blockIsInTowerZone = true;
     
     public bool isBeingPlacedOnTop = false;
-   
-    public bool isInDropPosition = false;
 
+    private bool _isInDropPosition = false;
+    public bool isInDropPosition
+    {
+        get { return _isInDropPosition; }
+        set { _isInDropPosition = value; }
+    }
+
+    private GameObject towerDropZone;
     public bool isBeingDragged = false;
 
     public bool isActive = false;
 
-    public bool userCanDrag = true;
+    public bool userCanDrag = false;
     public bool userCanNudge = true;
     public static int nBlocksOnGround { get; set; } = 0;
 
@@ -35,9 +41,9 @@ public class Block : MonoBehaviour
     private Vector3 mouseStartPos = new Vector3(0,0,0);
 
     private Vector3 blockStartPos;
-    public float mouseDriftPermittedToNudge = 100f;
+    private float mouseDriftPermittedToDrag;
 
-    private CameraControl cam;
+    private CameraController cam;
     private Quaternion originalRotation;
 
     private string blockObjTag = "Block";
@@ -54,11 +60,18 @@ public class Block : MonoBehaviour
     private Rigidbody rigidbody;
     private bool doneRotating;
     private bool donePositioning;
+    private float timeOnMouseDownNeededForDrag;
+    public bool hasBeenPlaced;
+
+    public DragBoxTool dragBox;
 
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController, 
-                 CameraControl cam,
-                 CursorController cursorInstance)
+                 CameraController cam,
+                 CursorController cursorInstance,
+                 GameObject towerDropZone,
+                 float mouseDriftNeededForNudge,
+                 float timeOnMouseDownNeededForNudge)
     {
         this.gameController = gameController;
         this.blockStartPos = gameObject.transform.position;
@@ -68,6 +81,10 @@ public class Block : MonoBehaviour
         this.cursorInstance = cursorInstance;
         this.rigidbody = this.GetComponent<Rigidbody>();
         this.gameObject.name = blockObjTag + GetInstanceID().ToString();
+        this.isInDropPosition = false;
+        this.towerDropZone = towerDropZone;
+        this.mouseDriftPermittedToDrag = mouseDriftNeededForNudge;
+        this.timeOnMouseDownNeededForDrag = timeOnMouseDownNeededForNudge;
     }
 
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
@@ -77,42 +94,48 @@ public class Block : MonoBehaviour
         if(this.isActive)
         {
             //If the block isn't touching another block, or the ground, and not being set up
-            if (!this.blocksTouching && !this.isBlockTouchingGround)
+            //if (!this.blocksTouching && !this.isBlockTouchingGround)
+            //{
+            //If block is not being rotated to a neutral position AND
+            //block is not being dropped from the top - another custom game state
+
+            //TODO - see if this condition below is redundant
+            //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
+            //if (!Input.GetMouseButton(0) || (this.mouseMovedEnoughToDrag() && !enoughTimeHasEllapsed()))
+            //{
+            //    this.hasBlockBeenMovedByPlayerRecently = true;
+            //    this.isBeingNudged = false;
+            //}
+
+            //Else, we can nudge it!
+            //TODO - make this an else to the if above
+            //if (Input.GetMouseButton(0))
+            //{
+            //    Debug.Log(!this.userCanDrag && Input.GetMouseButton(0));
+            //    Debug.Log(this.mouseMovedEnoughToDrag());
+            //    Debug.Log(enoughTimeHasEllapsed());
+            //}
+            //}
+            //if(this.isBeingNudged)
+            //{
+            //    Debug.Log(this.rigidbody.velocity.magnitude);
+            //}
+
+            if (!this.userCanDrag && !this.isBeingPlacedOnTop & Input.GetMouseButton(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
             {
-                //If block is not being rotated to a neutral position AND
-                //block is not being dropped from the top - another custom game state
-                //this.HandleBlockTouchingNothing();
-
-                //TODO - see if this condition below is redundant
-                //If we're holding left mouse, and have moved the block enough to actually change the block's position when dragging, we cannot nudge it
-                if (!Input.GetMouseButtonDown(0) || (this.mouseMovedEnoughToDrag() && !enoughTimeHasEllapsed()))
-                {
-                    this.hasBlockBeenMovedByPlayerRecently = true;
-                    this.isBeingNudged = false;
-                }
-
-                //Else, we can nudge it!
-                //TODO - make this an else to the if above
-                if (!this.userCanDrag && Input.GetMouseButtonDown(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
-                {
-                    this.userCanDrag = true;
-                }
-            } 
+                //Debug.Log("UserCanDrag");
+                this.userCanDrag = true;
+            }
         }
     }
 
     public void HandleBlockTouchingNothing()
     {
-        this.userCanDrag = false;
-
         // Only move block to tower top IF player moved it
         if(this.hasBlockBeenMovedByPlayerRecently)
         {
-            GameObject.FindGameObjectWithTag("TowerArea").GetComponent<Tower>().ActivateTowerDropZone();
-            this.isBeingPlacedOnTop = true;
-            PlaceBlockOnTopOfTower();
-            this.gameController.GoToTurnState(TurnState.PlaceBlock);
-            StartCoroutine(this.cam.pivotToDropView());
+            //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
+            PlaceBlockInDroppingPosition();
         }
     }
 
@@ -121,45 +144,47 @@ public class Block : MonoBehaviour
         this.isBeingPlacedOnTop = false;
         blocksTouching = true;
         this.isInDropPosition = false;
-        this.gameController.GoToTurnState(TurnState.GetBlock);
         this.userCanDrag = false;
         this.userCanNudge= false;
-        StartCoroutine(this.cam.pivotBackToPreviousView());
+        this.hasBlockBeenMovedByPlayerRecently = false;
+        this.rigidbody.freezeRotation = false;
+        this.hasBeenPlaced = true;
+        StartCoroutine(this.cam.pivotBackToPreviousView(this.cam.transform.position));
+        this.gameController.FinishTurn();
     }
 
-    public void PlaceBlockOnTopOfTower()
+    public void PlaceBlockInDroppingPosition()
     {
+        this.userCanDrag = false;
+        this.isBeingPlacedOnTop = true;
         this.rigidbody.useGravity = false;
         this.userCanNudge = false;
+        this.gameController.GoToTurnState(TurnState.PlaceBlock);
+        StartCoroutine(this.cam.pivotToDropView());
+
         StartCoroutine(MoveBlockToDropPosition());
         StartCoroutine(MoveBlockToDropRotation());
-        WaitForBlockToBePositionedAndRotated();
+        StartCoroutine(WaitForBlockToBePositionedAndRotated());
     }
 
     public IEnumerator WaitForBlockToBePositionedAndRotated()
     {
-        while(!this.donePositioning && !this.doneRotating)
+        while(!this.donePositioning || !this.doneRotating)
         {
             yield return 0;
         }
-        this.isBeingPlacedOnTop = false;
         this.isInDropPosition = true;
-        this.userCanDrag = true;
         this.userCanNudge = false;
-        this.rigidbody.useGravity = false;
         this.rigidbody.angularVelocity = new Vector3(0, 0, 0);
         this.rigidbody.velocity = new Vector3(0, 0, 0);
         this.rigidbody.angularDrag = 0.05f;
         this.rigidbody.drag = 1f;
-
-        this.hasBlockBeenMovedByPlayerRecently = false;
     }
 
     public IEnumerator MoveBlockToDropPosition()
     {
         this.donePositioning = false;
-        var distToDropPos = Vector3.Distance(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0));
-        while (distToDropPos > 1f)
+        while ((this.towerDropZone.transform.position.y - transform.position.y > 1))
         {
             var dist = Vector3.Distance(transform.position, blockStartPos);
             if (dist < 5f)
@@ -169,16 +194,15 @@ public class Block : MonoBehaviour
                 //Cancel out the vertical difference
                 dir.y = 0;
                 //Translate the object in the direction of the vector
-                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(dir.normalized.x, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
+                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(dir.normalized.x, this.towerDropZone.transform.position.y, 0), 5f);
             }
             else
             {
-                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraControl>().maxHeight - 1f, 0), 5f);
+                gameObject.transform.position = Vector3.MoveTowards(transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
             }
             yield return 0;
         }
         this.donePositioning = true;
-        Debug.Log("positioning done");
     }
 
     public IEnumerator MoveBlockToDropRotation()
@@ -189,7 +213,6 @@ public class Block : MonoBehaviour
             gameObject.transform.rotation = Quaternion.RotateTowards(transform.rotation, this.originalRotation, 100f);
             yield return 0;
         }
-        Debug.Log("rotation done");
         this.doneRotating = true;
     }
 
@@ -232,35 +255,47 @@ public class Block : MonoBehaviour
     //Event for when user clicks on block object
     private void OnMouseDown()
     {
-        if (this.isInDropPosition) 
+        // After pulling block out, if block is in drop position, give user control again
+        if (this.isInDropPosition && this.userCanDrag) 
         {
             this.rigidbody.useGravity = true;
-            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
         }
         this.startTime = Time.time;
-        if(this.mouseStartPos == new Vector3(0,0,0)) this.mouseStartPos = Input.mousePosition;
+        if(!this.isBeingNudged && !this.isBeingDragged) this.isActive = false;
     }
 
     private void OnMouseOver()
     {
-        if ((!Input.GetMouseButton(0) && !this.isBeingDragged && !this.isBeingNudged) ||
-            (Input.GetMouseButton(0) && (this.isBeingDragged || this.isBeingNudged)))
+        if (dragBox.isDragging && !this.isBeingDragged)
+        {
+            this.isActive = false;
+        } else
         {
             this.isActive = true;
         }
-
-        if(Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0))
         {
             OnLeftMouseUp();
-        }
+            if (this.mouseStartPos == new Vector3(0, 0, 0)) this.mouseStartPos = Input.mousePosition;
+        } 
     }
 
     private void OnMouseExit()
     {
-        if (!this.isBeingNudged && !this.isBeingDragged)
+        if (!this.isBeingNudged && !this.isBeingDragged && !this.isInDropPosition)
         {
             this.isActive = false;
             this.startTime = 0;
+        }
+    }
+
+    //Only use this to wait for user to release mouse after block is removed, so that they don't glitch the game out
+    private void OnMouseUp()
+    {
+        this.userCanDrag= false;
+        if(this.isInDropPosition)
+        {
+            this.userCanDrag = true;
         }
     }
 
@@ -268,7 +303,12 @@ public class Block : MonoBehaviour
     public bool mouseMovedEnoughToDrag()
     {
         Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
-        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToNudge || Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToNudge);
+        //Debug.Log(changedMousePos);
+        //Debug.Log(this.mouseDriftPermittedToNudge);
+        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToDrag) || 
+            (Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToDrag) || 
+            (Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToDrag);
+        //Debug.Log(mouseMovedEnough);
         return mouseMovedEnough;
     }
 
@@ -277,23 +317,21 @@ public class Block : MonoBehaviour
         if (this.startTime == 0) return false;
         var endTime = Time.time;
         var timeDiff = Mathf.Abs(endTime - this.startTime);
-        return timeDiff > 1f;
+        return timeDiff > this.timeOnMouseDownNeededForDrag;
     }
 
     //Event for when user releases mouse
     private void OnLeftMouseUp()
     {
-        if (this.userCanNudge && (this.startTime != 0) && !enoughTimeHasEllapsed())
+        if (this.userCanNudge && (this.startTime != 0) && !(enoughTimeHasEllapsed() && mouseMovedEnoughToDrag()))
         {
-            DragBoxTool.destroyAllRigidBodies();
+            //DragBoxTool.destroyAllRigidBodies();
             this.NudgeBlock();
         }
 
         if (this.userCanDrag && this.isBeingPlacedOnTop) {
                 GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
-
-        if(this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
 
         this.mouseStartPos = new Vector3(0, 0, 0);
         if(this.isActive) this.isActive = false;
@@ -310,9 +348,11 @@ public class Block : MonoBehaviour
             GameObject blockHit = hit.collider.gameObject;
             if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
             {
+                this.isBeingNudged= true;
                 this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
                 this.cursorInstance.DoCursorNudgeEffect(hit);
                 this.cursorInstance.playSoundAfterDelay(this.soundEmitter);
+                this.isBeingNudged = false;
             }
         }
     }
@@ -427,10 +467,15 @@ public class Block : MonoBehaviour
                 this.outline.updateOutlineState(CollisionColourState.green);
             } else 
             {
-                this.outline.updateOutlineState(CollisionColourState.blue);
+                //TODO - figure out why this is sometimes null, it's possibly being deleted after activation
+                if (this.outline != null) this.outline.updateOutlineState(CollisionColourState.blue);
             }
         } else
         {
+            if (this.outline == null)
+            {
+                //Debug.Log(this);
+            }
             if (this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
         }
     }

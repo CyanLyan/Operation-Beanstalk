@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 183593130}
   - component: {fileID: 183593128}
   m_Layer: 0
-  m_Name: Tower
+  m_Name: TowerController
   m_TagString: TowerArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -188,7 +188,8 @@ MonoBehaviour:
   towerCollisionBoxObj: {fileID: 664150049}
   towerCollisionBox: {fileID: 0}
   towerTop: {fileID: 407044566}
-  towerDropZone: {fileID: 2058243247}
+  towerDropZone: {fileID: 603358687}
+  blockPlacingZone: {fileID: 2058243247}
   TowerSetUpWaitTime: 0.5
   BlocksInTower: []
 --- !u!23 &183593128
@@ -289,7 +290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 302382633}
   m_Layer: 0
-  m_Name: DropView1
+  m_Name: DropViewPosition1
   m_TagString: DropView
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -349,6 +350,7 @@ MonoBehaviour:
   maxForce: 1
   lineContainer: {fileID: 0}
   dragBlockByPoint: 0
+  isDragging: 0
 --- !u!4 &369392696
 Transform:
   m_ObjectHideFlags: 0
@@ -361,7 +363,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &407044566
 GameObject:
@@ -520,7 +522,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &515430407
 GameObject:
@@ -615,7 +617,7 @@ RectTransform:
   m_Children:
   - {fileID: 1939188194}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -632,7 +634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 525642767}
   m_Layer: 0
-  m_Name: DropView3
+  m_Name: DropViewPosition3
   m_TagString: DropView
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -652,6 +654,36 @@ Transform:
   m_Father: {fileID: 1919672796}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
+--- !u!1 &603358687
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 603358688}
+  m_Layer: 2
+  m_Name: DropZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &603358688
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603358687}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &664150049
 GameObject:
   m_ObjectHideFlags: 0
@@ -766,7 +798,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &817927300
 PrefabInstance:
@@ -775,6 +807,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4877898027268558377, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 76e0ea76ad5fde64d98149739af72b51,
+        type: 2}
     - target: {fileID: 6750845200568785921, guid: 770ea8f73496d5a479e8e2557b96f2e1,
         type: 3}
       propertyPath: m_RootOrder
@@ -835,6 +873,11 @@ PrefabInstance:
       propertyPath: tower
       value: 
       objectReference: {fileID: 183593127}
+    - target: {fileID: 6750845200568785926, guid: 770ea8f73496d5a479e8e2557b96f2e1,
+        type: 3}
+      propertyPath: dragBox
+      value: 
+      objectReference: {fileID: 369392695}
     - target: {fileID: 6750845200568785926, guid: 770ea8f73496d5a479e8e2557b96f2e1,
         type: 3}
       propertyPath: cursorParent
@@ -898,7 +941,7 @@ GameObject:
   m_Component:
   - component: {fileID: 834331944}
   m_Layer: 0
-  m_Name: DropView4
+  m_Name: DropViewPosition4
   m_TagString: DropView
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1048,8 +1091,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9725f12b3c4bcfb4481b62a4893e8aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCollisionBox: {fileID: 0}
+  towerCollisionBox: {fileID: 664150050}
   towerTop: {fileID: 407044567}
+  towerDroppingZone: {fileID: 603358688}
   showDropPosition: 0
   initCameraPosition: {x: 0, y: 0, z: 0}
   initCameraRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -1058,6 +1102,7 @@ MonoBehaviour:
   dropRotation: {x: 0, y: 0, z: 0, w: 0}
   cameraIsInDropView: 0
   userCanMoveCamera: 1
+  CurrentCameraFocus: {fileID: 0}
 --- !u!1 &1101568644 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6750845200568785933, guid: 770ea8f73496d5a479e8e2557b96f2e1,
@@ -1210,6 +1255,8 @@ MonoBehaviour:
   _blockSpacing: 0.005
   _nBlocks: 3
   _randomnessIndex: 0
+  DistanceNeededForMouseDrag: 0
+  TimeOnMouseDownNeededForDrag: 0
   _blockPrefab: {fileID: 1101568644}
 --- !u!1 &1289162236 stripped
 GameObject:
@@ -1240,6 +1287,7 @@ MonoBehaviour:
   maxForce: 0
   lineContainer: {fileID: 0}
   dragBlockByPoint: 0
+  isDragging: 0
 --- !u!114 &1289162241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1255,7 +1303,6 @@ MonoBehaviour:
   isBeingNudged: 0
   blockIsInTowerZone: 1
   isBeingPlacedOnTop: 0
-  isInDropPosition: 0
   isBeingDragged: 0
   isActive: 0
   userCanDrag: 1
@@ -1263,10 +1310,11 @@ MonoBehaviour:
   towerZone: {fileID: 0}
   nudgeForce: 10
   timeSpentNotTouching: 0
-  mouseDriftPermittedToNudge: 10
   gameController: {fileID: 0}
   lineRenderer: {fileID: 0}
   soundEmitter: {fileID: 0}
+  hasBeenPlaced: 0
+  dragBox: {fileID: 0}
 --- !u!64 &1289162242
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1328,7 +1376,7 @@ Transform:
   - {fileID: 1233955661}
   - {fileID: 2145774392}
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1363392478
 MonoBehaviour:
@@ -1469,7 +1517,7 @@ Transform:
   - {fileID: 1919672796}
   - {fileID: 55860738}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1436457545
 GameObject:
@@ -1631,7 +1679,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1479431918
 PrefabInstance:
@@ -1727,7 +1775,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1490656441}
   m_Layer: 0
-  m_Name: DropView2
+  m_Name: DropViewPosition2
   m_TagString: DropView
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1874,7 +1922,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1633375120
 GameObject:
@@ -2175,7 +2223,7 @@ GameObject:
   - component: {fileID: 2058243248}
   - component: {fileID: 2058243250}
   m_Layer: 0
-  m_Name: DropZone
+  m_Name: BlockPlacingZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2206,7 +2254,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2058243250
 MonoBehaviour:
@@ -2220,7 +2268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a0554706204e214ca8588d57cc0ab05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TowerDropZoneIsReady: 0
+  BlockPlacingZoneIsReady: 0
 --- !u!1 &2145774391
 GameObject:
   m_ObjectHideFlags: 0
@@ -2264,11 +2312,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f0a639d7c294ec4a8235a3550104309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mass: 40
+  _mass: 10
   _drag: 1
   _blockHeight: 0.6
-  _angularDrag: 0.05
+  _angularDrag: 0.8
   _blockSpacing: 0.005
   _nBlocks: 3
-  _randomnessIndex: 0.5
+  _randomnessIndex: 0
+  DistanceNeededForMouseDrag: 0
+  TimeOnMouseDownNeededForDrag: 0.2
   _blockPrefab: {fileID: 1101568644}

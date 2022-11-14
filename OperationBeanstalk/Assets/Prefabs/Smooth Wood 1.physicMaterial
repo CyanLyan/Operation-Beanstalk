@@ -6,7 +6,7 @@ PhysicMaterial:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Smooth Wood
+  m_Name: Smooth Wood 1
   dynamicFriction: 0.129
   staticFriction: 0.25
   bounciness: 0

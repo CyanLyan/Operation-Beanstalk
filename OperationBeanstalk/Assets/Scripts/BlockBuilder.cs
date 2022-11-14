@@ -54,7 +54,7 @@ public static class BlockBuilder
     {
         var blockClass = block.GetComponent<Block>();
         blockClass.blockIsInTowerZone = true;
-        blockClass.userCanDrag = true;
+        blockClass.userCanDrag = false;
         blockClass.userCanNudge = true;
         return block;
     }
@@ -73,7 +73,7 @@ public static class BlockBuilder
         block.transform.Translate(new Vector3(positionOffset, 0f, 0f));
         block = BlockBuilder.randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
         block.transform.parent = initDetails.TowerCollisionBox.transform;
-        block.GetComponent<Block>().Init(initDetails.gameController, initDetails.cam, initDetails.cursorController);
+        block.GetComponent<Block>().Init(initDetails.gameController, initDetails.cam, initDetails.cursorController, initDetails.TowerDropZone, initDetails.blockSettings.DistanceNeededForMouseDrag, initDetails.blockSettings.TimeOnMouseDownNeededForDrag);
         return block;
     }
 
@@ -84,7 +84,7 @@ public static class BlockBuilder
     {
         public BlockSettings blockSettings { get; set; }
         public GameObject initBlockPrefab { get; set; }
-        public CameraControl cam { get; set; }
+        public CameraController cam { get; set; }
         public GameController gameController { get; set; }
         public GameObject TowerCollisionBox { get; set; }
         public GameObject towerTop { get; set; }
@@ -94,9 +94,10 @@ public static class BlockBuilder
         public Vector3 dropZonePosition { get; set; }
 
         public CursorController cursorController { get; set; }
+        public GameObject TowerDropZone { get; internal set; }
 
         public TowerInitDetails(BlockSettings blockSettings, 
-                                CameraControl cameraController, 
+                                CameraController cameraController, 
                                 GameController gameController, 
                                 CursorController cursorController,
                                 int nPallets = 0, 

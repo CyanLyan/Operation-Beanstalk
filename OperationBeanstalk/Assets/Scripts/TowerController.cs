@@ -4,30 +4,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using static BlockBuilder;
 
-public class Tower : MonoBehaviour
+public class TowerController : MonoBehaviour
 {   
     public GameObject towerCollisionBoxObj;
     public TowerCollisionBox towerCollisionBox;
     public GameObject towerTop;
     public GameObject towerDropZone;
+    public GameObject blockPlacingZone;
     public float TowerSetUpWaitTime = 0.5f;
     public List<GameObject> BlocksInTower= new List<GameObject>();
     public bool GenerateTower(TowerInitDetails initDetails, int nPallets)
     {
         try
         {
+            //Set initdetails to match current tower
             initDetails.TowerCollisionBox = this.towerCollisionBoxObj;
-            this.towerCollisionBox = this.towerCollisionBoxObj.GetComponent<TowerCollisionBox>();
             initDetails.towerArea = gameObject;
             initDetails.towerTop = this.towerTop;
             initDetails.nPallets= nPallets;
+            initDetails.TowerDropZone= this.towerDropZone;
+            this.towerCollisionBox = this.towerCollisionBoxObj.GetComponent<TowerCollisionBox>();
+
             initDetails.SetTowerCollisionBoxAndDropZone(towerCollisionBoxObj);
-            this.towerDropZone.transform.position = initDetails.dropZonePosition;
+            this.blockPlacingZone.transform.position = initDetails.dropZonePosition;
             this.BlocksInTower = TowerBuilder.createTower(initDetails);
             this.towerCollisionBox.CalculateTowerBoundsAndSet(this.BlocksInTower, initDetails.nPallets);
-            SetDropZoneDimensions(initDetails);
 
-            StartCoroutine(Wait(20));
+            this.towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
+            SetBlockPlacingZoneDimensions(initDetails);
+
+            this.ActivateBlockPlacingZone();
             return true;
 
         } catch (Exception e)
@@ -37,27 +43,23 @@ public class Tower : MonoBehaviour
         }
     }
 
-    public void ActivateTowerDropZone()
+    public void ActivateBlockPlacingZone()
     {
-        towerDropZone.GetComponent<TowerDropZone>().TowerDropZoneIsReady = true;
+        blockPlacingZone.GetComponent<BlockPlacingZone>().BlockPlacingZoneIsReady = true;
+        blockPlacingZone.GetComponent<BoxCollider>().enabled = true;
     }
 
-    private IEnumerator Wait(int seconds)
+    private void SetBlockPlacingZoneDimensions(TowerInitDetails initDetails) 
     {
-        yield return new WaitForSecondsRealtime(seconds);
-    }
-
-    private void SetDropZoneDimensions(TowerInitDetails initDetails) 
-    {
-        BoxCollider boxCollider = this.towerDropZone.GetComponent<BoxCollider>();
+        BoxCollider boxCollider = this.blockPlacingZone.GetComponent<BoxCollider>();
         var newWidth = initDetails.blockSettings.NBlocksPerPallet;
         //TODO-figure out more convinient calculation for y dim than magic number
         boxCollider.size = new Vector3(newWidth, 0.12f, newWidth);
     }
 
-    public void UpdateDropZonePosition(float newYPosition)
+    public void UpdateBlockPlacingZonePosition(float newYPosition)
     {
-        BoxCollider box = this.towerDropZone.GetComponent<BoxCollider>();
-        box.center = new Vector3(box.center.x, newYPosition, box.center.z);
+        BoxCollider box = this.blockPlacingZone.GetComponent<BoxCollider>();
+        box.transform.position = new Vector3(box.transform.position.x, newYPosition, box.transform.position.z);
     }
 }

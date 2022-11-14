@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour
 
     public List<Player> PlayerList = new List<Player>();
 
-    public Tower tower;
+    public TowerController tower;
 
     public List<KeyValuePair<string, GameSettings>> gameSettingsList = new List<KeyValuePair<string, GameSettings>>();
 
@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour
         GameObject textObj = new GameObject("p1 text");
         this.cursorInstance = this.PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
-        var cameraController = camerControllerObj.GetComponent<CameraControl>();
+        var cameraController = camerControllerObj.GetComponent<CameraController>();
         TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
                                                         this, 
@@ -83,19 +83,24 @@ public class GameController : MonoBehaviour
 
     public void DropState()
     {
-        this.tower.ActivateTowerDropZone();
+        this.tower.ActivateBlockPlacingZone();
     }
 
     public void FinishTurn()
     {
         turnIndex++;
-        if(turnIndex == 1 || turnIndex%2 == 0)
+        if(turnIndex%3 == 0)
         {
             this.currentGameSettings.NPalletsHigh++;
             this.tower.towerCollisionBox.UpdateTowerBoxBounds(this.currentGameSettings.NPalletsHigh);
             var newYPosition = this.currentGameSettings.NPalletsHigh * this.currentGameSettings.BlockSettings.BlockHeight;
-            this.tower.UpdateDropZonePosition(newYPosition);
+            this.tower.UpdateBlockPlacingZonePosition(newYPosition);
         }
+    }
+
+    public void SaveTower()
+    {
+        //Freeze all rigidbodies on tower
     }
 }
 
