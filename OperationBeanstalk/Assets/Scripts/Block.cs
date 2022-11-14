@@ -113,8 +113,6 @@ public class Block : MonoBehaviour
         }
     }
 
-    
-
     //Event which triggers when collision state for a block's rigidbody doesn't change
     //Changes state variables depending on what block keeps in contact with.
     void OnCollisionStay(Collision other)
@@ -203,11 +201,9 @@ public class Block : MonoBehaviour
     public bool mouseMovedEnoughToDrag()
     {
         Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
-        //Debug.Log(this.mouseDriftPermittedToNudge);
         bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToDrag) || 
             (Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToDrag) || 
             (Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToDrag);
-        //Debug.Log(mouseMovedEnough);
         return mouseMovedEnough;
     }
 
@@ -224,7 +220,6 @@ public class Block : MonoBehaviour
     {
         if (this.userCanNudge && (this.startTime != 0) && (!mouseMovedEnoughToDrag()))
         {
-            //DragBoxTool.destroyAllRigidBodies();
             this.NudgeBlock();
         } else if (this.userCanDrag && this.isBeingPlacedOnTop) {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
