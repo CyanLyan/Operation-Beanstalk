@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
     public float maxHeight;
     private float speed = 100f;
 
-    private float cameraMoveSpeed = 10f;
+    private float cameraMoveSpeed = 2f;
 
     public Quaternion dropRotation;
     private Vector3 newDropPos;
@@ -140,20 +140,19 @@ public class CameraController : MonoBehaviour
     {
         this.previousViewPosition = this.mainView.transform.position;
         this.previousViewRotation = this.mainView.transform.rotation;
-        this.userCanMoveCamera = false;
+        //this.userCanMoveCamera = false;
         var dropView = this.SelectClosestDropViewToMainCamera();
         dropView.transform.LookAt(this.towerTop);
 
-        var duration = 2f;
-        for (var t = 0.0f; t < duration; t += Time.deltaTime)
+        for (var t = 0.0f; t < this.cameraMoveSpeed; t += Time.deltaTime)
         {
-            moveCameraBetween2Points(this.mainView.transform.position, dropView.transform.position, t / duration);
-            rotateCameraBetween2Points((t / duration)*20, dropView.rotation);
+            moveCameraBetween2Points(this.mainView.transform.position, dropView.transform.position, t / this.cameraMoveSpeed);
+            rotateCameraBetween2Points((t / this.cameraMoveSpeed) *20, dropView.rotation);
             transform.position = this.mainView.transform.position;
             transform.rotation = this.mainView.transform.rotation;
             yield return null;
         }
-        this.userCanMoveCamera = true;
+        //this.userCanMoveCamera = true;
         this.cameraIsInDropView = true;
         this.CurrentCameraFocus = this.towerDroppingZone;
     }
@@ -163,11 +162,10 @@ public class CameraController : MonoBehaviour
     {
         this.userCanMoveCamera = false;
 
-        var duration = 2.0f;
-        for (var t = 0.0f; t < duration; t += Time.deltaTime)
+        for (var t = 0.0f; t < this.cameraMoveSpeed; t += Time.deltaTime)
         {
-            moveCameraBetween2Points(startingPosition, this.previousViewPosition, (t / duration)*10);
-            rotateCameraBetween2Points((t / duration)*10, this.previousViewRotation);
+            moveCameraBetween2Points(startingPosition, this.previousViewPosition, (t / this.cameraMoveSpeed));
+            rotateCameraBetween2Points((t / this.cameraMoveSpeed)*10, this.previousViewRotation);
             transform.position = this.mainView.transform.position;
             transform.rotation = this.mainView.transform.rotation;
             yield return null;

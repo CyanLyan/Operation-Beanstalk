@@ -149,7 +149,8 @@ Transform:
   m_LocalRotation: {x: 0.08839101, y: 0.3730249, z: -0.035726175, w: 0.92291015}
   m_LocalPosition: {x: -6.37, y: 5.34, z: -7.2399993}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1397583544}
   m_Father: {fileID: 1405777843}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 10.942, y: 44.015003, z: 0}
@@ -273,7 +274,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -363,7 +364,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &407044566
 GameObject:
@@ -393,7 +394,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &443688383
 GameObject:
@@ -522,7 +523,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &515430407
 GameObject:
@@ -617,7 +618,7 @@ RectTransform:
   m_Children:
   - {fileID: 1939188194}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -682,7 +683,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &664150049
 GameObject:
@@ -714,7 +715,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &664150051
 BoxCollider:
@@ -786,6 +787,7 @@ MonoBehaviour:
     type: 3}
   camerControllerObj: {fileID: 960258024}
   dragBoxToolObj: {fileID: 369392694}
+  midwayBlockMovePoint: {fileID: 1397583543}
 --- !u!4 &725078023
 Transform:
   m_ObjectHideFlags: 0
@@ -798,7 +800,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &817927300
 PrefabInstance:
@@ -1205,6 +1207,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1101568646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101568644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269c0e57b34c33d4da95bbbd3b60a66c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameController: {fileID: 0}
+  towerDropZone: {fileID: 0}
+  camObj: {fileID: 0}
+  cam: {fileID: 0}
+  midwayBlockMovePoint: {fileID: 0}
 --- !u!1 &1233955660
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,6 +1277,8 @@ MonoBehaviour:
   DistanceNeededForMouseDrag: 0
   TimeOnMouseDownNeededForDrag: 0
   _blockPrefab: {fileID: 1101568644}
+  BlockMoverObj: {fileID: 0}
+  BlockMover: {fileID: 0}
 --- !u!1 &1289162236 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 383be6f45bd90b340973088842edb45a,
@@ -1310,9 +1331,12 @@ MonoBehaviour:
   towerZone: {fileID: 0}
   nudgeForce: 10
   timeSpentNotTouching: 0
+  blockStartPos: {x: 0, y: 0, z: 0}
+  originalRotation: {x: 0, y: 0, z: 0, w: 0}
   gameController: {fileID: 0}
   lineRenderer: {fileID: 0}
   soundEmitter: {fileID: 0}
+  blockMover: {fileID: 0}
   hasBeenPlaced: 0
   dragBox: {fileID: 0}
 --- !u!64 &1289162242
@@ -1376,7 +1400,7 @@ Transform:
   - {fileID: 1233955661}
   - {fileID: 2145774392}
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1363392478
 MonoBehaviour:
@@ -1484,8 +1508,38 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 125.130005, y: -98.716, z: -58.639984}
+--- !u!1 &1397583543
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1397583544}
+  m_Layer: 0
+  m_Name: MidwayBlockMovePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1397583544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397583543}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 55860738}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 10.942, y: 44.015003, z: 0}
 --- !u!1 &1405777842
 GameObject:
   m_ObjectHideFlags: 0
@@ -1517,7 +1571,7 @@ Transform:
   - {fileID: 1919672796}
   - {fileID: 55860738}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1436457545
 GameObject:
@@ -1613,7 +1667,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1444554648
 GameObject:
@@ -1679,7 +1733,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1479431918
 PrefabInstance:
@@ -1691,7 +1745,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 383be6f45bd90b340973088842edb45a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 383be6f45bd90b340973088842edb45a,
         type: 3}
@@ -1922,7 +1976,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1633375120
 GameObject:
@@ -2067,6 +2121,54 @@ RenderTexture:
     m_WrapW: 1
   m_Dimension: 2
   m_VolumeDepth: 1
+--- !u!1 &1791063861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1791063862}
+  - component: {fileID: 1791063863}
+  m_Layer: 0
+  m_Name: BlockMover
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1791063862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791063861}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.75660706, y: 6.2137094, z: -3.3714323}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1791063863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791063861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269c0e57b34c33d4da95bbbd3b60a66c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameController: {fileID: 725078022}
+  towerDropZone: {fileID: 603358687}
+  camObj: {fileID: 960258024}
+  cam: {fileID: 960258030}
+  midwayBlockMovePoint: {fileID: 1397583543}
 --- !u!1 &1858660294
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,7 +2356,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2058243250
 MonoBehaviour:
@@ -2315,10 +2417,12 @@ MonoBehaviour:
   _mass: 10
   _drag: 1
   _blockHeight: 0.6
-  _angularDrag: 0.8
+  _angularDrag: 2
   _blockSpacing: 0.005
   _nBlocks: 3
   _randomnessIndex: 0
-  DistanceNeededForMouseDrag: 0
-  TimeOnMouseDownNeededForDrag: 0.2
+  DistanceNeededForMouseDrag: 1
+  TimeOnMouseDownNeededForDrag: 0
   _blockPrefab: {fileID: 1101568644}
+  BlockMoverObj: {fileID: 1791063861}
+  BlockMover: {fileID: 0}

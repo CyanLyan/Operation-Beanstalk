@@ -15,8 +15,11 @@ public class BlockSettings : MonoBehaviour
     public float TimeOnMouseDownNeededForDrag;
 
     public GameObject _blockPrefab;
+    public GameObject BlockMoverObj;
+    public BlockMover BlockMover;
 
     public BlockSettings(GameObject blockPrefab,
+                         GameObject blockMoverObj,
                          float mass,
                          float drag,
                          float blockHeight,
@@ -33,6 +36,7 @@ public class BlockSettings : MonoBehaviour
         NBlocksPerPallet = nBlocks;
         RandomnessIndex = randomnessIndex;
         BlockPrefab = blockPrefab;
+        BlockMoverObj = blockMoverObj;
     }
 
 

@@ -73,7 +73,11 @@ public static class BlockBuilder
         block.transform.Translate(new Vector3(positionOffset, 0f, 0f));
         block = BlockBuilder.randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
         block.transform.parent = initDetails.TowerCollisionBox.transform;
-        block.GetComponent<Block>().Init(initDetails.gameController, initDetails.cam, initDetails.cursorController, initDetails.TowerDropZone, initDetails.blockSettings.DistanceNeededForMouseDrag, initDetails.blockSettings.TimeOnMouseDownNeededForDrag);
+        block.GetComponent<Block>().Init(initDetails.gameController, 
+                                         initDetails.cursorController, 
+                                         initDetails.blockSettings.BlockMover, 
+                                         initDetails.blockSettings.DistanceNeededForMouseDrag, 
+                                         initDetails.blockSettings.TimeOnMouseDownNeededForDrag);
         return block;
     }
 
@@ -96,10 +100,13 @@ public static class BlockBuilder
         public CursorController cursorController { get; set; }
         public GameObject TowerDropZone { get; internal set; }
 
+        public GameObject MidwayBlockMovePoint { get; set; }
+
         public TowerInitDetails(BlockSettings blockSettings, 
                                 CameraController cameraController, 
                                 GameController gameController, 
                                 CursorController cursorController,
+                                GameObject midwayBlockMovePoint,
                                 int nPallets = 0, 
                                 GameObject blockPrefab = null) : this()
         {
@@ -109,6 +116,7 @@ public static class BlockBuilder
             this.gameController = gameController;
             this.nPallets = nPallets;
             this.cursorController = cursorController;
+            this.MidwayBlockMovePoint= midwayBlockMovePoint;
         }
 
         public void SetTowerCollisionBoxAndDropZone(GameObject box)

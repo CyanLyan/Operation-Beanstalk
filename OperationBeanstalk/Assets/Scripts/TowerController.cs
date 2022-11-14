@@ -24,13 +24,17 @@ public class TowerController : MonoBehaviour
             initDetails.nPallets= nPallets;
             initDetails.TowerDropZone= this.towerDropZone;
             this.towerCollisionBox = this.towerCollisionBoxObj.GetComponent<TowerCollisionBox>();
-
+            initDetails.blockSettings.BlockMover.towerDropZone = initDetails.TowerDropZone;
+            initDetails.blockSettings.BlockMover.cam = initDetails.cam;
             initDetails.SetTowerCollisionBoxAndDropZone(towerCollisionBoxObj);
             this.blockPlacingZone.transform.position = initDetails.dropZonePosition;
             this.BlocksInTower = TowerBuilder.createTower(initDetails);
             this.towerCollisionBox.CalculateTowerBoundsAndSet(this.BlocksInTower, initDetails.nPallets);
 
+            var towerSize = this.towerCollisionBox.GetComponent<BoxCollider>().size;
+            initDetails.MidwayBlockMovePoint.transform.localPosition = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight / 3, 0);
             this.towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
+            
             SetBlockPlacingZoneDimensions(initDetails);
 
             this.ActivateBlockPlacingZone();
@@ -61,5 +65,10 @@ public class TowerController : MonoBehaviour
     {
         BoxCollider box = this.blockPlacingZone.GetComponent<BoxCollider>();
         box.transform.position = new Vector3(box.transform.position.x, newYPosition, box.transform.position.z);
+    }
+
+    public void TowerIsCollapsing()
+    {
+        Debug.Log("AAA TOWER IS COLLAPSING");
     }
 }

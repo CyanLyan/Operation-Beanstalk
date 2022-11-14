@@ -38,6 +38,8 @@ public class GameController : MonoBehaviour
     //TODO - create tool/toggle for point drag vs. frozen rotation drag
     public GameObject dragBoxToolObj;
 
+    public GameObject midwayBlockMovePoint;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +60,10 @@ public class GameController : MonoBehaviour
         TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
                                                         this, 
-                                                        cursorInstance);
+                                                        cursorInstance, 
+                                                        midwayBlockMovePoint);
+        details.blockSettings.BlockMover = details.blockSettings.BlockMoverObj.GetComponent<BlockMover>();
+        details.blockSettings.BlockMover.gameController = this;
         var gameReady = this.tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
     }
 
