@@ -93,7 +93,6 @@ public class Block : MonoBehaviour
         {
             if (!this.userCanDrag && !this.isBeingPlacedOnTop & Input.GetMouseButton(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
             {
-                Debug.Log("UserCanDrag");
                 this.userCanNudge= false;
                 this.userCanDrag = true;
             }

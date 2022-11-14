@@ -23,7 +23,6 @@ public class CameraController : MonoBehaviour
     private float cameraMoveSpeed = 2f;
 
     public Quaternion dropRotation;
-    private Vector3 newDropPos;
     public bool cameraIsInDropView = false;
     private Vector3 previousViewPosition;
     private Quaternion previousViewRotation;
@@ -164,8 +163,8 @@ public class CameraController : MonoBehaviour
 
         for (var t = 0.0f; t < this.cameraMoveSpeed; t += Time.deltaTime)
         {
-            moveCameraBetween2Points(startingPosition, this.previousViewPosition, (t / this.cameraMoveSpeed));
-            rotateCameraBetween2Points((t / this.cameraMoveSpeed)*10, this.previousViewRotation);
+            moveCameraBetween2Points(this.mainView.transform.position, this.previousViewPosition, (t / this.cameraMoveSpeed));
+            rotateCameraBetween2Points((t / this.cameraMoveSpeed)*20, this.previousViewRotation);
             transform.position = this.mainView.transform.position;
             transform.rotation = this.mainView.transform.rotation;
             yield return null;
