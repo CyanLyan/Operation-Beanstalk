@@ -1418,7 +1418,7 @@ MonoBehaviour:
   _blockSettingsObject: {fileID: 2145774391}
   _nPalletsHigh: 15
   _PlayerNudgeForce: 2
-  cameraViewPivotSpeed: 1.5
+  cameraViewPivotSpeed: 0.3
 --- !u!1 &1390471192
 GameObject:
   m_ObjectHideFlags: 0
