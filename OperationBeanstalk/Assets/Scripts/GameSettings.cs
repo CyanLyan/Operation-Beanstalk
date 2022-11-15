@@ -9,6 +9,7 @@ public class GameSettings: MonoBehaviour
     public int _nPalletsHigh;
 
     public float _PlayerNudgeForce;
+    public float cameraViewPivotSpeed;
 
     private void Awake()
     {

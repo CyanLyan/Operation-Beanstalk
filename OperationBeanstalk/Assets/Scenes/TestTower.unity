@@ -1224,6 +1224,7 @@ MonoBehaviour:
   camObj: {fileID: 0}
   cam: {fileID: 0}
   midwayBlockMovePoint: {fileID: 0}
+  positionBeforeMoving: {x: 0, y: 0, z: 0}
 --- !u!1 &1233955660
 GameObject:
   m_ObjectHideFlags: 0
@@ -1417,6 +1418,7 @@ MonoBehaviour:
   _blockSettingsObject: {fileID: 2145774391}
   _nPalletsHigh: 15
   _PlayerNudgeForce: 2
+  cameraViewPivotSpeed: 1.5
 --- !u!1 &1390471192
 GameObject:
   m_ObjectHideFlags: 0
@@ -2169,6 +2171,7 @@ MonoBehaviour:
   camObj: {fileID: 960258024}
   cam: {fileID: 960258030}
   midwayBlockMovePoint: {fileID: 1397583543}
+  positionBeforeMoving: {x: 0, y: 0, z: 0}
 --- !u!1 &1858660294
 GameObject:
   m_ObjectHideFlags: 0

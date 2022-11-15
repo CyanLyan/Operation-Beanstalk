@@ -57,6 +57,7 @@ public class GameController : MonoBehaviour
         this.cursorInstance = this.PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
         var cameraController = camerControllerObj.GetComponent<CameraController>();
+        cameraController.cameraViewPivotSpeed = currentGameSettings.cameraViewPivotSpeed;
         TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
                                                         this, 
