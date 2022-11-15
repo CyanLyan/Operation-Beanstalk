@@ -194,6 +194,7 @@ public class Block : MonoBehaviour
         {
             this.userCanDrag = true;
         }
+        if(!this.isInDropPosition) this.userCanNudge= true;
     }
 
     //Checks if the mouse has moved enough for the user to be able to drag it.
