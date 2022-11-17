@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MoreMountains.Feedbacks;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -63,6 +64,8 @@ public class Block : MonoBehaviour
     public bool hasBeenPlaced;
 
     public DragBoxTool dragBox;
+
+    public MMFeedbacks NudgeEffect;
 
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
@@ -241,6 +244,7 @@ public class Block : MonoBehaviour
             if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
             {
                 this.isBeingNudged= true;
+                this.NudgeEffect.PlayFeedbacks();
                 this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
                 this.cursorInstance.DoCursorNudgeEffect(hit);
                 this.cursorInstance.playSoundAfterDelay(this.soundEmitter);
