@@ -161,7 +161,7 @@ Material:
     - _FlatRimSize: 0.5
     - _FlatSpecularEdgeSmoothness: 1
     - _FlatSpecularSize: 1
-    - _Flatness: 0.58
+    - _Flatness: 0.567
     - _FlatnessExtra: 1
     - _Framerate: 5
     - _GlossMapScale: 0
@@ -174,9 +174,9 @@ Material:
     - _GradientSize: 25.67
     - _HideRimUnderShadow: 0
     - _InvertOpacityFresnel: 0
-    - _LightContribution: 0
-    - _LightFalloffSize: 0
-    - _LightmapDirectionPitch: 0
+    - _LightContribution: 0.268
+    - _LightFalloffSize: 0.188
+    - _LightmapDirectionPitch: 176.5
     - _LightmapDirectionYaw: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
@@ -202,10 +202,10 @@ Material:
     - _SecondaryTextureSize: 1
     - _SecondaryTextureSpeedFactor: 0
     - _SecondaryTextureStrength: 0
-    - _SelfShadingSize: 0.682
+    - _SelfShadingSize: 0.64
     - _SelfShadingSizeExtra: 0.546
     - _ShadowBlur: 1
-    - _ShadowEdgeSize: 0.05
+    - _ShadowEdgeSize: 0.0753
     - _ShadowEdgeSizeExtra: 0.05
     - _ShadowMixMode: 0
     - _ShadowSize: 0.5
@@ -247,19 +247,19 @@ Material:
     - __dirty: 1
     m_Colors:
     - _AmbientColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
-    - _BaseColor: {r: 0.9150943, g: 0.83604246, b: 0.64315593, a: 1}
+    - _BaseColor: {r: 0.6039216, g: 0.7490196, b: 0.078431375, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorDim: {r: 0.6415094, g: 0.506853, b: 0.3721965, a: 1}
+    - _ColorDim: {r: 0.454902, g: 0.8862746, b: 0.34509805, a: 1}
     - _ColorDimCurve: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
-    - _ColorDimExtra: {r: 0.50980395, g: 0.28627452, b: 0.043137256, a: 1}
+    - _ColorDimExtra: {r: 0.50980395, g: 0.24896136, b: 0.04313724, a: 1}
     - _ColorDimSteps: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
     - _ColorGradient: {r: 0.9150943, g: 0.83604246, b: 0.64315593, a: 1}
     - _DiffuseColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _FlatRimColor: {r: 0.9450981, g: 0.454902, b: 0.1333333, a: 1}
-    - _FlatSpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FlatSpecularColor: {r: 0.00093449844, g: 0.1981132, b: 0.018582124, a: 1}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LightmapDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _LightmapDirection: {r: 0, g: -0.9981348, b: 0.061048582, a: 0}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RampDark: {r: 0.34905657, g: 0.34905657, b: 0.34905657, a: 0}
     - _RampLight: {r: 1, g: 1, b: 1, a: 0}
