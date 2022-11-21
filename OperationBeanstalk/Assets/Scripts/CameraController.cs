@@ -165,7 +165,6 @@ public class CameraController : MonoBehaviour
     {
         for (var t = 0.0f; t < this.cameraViewPivotSpeed; t += Time.deltaTime)
         {
-            Debug.Log(t);
             moveCameraBetween2Points(this.mainView.transform.position, this.previousViewPosition, (t / this.cameraViewPivotSpeed));
             rotateCameraBetween2Points((t / this.cameraViewPivotSpeed)*20, this.previousViewRotation);
             transform.position = this.mainView.transform.position;
