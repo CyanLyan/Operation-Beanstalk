@@ -1,6 +1,7 @@
 # Operation-Beanstalk
 ## TODO LIST ##
 -Fix block mover to move to MidwayBlockMovePoint THEN the dropview selected, using LERP
+
 -Fix camera shake for block nudge, which keeps returning the camera position to the default after every effect
 -Add a UI element to visually represent drag tool, which will replace LineRenderer in DragBlock
 -Fix HandleBlockTouchingNothing() inside Block.cs to only trigger when the tower is truly toppling over
