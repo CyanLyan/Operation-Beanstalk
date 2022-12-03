@@ -104,6 +104,8 @@ public class Block : MonoBehaviour
         }
     }
 
+    // Called by Tower Collision box whenever a block leaves it's collision area
+    // This is only triggered when a block has been properly removed
     public void HandleBlockTouchingNothing()
     {
         // Only move block to tower top IF player moved it
