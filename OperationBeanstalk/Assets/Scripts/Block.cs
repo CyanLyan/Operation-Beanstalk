@@ -66,6 +66,7 @@ public class Block : MonoBehaviour
     public DragBoxTool dragBox;
 
     public MMFeedbacks NudgeEffect;
+    private Camera _camera;
 
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
@@ -86,6 +87,7 @@ public class Block : MonoBehaviour
         this.timeOnMouseDownNeededForDrag = timeOnMouseDownNeededForNudge;
 
         this.blockMover = blockMover;
+        _camera = Camera.main;
     }
 
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
@@ -236,8 +238,8 @@ public class Block : MonoBehaviour
     private void NudgeBlock()
     {
         RaycastHit hit;
-        Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit);
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit);
+        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             GameObject blockHit = hit.collider.gameObject;
