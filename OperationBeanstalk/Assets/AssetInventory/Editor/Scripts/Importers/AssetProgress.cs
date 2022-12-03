@@ -1,6 +1,6 @@
 ﻿namespace AssetInventory
 {
-    public abstract class AssertProgress
+    public abstract class AssetProgress
     {
         public static string CurrentMain { get; protected set; }
         public static int MainCount { get; protected set; }
