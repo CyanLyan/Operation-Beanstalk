@@ -57,7 +57,8 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(this.cam.pivotToDropView());
         this.midwayBlockMovePoint.transform.position = Vector3.zero;
 
-        StartCoroutine(MoveBlockToDropPosition(block));
+        StartCoroutine(MoveBlockToPosition(block, this.towerDropZone.transform));
+        //StartCoroutine(MoveBlockToPosition(block, this.towerDropZone.transform));
         StartCoroutine(MoveBlockToDropRotation(block));
         StartCoroutine(WaitForBlockToBePositionedAndRotated(block));
     }
@@ -68,6 +69,14 @@ public class BlockMover : MonoBehaviour
         {
             yield return 0;
         }
+
+        //StartCoroutine(MoveBlockToDropPosition(block));
+        //StartCoroutine(MoveBlockToDropRotation(block));
+        SetBlockStatsForDropPosition(block);
+    }
+
+    private void SetBlockStatsForDropPosition(Block block)
+    {
         block.isInDropPosition = true;
         block.userCanNudge = false;
         block.GetComponent<Rigidbody>().angularVelocity = new Vector3(0, 0, 0);
@@ -95,6 +104,30 @@ public class BlockMover : MonoBehaviour
             {
                 block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
             }
+            yield return 0;
+        }
+        this.donePositioning = true;
+    }
+
+    public IEnumerator MoveBlockToPosition(Block block, Transform newPosTransform)
+    {
+        this.donePositioning = false;
+        while ((newPosTransform.position.y - block.transform.position.y > 1))
+        {
+            var dist = Vector3.Distance(block.transform.position, block.blockStartPos);
+            //if (dist < 3f)
+            //{
+                //Calculate the vector between the object and the player
+            Vector3 dir = block.transform.position - block.blockStartPos;
+                //Cancel out the vertical difference
+            dir.y = 0;
+                //Translate the object in the direction of the vector
+            block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, newPosTransform.position.y, 0), 5f);
+            //}
+            //else
+            //{
+            //    block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
+            //}
             yield return 0;
         }
         this.donePositioning = true;
