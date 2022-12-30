@@ -19,6 +19,8 @@ public class BlockMover : MonoBehaviour
     private bool moveToPoint1;
     private bool moveToPoint2;
 
+    public float moveDistancePerStep;
+
     // Start is called before the first frame update
     //void Start()
     //{
@@ -57,8 +59,8 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(this.cam.pivotToDropView());
         this.midwayBlockMovePoint.transform.position = Vector3.zero;
 
-        StartCoroutine(MoveBlockToPosition(block, this.towerDropZone.transform));
         //StartCoroutine(MoveBlockToPosition(block, this.towerDropZone.transform));
+        StartCoroutine(MoveBlockToPoint1Then2(block, this.midwayBlockMovePoint.transform.position, this.towerDropZone.transform.position));
         StartCoroutine(MoveBlockToDropRotation(block));
         StartCoroutine(WaitForBlockToBePositionedAndRotated(block));
     }
@@ -70,7 +72,7 @@ public class BlockMover : MonoBehaviour
             yield return 0;
         }
 
-        //StartCoroutine(MoveBlockToDropPosition(block));
+        //StartCoroutine(MoveBlockToDropPosition(block));d
         //StartCoroutine(MoveBlockToDropRotation(block));
         SetBlockStatsForDropPosition(block);
     }
@@ -98,11 +100,11 @@ public class BlockMover : MonoBehaviour
                 //Cancel out the vertical difference
                 dir.y = 0;
                 //Translate the object in the direction of the vector
-                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, this.towerDropZone.transform.position.y, 0), 5f);
+                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, this.towerDropZone.transform.position.y, 0), this.moveDistancePerStep);
             }
             else
             {
-                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
+                block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), this.moveDistancePerStep);
             }
             yield return 0;
         }
@@ -122,11 +124,11 @@ public class BlockMover : MonoBehaviour
                 //Cancel out the vertical difference
             dir.y = 0;
                 //Translate the object in the direction of the vector
-            block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, newPosTransform.position.y, 0), 5f);
+            block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(dir.normalized.x, newPosTransform.position.y, 0), this.moveDistancePerStep);
             //}
             //else
             //{
-            //    block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), 5f);
+            //    block.gameObject.transform.position = Vector3.MoveTowards(block.transform.position, new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1f, 0), this.moveDistancePerStep);
             //}
             yield return 0;
         }
@@ -161,9 +163,13 @@ public class BlockMover : MonoBehaviour
     {
         var blockPositionInWorld = gameObject.transform.TransformPoint(block.transform.position);
         Debug.Log(blockPositionInWorld);
-        while ((point.y - block.transform.position.y) > distanceToPointNeeded)
+        Vector3 positionDelta = point - block.transform.position;
+        bool yPositionReached = Math.Abs(positionDelta.y) >= distanceToPointNeeded;
+        bool xPositionReached = Math.Abs(positionDelta.x) >= distanceToPointNeeded;
+        bool zPositionReached = Math.Abs(positionDelta.z) >= distanceToPointNeeded;
+        while (!yPositionReached || !xPositionReached || !zPositionReached)
         {
-            block.gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, point, 5f);
+            block.gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, point, this.moveDistancePerStep);
             yield return 0;
         }
         pointReached = true;
