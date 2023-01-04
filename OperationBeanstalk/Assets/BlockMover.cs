@@ -1,3 +1,4 @@
+using SWS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,11 +22,7 @@ public class BlockMover : MonoBehaviour
 
     public float moveDistancePerStep;
 
-    // Start is called before the first frame update
-    //void Start()
-    //{
-    //    this.cam = this.camObj.GetComponent<CameraController>();
-    //}
+    public PathManager pathManager;
 
     // Update is called once per frame
     void Update()
@@ -33,6 +30,11 @@ public class BlockMover : MonoBehaviour
         
     }
 
+    /**
+     * Activated externally by the dropzone collision box, once the block is in place.
+     * TODO - after implementing SWS (simple waypoint system) see if we even need this
+     *        chain of events or can just manually end the sequence ourselves.
+     * */
     public void FinishDroppingBlockInPlace(Block block)
     {
         block.isBeingPlacedOnTop = false;
@@ -59,7 +61,7 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(this.cam.pivotToDropView());
         this.midwayBlockMovePoint.transform.position = Vector3.zero;
 
-        //StartCoroutine(MoveBlockToPosition(block, this.towerDropZone.transform));
+        pathManager.
         StartCoroutine(MoveBlockToPoint1Then2(block, this.midwayBlockMovePoint.transform.position, this.towerDropZone.transform.position));
         StartCoroutine(MoveBlockToDropRotation(block));
         StartCoroutine(WaitForBlockToBePositionedAndRotated(block));
