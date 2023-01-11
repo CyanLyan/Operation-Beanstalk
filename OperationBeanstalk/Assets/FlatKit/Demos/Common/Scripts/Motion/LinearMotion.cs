@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Dustyroom {
     public class LinearMotion : MonoBehaviour {
@@ -27,8 +26,8 @@ namespace Dustyroom {
         public Vector3 rotationAxis = Vector3.up;
         public float rotationSpeed = 50.0f;
         public bool useLocalCoordinate = true;
-        public float translationAcceleration = 0f;
-        public float rotationAcceleration = 0f;
+        public float translationAcceleration;
+        public float rotationAcceleration;
 
         private Vector3 TranslationVector {
             get {

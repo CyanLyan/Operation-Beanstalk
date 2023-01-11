@@ -3,12 +3,9 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using SWS;
+using UnityEngine;
 
 /// <summary>
 /// Example: user input script which moves through waypoints one by one.

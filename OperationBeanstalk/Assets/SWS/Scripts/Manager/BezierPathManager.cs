@@ -3,9 +3,10 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace SWS
 {
@@ -18,7 +19,7 @@ namespace SWS
         /// <summary>
         /// Path points (not waypoints) creating the path.
         /// <summary>
-        public Vector3[] pathPoints = new Vector3[]{};
+        public Vector3[] pathPoints = {};
 
         /// <summary>
         /// List to store bezier points for this path.
@@ -48,7 +49,7 @@ namespace SWS
         /// <summary>
         /// Toggles custom detail for single path segments.
         /// <summary>
-        public bool customDetail = false;
+        public bool customDetail;
 
         /// <summary>
         /// List of detail values for single path segments, when enabled.
@@ -140,7 +141,7 @@ namespace SWS
                     copy[i] = transform.InverseTransformPoint(pathPoints[i]);
             }
             else
-                System.Array.Copy(pathPoints, copy, pathPoints.Length);
+                Array.Copy(pathPoints, copy, pathPoints.Length);
 
             return copy;
         }
@@ -258,7 +259,7 @@ namespace SWS
             for (int n = 0; n <= iterations; n++)
             {
                 //cannot increment i as a float
-                float i = (float)n / iterations;
+                float i = n / iterations;
                 float rest = (1f - i);
                 //bezier formula
                 Vector3 newPos = Vector3.zero;
@@ -278,13 +279,13 @@ namespace SWS
     /// <summary>
     /// Custom class to store waypoint transforms and control points for bezier paths.
     /// <summary>
-    [System.Serializable]
+    [Serializable]
     public class BezierPoint
     {
         /// <summary>
         /// Waypoint transform for this bezier point.
         /// <summary>
-        public Transform wp = null;
+        public Transform wp;
 
         /// <summary>
         /// Control points for this bezier point.

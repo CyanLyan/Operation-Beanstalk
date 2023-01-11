@@ -3,8 +3,8 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace SWS

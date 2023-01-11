@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -17,10 +15,10 @@ public class Player : MonoBehaviour
     public Player(Color color, string name, int score, GameObject cursorControllerObj)
     {
         this.color = color;
-        this.playerName = name;
+        playerName = name;
         this.score = score;
         this.cursorControllerObj = Instantiate(cursorControllerObj);
-        this.cursorController = cursorControllerObj.GetComponent<CursorController>();
+        cursorController = cursorControllerObj.GetComponent<CursorController>();
     }
 
     void Start()

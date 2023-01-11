@@ -3,15 +3,15 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using UnityEngine.Events;
 using System;
 using System.Collections;
 using DG.Tweening;
-
 using DG.Tweening.Core;
+using DG.Tweening.Plugins.Core.PathCore;
 using DG.Tweening.Plugins.Options;
-
+using UnityEngine;
+using UnityEngine.Events;
+using Random = System.Random;
 
 namespace SWS
 {
@@ -28,33 +28,33 @@ namespace SWS
         /// <summary>
         /// Whether this object should start its movement at game launch.
         /// <summary>
-        public bool onStart = false;
+        public bool onStart;
 
         /// <summary>
         /// Whether this object should walk to the first waypoint or spawn there.
         /// <summary>
-        public bool moveToPath = false;
+        public bool moveToPath;
 
         /// <summary>
         /// reverse the movement direction on the path, typically used for "pingPong" behavior.
         /// <summary>
-        public bool reverse = false;
+        public bool reverse;
 
         /// <summary>
         /// Waypoint index where this object should start its path.
         /// <summary>
-        public int startPoint = 0;
+        public int startPoint;
 
         /// <summary>
         /// Current waypoint indicator on the path. 
         /// <summary>
         [HideInInspector]
-        public int currentPoint = 0;
+        public int currentPoint;
 
         /// <summary>
         /// Option for closing the path on the "loop" looptype.
         /// <summary>
-        public bool closeLoop = false;
+        public bool closeLoop;
 
         /// <summary>
         /// Whether local positioning relative to path or object should be used when tweening this object.
@@ -70,12 +70,12 @@ namespace SWS
         /// <summary>
         /// Value to look ahead on the path when orientToPath is enabled (0-1).
         /// <summary>
-        public float lookAhead = 0;
+        public float lookAhead;
 
         /// <summary>
         /// Additional units to add on the y-axis.
         /// <summary>
-        public float sizeToAdd = 0;
+        public float sizeToAdd;
 
         /// <summary>
         /// Selection for speed-based movement or time in seconds per segment. 
@@ -119,27 +119,27 @@ namespace SWS
         /// <summary>
         /// Animation path type, linear or curved.
         /// <summary>
-        public DG.Tweening.PathType pathType = DG.Tweening.PathType.CatmullRom;
+        public PathType pathType = PathType.CatmullRom;
 
         /// <summary>
         /// Whether this object should orient itself to a different Unity axis.
         /// <summary>
-        public DG.Tweening.PathMode pathMode = DG.Tweening.PathMode.Full3D;
+        public PathMode pathMode = PathMode.Full3D;
 
         /// <summary>
         /// Animation easetype on TimeValue type time.
         /// <summary>
-        public DG.Tweening.Ease easeType = DG.Tweening.Ease.Linear;
+        public Ease easeType = Ease.Linear;
 
         /// <summary>
         /// Option for locking a position axis.
         /// <summary>
-        public DG.Tweening.AxisConstraint lockPosition = DG.Tweening.AxisConstraint.None;
+        public AxisConstraint lockPosition = AxisConstraint.None;
 
         /// <summary>
         /// Option for locking a rotation axis with orientToPath enabled.
         /// <summary>
-        public DG.Tweening.AxisConstraint lockRotation = DG.Tweening.AxisConstraint.None;
+        public AxisConstraint lockRotation = AxisConstraint.None;
 
         /// <summary>
         /// Whether to lerp this target from one waypoint rotation to the next,
@@ -168,7 +168,7 @@ namespace SWS
         /// Note that this includes a call when moveToPath starts.
         /// It is also called on both endpoints on loop type = ping pong.
         /// </summary>
-        public UnityEvent movementStart;
+        public UnityEvent movementStart = new UnityEvent();
         public event Action movementStartEvent;
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace SWS
         /// Note that on loop types, this could mean double invokes for the same waypoint.
         /// E.g. on ping-pong loop type you can check the reverse flag for more control. 
         /// </summary>
-        public WaypointEvent movementChange;
+        public WaypointEvent movementChange = new WaypointEvent();
         public event Action<int> movementChangeEvent;
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace SWS
         /// Note that this is not called when moveToPath ends.
         /// It is also called on both endpoints on loop type = ping pong.
         /// </summary>
-        public UnityEvent movementEnd;
+        public UnityEvent movementEnd = new UnityEvent();
         public event Action movementEndEvent;
 
         //---DOTween animation helper variables---
@@ -199,7 +199,7 @@ namespace SWS
         //original rotation when rotating to first waypoint on moveToPath
         private Quaternion originRot;
         //looptype random generator
-        private System.Random rand = new System.Random();
+        private Random rand = new Random();
         //looptype random waypoint index array
         private int[] rndArray;
         //coroutine when a wait routine is active
@@ -283,7 +283,7 @@ namespace SWS
                 parms.SetLoops(-1, DG.Tweening.LoopType.Yoyo);
 
             //apply ease type or animation curve
-            if (easeType == DG.Tweening.Ease.Unset)
+            if (easeType == Ease.Unset)
                 parms.SetEase(animEaseType);
             else
                 parms.SetEase(easeType);
@@ -307,7 +307,7 @@ namespace SWS
                 parms.OnComplete(ReachedEnd);
             }
 
-            if (pathMode == DG.Tweening.PathMode.Ignore &&
+            if (pathMode == PathMode.Ignore &&
 				waypointRotation != RotationType.none)
             {
                 if (rotationTarget == null)
@@ -340,8 +340,8 @@ namespace SWS
             //continue new tween with adjusted speed if it was changed before
             if (originSpeed != speed)
                 ChangeSpeed(speed);
-
-            movementStart.Invoke();
+            
+            movementStart?.Invoke();
             if (movementStartEvent != null)
                 movementStartEvent();
         }
@@ -401,7 +401,7 @@ namespace SWS
                 return;
             }
 
-            TweenerCore<Vector3, DG.Tweening.Plugins.Core.PathCore.Path, PathOptions> tweenPath = tween as TweenerCore<Vector3, DG.Tweening.Plugins.Core.PathCore.Path, PathOptions>;
+            TweenerCore<Vector3, Path, PathOptions> tweenPath = tween as TweenerCore<Vector3, Path, PathOptions>;
             float currentDist = tweenPath.PathLength() * tweenPath.ElapsedPercentage();
             float pathLength = 0f;
             float currentPerc = 0f;

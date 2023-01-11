@@ -13,19 +13,20 @@ public class DepthNormalsFeature : ScriptableRendererFeature
         private List<ShaderTagId> shaderTags;
         private FilteringSettings filteringSettings;
 
-        public RenderPass(Material material) : base()
+        public RenderPass(Material material)
         {
             this.material = material;
             // This contains a list of shader tags. The renderer will only render objects with
             // materials containing a shader with at least one tag in this list
-            this.shaderTags = new List<ShaderTagId>() {
+            shaderTags = new List<ShaderTagId>
+            {
                 new ShaderTagId("DepthOnly"),
                 //new ShaderTagId("SRPDefaultUnlit"),
                 //new ShaderTagId("UniversalForward"),
                 //new ShaderTagId("LightweightForward"),
             };
             // Render opaque materials
-            this.filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+            filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             destinationHandle.Init("_DepthNormalsTexture");
         }
 
@@ -60,7 +61,7 @@ public class DepthNormalsFeature : ScriptableRendererFeature
     {
         // We will use the built-in renderer's depth normals texture shader
         Material material = CoreUtils.CreateEngineMaterial("Hidden/Internal-DepthNormalsTexture");
-        this.renderPass = new RenderPass(material);
+        renderPass = new RenderPass(material);
         // Render after shadow caster, depth, etc. passes
         renderPass.renderPassEvent = RenderPassEvent.AfterRenderingPrePasses;
     }

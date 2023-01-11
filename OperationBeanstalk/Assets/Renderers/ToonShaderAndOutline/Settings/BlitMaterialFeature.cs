@@ -13,6 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -28,17 +29,17 @@ public class BlitMaterialFeature : ScriptableRendererFeature
         private RenderTargetIdentifier sourceID;
         private RenderTargetHandle tempTextureHandle;
 
-        public RenderPass(string profilingName, Material material, int passIndex) : base()
+        public RenderPass(string profilingName, Material material, int passIndex)
         {
             this.profilingName = profilingName;
             this.material = material;
-            this.materialPassIndex = passIndex;
+            materialPassIndex = passIndex;
             tempTextureHandle.Init("_TempBlitMaterialTexture");
         }
 
         public void SetSource(RenderTargetIdentifier source)
         {
-            this.sourceID = source;
+            sourceID = source;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -62,7 +63,7 @@ public class BlitMaterialFeature : ScriptableRendererFeature
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Settings
     {
         public Material material;
@@ -82,7 +83,7 @@ public class BlitMaterialFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        this.renderPass = new RenderPass(name, settings.material, settings.materialPassIndex);
+        renderPass = new RenderPass(name, settings.material, settings.materialPassIndex);
         renderPass.renderPassEvent = settings.renderEvent;
     }
 

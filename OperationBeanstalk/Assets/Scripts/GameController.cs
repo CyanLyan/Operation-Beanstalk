@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static BlockBuilder;
@@ -44,17 +43,17 @@ public class GameController : MonoBehaviour
     void Start()
     {
 
-        this.currentGameSettings = gameSettingsObj.GetComponent<GameSettings>();
-        this.turnIndex = 0;
-        this.test2PlayerGame();
+        currentGameSettings = gameSettingsObj.GetComponent<GameSettings>();
+        turnIndex = 0;
+        test2PlayerGame();
 
         GameObject newGO = new GameObject("myTextGO");
-        newGO.transform.SetParent(this.textUI.transform);
+        newGO.transform.SetParent(textUI.transform);
 
         
-        this.turnIndex = 0;
+        turnIndex = 0;
         GameObject textObj = new GameObject("p1 text");
-        this.cursorInstance = this.PlayerList[0].cursorController;
+        cursorInstance = PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
         var cameraController = camerControllerObj.GetComponent<CameraController>();
         cameraController.cameraViewPivotSpeed = currentGameSettings.cameraViewPivotSpeed;
@@ -65,7 +64,7 @@ public class GameController : MonoBehaviour
                                                         midwayBlockMovePoint);
         details.blockSettings.BlockMover = details.blockSettings.BlockMoverObj.GetComponent<BlockMover>();
         details.blockSettings.BlockMover.gameController = this;
-        var gameReady = this.tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
+        var gameReady = tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
     }
 
     GameObject addPlayer(Player p, GameObject t)
@@ -78,18 +77,18 @@ public class GameController : MonoBehaviour
     
     void test2PlayerGame()
     {
-        this.PlayerList.Add(new Player(Color.red, "james", 0, this.cursorControllerObj));
-        this.PlayerList.Add(new Player(Color.cyan, "cyan", 0, this.cursorControllerObj));
+        PlayerList.Add(new Player(Color.red, "james", 0, cursorControllerObj));
+        PlayerList.Add(new Player(Color.cyan, "cyan", 0, cursorControllerObj));
     }
 
     public void GoToTurnState(TurnState state)
     {
-        this.CurrentTurnState = state;
+        CurrentTurnState = state;
     }
 
     public void DropState()
     {
-        this.tower.ActivateBlockPlacingZone();
+        tower.ActivateBlockPlacingZone();
     }
 
     public void FinishTurn()
@@ -97,10 +96,10 @@ public class GameController : MonoBehaviour
         turnIndex++;
         if(turnIndex%3 == 0)
         {
-            this.currentGameSettings.NPalletsHigh++;
-            this.tower.towerCollisionBox.UpdateTowerBoxBounds(this.currentGameSettings.NPalletsHigh);
-            var newYPosition = this.currentGameSettings.NPalletsHigh * this.currentGameSettings.BlockSettings.BlockHeight;
-            this.tower.UpdateBlockPlacingZonePosition(newYPosition);
+            currentGameSettings.NPalletsHigh++;
+            tower.towerCollisionBox.UpdateTowerBoxBounds(currentGameSettings.NPalletsHigh);
+            var newYPosition = currentGameSettings.NPalletsHigh * currentGameSettings.BlockSettings.BlockHeight;
+            tower.UpdateBlockPlacingZonePosition(newYPosition);
         }
     }
 

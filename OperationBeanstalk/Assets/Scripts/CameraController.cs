@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using System;
+using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
@@ -28,7 +27,7 @@ public class CameraController : MonoBehaviour
     }
 
     public Quaternion dropRotation;
-    public bool cameraIsInDropView = false;
+    public bool cameraIsInDropView;
     private Vector3 previousViewPosition;
     private Quaternion previousViewRotation;
     public bool userCanMoveCamera = true;
@@ -41,17 +40,17 @@ public class CameraController : MonoBehaviour
     //Primarily controls where camera is, based on which keys are pressed by a user every frame.
     private void Awake()
     {
-        this.initDistanceFromTowerCollisionBox = Vector3.Distance(transform.position, GameObject.Find("EventSystem").transform.position);
-        this.mainView = GameObject.Find("MainView").gameObject;
-        this.previousViewPosition = Vector3.zero;
-        this.previousViewRotation = new Quaternion(0,0,0,0);
+        initDistanceFromTowerCollisionBox = Vector3.Distance(transform.position, GameObject.Find("EventSystem").transform.position);
+        mainView = GameObject.Find("MainView").gameObject;
+        previousViewPosition = Vector3.zero;
+        previousViewRotation = new Quaternion(0,0,0,0);
 
-        this.CurrentCameraFocus = towerCollisionBox;
+        CurrentCameraFocus = towerCollisionBox;
     }
 
     public void Update()
     {
-        if (CorrectKeyDetected() && this.userCanMoveCamera)
+        if (CorrectKeyDetected() && userCanMoveCamera)
         {
             HandleUserCameraInput();
         }
@@ -71,23 +70,23 @@ public class CameraController : MonoBehaviour
         //var target = this.CurrentCameraFocus.transform.position;
         if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            this.mainView.transform.RotateAround(this.CurrentCameraFocus.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
+            mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            this.mainView.transform.RotateAround(this.CurrentCameraFocus.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
+            mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
-            this.mainView.transform.position = Vector3.Lerp(this.mainView.transform.position, new Vector3(this.mainView.transform.position.x, maxHeight, this.mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
+            mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, maxHeight, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
         }
         else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
-            this.mainView.transform.position = Vector3.Lerp(this.mainView.transform.position, new Vector3(this.mainView.transform.position.x, 0, this.mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
+            mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, 0, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
         }
 
-        transform.position = this.mainView.transform.position;
-        transform.rotation = this.mainView.transform.rotation;
+        transform.position = mainView.transform.position;
+        transform.rotation = mainView.transform.rotation;
     }
 
     // TODO: Eventually we should be picking dropview based on orientation or block being placed
@@ -142,46 +141,46 @@ public class CameraController : MonoBehaviour
     //Moves camera to a view atop the current jenga tower where we can see the tower top & the block being placed.
     public IEnumerator pivotToDropView()
     {
-        this.previousViewPosition = this.mainView.transform.position;
-        this.previousViewRotation = this.mainView.transform.rotation;
-        var dropView = this.SelectClosestDropViewToMainCamera();
-        dropView.transform.LookAt(this.towerTop);
+        previousViewPosition = mainView.transform.position;
+        previousViewRotation = mainView.transform.rotation;
+        var dropView = SelectClosestDropViewToMainCamera();
+        dropView.transform.LookAt(towerTop);
 
-        for (var t = 0.0f; t < this.cameraViewPivotSpeed; t += Time.deltaTime)
+        for (var t = 0.0f; t < cameraViewPivotSpeed; t += Time.deltaTime)
         {
-            Debug.Log(t);
-            moveCameraBetween2Points(this.mainView.transform.position, dropView.transform.position, t / this.cameraViewPivotSpeed);
-            rotateCameraBetween2Points((t / this.cameraViewPivotSpeed) *20, dropView.rotation);
-            transform.position = this.mainView.transform.position;
-            transform.rotation = this.mainView.transform.rotation;
+            //Debug.Log(t);
+            moveCameraBetween2Points(mainView.transform.position, dropView.transform.position, t / cameraViewPivotSpeed);
+            rotateCameraBetween2Points((t / cameraViewPivotSpeed) *20, dropView.rotation);
+            transform.position = mainView.transform.position;
+            transform.rotation = mainView.transform.rotation;
             yield return null;
         }
-        this.cameraIsInDropView = true;
-        this.CurrentCameraFocus = this.towerDroppingZone;
+        cameraIsInDropView = true;
+        CurrentCameraFocus = towerDroppingZone;
     }
 
     //Returns camera to previous camera position
     public IEnumerator pivotBackToPreviousView(Vector3 startingPosition)
     {
-        for (var t = 0.0f; t < this.cameraViewPivotSpeed; t += Time.deltaTime)
+        for (var t = 0.0f; t < cameraViewPivotSpeed; t += Time.deltaTime)
         {
-            moveCameraBetween2Points(this.mainView.transform.position, this.previousViewPosition, (t / this.cameraViewPivotSpeed));
-            rotateCameraBetween2Points((t / this.cameraViewPivotSpeed)*20, this.previousViewRotation);
-            transform.position = this.mainView.transform.position;
-            transform.rotation = this.mainView.transform.rotation;
+            moveCameraBetween2Points(mainView.transform.position, previousViewPosition, (t / cameraViewPivotSpeed));
+            rotateCameraBetween2Points((t / cameraViewPivotSpeed)*20, previousViewRotation);
+            transform.position = mainView.transform.position;
+            transform.rotation = mainView.transform.rotation;
             yield return null;
         }
-        this.cameraIsInDropView = false;
-        this.CurrentCameraFocus = towerCollisionBox;
+        cameraIsInDropView = false;
+        CurrentCameraFocus = towerCollisionBox;
     }
 
     public void moveCameraBetween2Points(Vector3 pointA, Vector3 pointB, float duration)
     {
-        this.mainView.transform.position = Vector3.Lerp(pointA, pointB, duration);
+        mainView.transform.position = Vector3.Lerp(pointA, pointB, duration);
     }
 
     public void rotateCameraBetween2Points(float duration, Quaternion newRotation)
     {
-        this.mainView.transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, duration);
+        mainView.transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, duration);
     }
 }

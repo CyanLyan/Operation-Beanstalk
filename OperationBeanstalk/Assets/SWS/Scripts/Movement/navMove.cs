@@ -3,12 +3,12 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using UnityEngine.Events;
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
+using Random = System.Random;
 
 namespace SWS
 {
@@ -26,33 +26,33 @@ namespace SWS
         /// <summary>
         /// Whether this object should start its movement at game launch.
         /// <summary>
-        public bool onStart = false;
+        public bool onStart;
 
         /// <summary>
         /// Whether this object should walk to the first waypoint or spawn there.
         /// <summary>
-        public bool moveToPath = false;
+        public bool moveToPath;
 
         /// <summary>
         /// reverse the movement direction on the path, typically used for "pingPong" behavior.
         /// <summary>
-        public bool reverse = false;
+        public bool reverse;
 
         /// <summary>
         /// Waypoint index where this object should start its path. 
         /// <summary>
-        public int startPoint = 0;
+        public int startPoint;
 
         /// <summary>
         /// Current waypoint indicator on the path. 
         /// <summary>
         [HideInInspector]
-        public int currentPoint = 0;
+        public int currentPoint;
 
         /// <summary>
         /// Option for closing the path on the "loop" looptype.
         /// <summary>
-        public bool closeLoop = false;
+        public bool closeLoop;
 
         /// <summary>
         /// Whether rotation should be overridden by the NavMesh agent.
@@ -104,13 +104,13 @@ namespace SWS
         //reference to the agent component
         private NavMeshAgent agent;
         //looptype random generator
-        private System.Random rand = new System.Random();
+        private Random rand = new Random();
         //looptype random current waypoint index
-        private int rndIndex = 0;
+        private int rndIndex;
         //coroutine when a wait routine is active
         private Coroutine waitRoutine;
         //bool to indicate whether the move coroutines are active
-        private bool isMoving = false;
+        private bool isMoving;
 
 
         //initialize components

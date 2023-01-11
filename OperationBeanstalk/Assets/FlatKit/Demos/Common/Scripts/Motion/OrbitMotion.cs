@@ -19,18 +19,18 @@ public class OrbitMotion : MonoBehaviour {
     public float ySpeed = 120.0f;
     public float damping = 3f;
 
-    [Space] public bool clampAngle = false;
+    [Space] public bool clampAngle;
     public float yMinLimit = -20f;
     public float yMaxLimit = 80f;
 
-    [Space] public bool allowZoom = false;
+    [Space] public bool allowZoom;
     public float distanceMin = .5f;
     public float distanceMax = 15f;
 
-    float _x = 0.0f;
-    float _y = 0.0f;
+    float _x;
+    float _y;
 
-    [Space] public bool autoMovement = false;
+    [Space] public bool autoMovement;
     public float autoSpeedX = 0.2f;
     public float autoSpeedY = 0.1f;
     public float autoSpeedDistance = -0.1f;

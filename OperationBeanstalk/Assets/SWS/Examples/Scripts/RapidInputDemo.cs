@@ -3,10 +3,10 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
 using System.Collections;
 using DG.Tweening;
 using SWS;
+using UnityEngine;
 
 /// <summary>
 /// Example: object controlled by user input, speed decreases when not pressing a key.
@@ -46,7 +46,7 @@ public class RapidInputDemo : MonoBehaviour
     /// <summary>
     /// Minimum audio pitch when idling.
     /// <summary>
-    public float minPitch = 0;
+    public float minPitch;
 
     /// <summary>
     /// Maximum audio pitch at max speed.
@@ -58,7 +58,7 @@ public class RapidInputDemo : MonoBehaviour
     //current speed
     private float currentSpeed;
     //time passed since start
-    private float timeCounter = 0f;
+    private float timeCounter;
 
 
     //get references

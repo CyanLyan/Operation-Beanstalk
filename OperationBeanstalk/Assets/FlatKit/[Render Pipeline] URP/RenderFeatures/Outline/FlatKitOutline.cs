@@ -38,7 +38,8 @@ public class FlatKitOutline : ScriptableRendererFeature {
         }
 
         _blitShader ??= Shader.Find(BlitTexturePass.CopyEffectShaderName);
-        _blitTexturePass ??= new BlitTexturePass() {
+        _blitTexturePass ??= new BlitTexturePass
+        {
             renderPassEvent = settings.renderEvent
         };
     }

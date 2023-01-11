@@ -4,8 +4,8 @@
  * 	otherwise make available to any third party the Service or the Content. */
 
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 namespace SWS
 {

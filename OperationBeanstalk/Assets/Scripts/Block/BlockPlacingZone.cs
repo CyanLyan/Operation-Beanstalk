@@ -8,10 +8,10 @@ public class BlockPlacingZone : MonoBehaviour
     public void OnTriggerEnter(Collider other)
     {
         //Debug.Log("BlockPlacingZone Collided with " + other.gameObject.name);
-        if (BlockPlacingZoneIsReady && (other is MeshCollider) && (other.gameObject.tag == "Block") && (other.gameObject.GetComponent<Block>().isInDropPosition == true))
+        if (BlockPlacingZoneIsReady && (other is MeshCollider) && (other.gameObject.tag == "Block") && other.gameObject.GetComponent<Block>().isInDropPosition)
         {
             var block = other.gameObject.GetComponent<Block>();
-            block.blockMover.FinishDroppingBlockInPlace(block);
+            block.blockMover.FinishDroppingBlockInPlace();
         }
     }
 }

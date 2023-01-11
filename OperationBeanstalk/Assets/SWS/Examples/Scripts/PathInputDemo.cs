@@ -3,10 +3,9 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using System.Collections;
 using DG.Tweening;
 using SWS;
+using UnityEngine;
 
 /// <summary>
 /// Example: object controlled by user input along the path
@@ -21,7 +20,7 @@ public class PathInputDemo : MonoBehaviour
     /// <summary>
     /// Object progress on the path, should be read only.
     /// <summary>
-    public float progress = 0f;
+    public float progress;
 
     //references
     private splineMove move;

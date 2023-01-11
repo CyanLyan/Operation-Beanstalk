@@ -3,10 +3,11 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace SWS
@@ -242,6 +243,6 @@ namespace SWS
     /// UnityEvent with int parameter type.
     /// Used in movement scripts for movementChange event.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class WaypointEvent : UnityEvent<int> { }
 }

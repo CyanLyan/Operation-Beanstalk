@@ -8,26 +8,26 @@ public class FogSettings : ScriptableObject {
     public bool useDistance = true;
 
     public Gradient distanceGradient;
-    public float near = 0;
+    public float near;
     public float far = 100;
 
     [Range(0, 1)]
     public float distanceFogIntensity = 1.0f;
 
-    public bool useDistanceFogOnSky = false;
+    public bool useDistanceFogOnSky;
 
     [Header("Height Fog")]
     [Space]
-    public bool useHeight = false;
+    public bool useHeight;
 
     public Gradient heightGradient;
-    public float low = 0;
+    public float low;
     public float high = 10;
 
     [Range(0, 1)]
     public float heightFogIntensity = 1.0f;
 
-    public bool useHeightFogOnSky = false;
+    public bool useHeightFogOnSky;
 
     [Header("Blending")]
     [Space]

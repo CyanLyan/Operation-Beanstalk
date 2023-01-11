@@ -3,9 +3,9 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
 using System.Collections;
 using SWS;
+using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
@@ -68,7 +68,7 @@ public class EventReceiver : MonoBehaviour
         //get references
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
         navMove myMove = GetComponent<navMove>();
-        GameObject tar = (GameObject)target as GameObject;
+        GameObject tar = (GameObject)target;
 
         //increase agent speed
         myMove.ChangeSpeed(4);
@@ -105,7 +105,7 @@ public class EventReceiver : MonoBehaviour
 
     private IEnumerator ActivateForTimeRoutine(Object target)
     {
-        GameObject tar = (GameObject)target as GameObject;
+        GameObject tar = (GameObject)target;
         tar.SetActive(true);
 
         yield return new WaitForSeconds(6);

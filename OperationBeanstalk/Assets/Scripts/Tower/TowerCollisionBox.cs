@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public class TowerCollisionBox : MonoBehaviour
 
     public void UpdateTowerBoxBounds(float currentTowerHeightInBlocks)
     {
-        this.CurrentTowerHeightInBlocks = currentTowerHeightInBlocks;
+        CurrentTowerHeightInBlocks = currentTowerHeightInBlocks;
         VerticallyAdjustTowerBounds();
     }
 
@@ -26,7 +25,7 @@ public class TowerCollisionBox : MonoBehaviour
 
     public void CalculateTowerBoundsAndSet(List<GameObject> blocksInTower, int nPallets)
     {
-        this.CurrentTowerHeightInBlocks = nPallets;
+        CurrentTowerHeightInBlocks = nPallets;
         Bounds newBounds = CalculateTowerBoundsDimensions(blocksInTower);
         gameObject.GetComponent<BoxCollider>().size = newBounds.size;
         VerticallyAdjustTowerBounds();

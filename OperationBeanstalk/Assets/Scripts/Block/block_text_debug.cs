@@ -1,22 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class block_text_debug : MonoBehaviour
 {
     string myInfo = "5";
-    public bool isBlockTouchingGround { get; set; } = false;
-    public bool blocksTouching { get; set; } = false;
+    public bool isBlockTouchingGround { get; set; }
+    public bool blocksTouching { get; set; }
 
-    public bool isBeingNudged = false;
+    public bool isBeingNudged;
 
     public bool blockIsInTowerZone = true;
 
     public bool userCanDrag = true;
 
-    public bool isBeingPlacedOnTop = false;
+    public bool isBeingPlacedOnTop;
 
-    public bool blockIsBeingDragged = false;
+    public bool blockIsBeingDragged;
     // Start is called before the first frame update
     void Awake()
     {

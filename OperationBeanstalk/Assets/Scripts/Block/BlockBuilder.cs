@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Random = UnityEngine.Random;
+﻿using UnityEngine;
 
 public static class BlockBuilder
 {
@@ -71,7 +69,7 @@ public static class BlockBuilder
         
         var positionOffset = (block.transform.localScale.z + initDetails.blockSettings.BlockSpacing) * palletCreatorIndex; //Distance from midpoints, in units
         block.transform.Translate(new Vector3(positionOffset, 0f, 0f));
-        block = BlockBuilder.randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
+        block = randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
         block.transform.parent = initDetails.TowerCollisionBox.transform;
         block.GetComponent<Block>().Init(initDetails.gameController, 
                                          initDetails.cursorController, 
@@ -111,12 +109,12 @@ public static class BlockBuilder
                                 GameObject blockPrefab = null) : this()
         {
             this.blockSettings = blockSettings;
-            this.initBlockPrefab = blockPrefab;
-            this.cam = cameraController;
+            initBlockPrefab = blockPrefab;
+            cam = cameraController;
             this.gameController = gameController;
             this.nPallets = nPallets;
             this.cursorController = cursorController;
-            this.MidwayBlockMovePoint= midwayBlockMovePoint;
+            MidwayBlockMovePoint= midwayBlockMovePoint;
         }
 
         public void SetTowerCollisionBoxAndDropZone(GameObject box)

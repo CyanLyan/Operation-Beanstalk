@@ -3,8 +3,8 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 namespace SWS
 {
@@ -17,7 +17,7 @@ namespace SWS
         /// <summary>
         /// Rotation value that gets added to the initial particle rotation.
         /// <summary>
-        public float modRotation = 0;
+        public float modRotation;
         //particle system reference
         private ParticleSystem pSys;
 

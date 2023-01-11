@@ -3,8 +3,9 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 namespace SWS
 {
@@ -17,7 +18,7 @@ namespace SWS
         /// <summary>
         /// Waypoint array creating the path.
         /// <summary>
-        public Transform[] waypoints = new Transform[]{};
+        public Transform[] waypoints = {};
 
         /// <summary>
         /// Toggles drawing of linear or curved gizmo lines.
@@ -27,7 +28,7 @@ namespace SWS
         /// <summary>
         /// Toggles drawing of waypoint direction rotation.
         /// <summary>
-        public bool drawDirection = false;
+        public bool drawDirection;
 
         /// <summary>
         /// Gizmo color for path ends.
@@ -137,7 +138,7 @@ namespace SWS
         {
             float handleSize = 1f;
             #if UNITY_EDITOR
-                handleSize = UnityEditor.HandleUtility.GetHandleSize(pos) * 0.4f;
+                handleSize = HandleUtility.GetHandleSize(pos) * 0.4f;
                 handleSize = Mathf.Clamp(handleSize, 0, 1.2f);
             #endif
             return handleSize;

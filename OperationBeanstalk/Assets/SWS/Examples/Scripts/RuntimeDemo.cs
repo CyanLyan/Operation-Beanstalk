@@ -3,10 +3,10 @@
  * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
  * 	otherwise make available to any third party the Service or the Content. */
 
-using UnityEngine;
-using UnityEngine.Events;
+using System;
 using DG.Tweening;
 using SWS;
+using UnityEngine;
 
 /// <summary>
 /// Example: demonstrates the programmatic use at runtime.
@@ -74,11 +74,11 @@ public class RuntimeDemo : MonoBehaviour
         if (!example1.done && GUI.Button(new Rect(30, 10, 100, 20), "Instantiate"))
         {
             //instantiate walker prefab
-            GameObject walker = (GameObject)Instantiate(example1.walkerPrefab, pos, Quaternion.identity);
+            GameObject walker = Instantiate(example1.walkerPrefab, pos, Quaternion.identity);
             walker.name = walkerName;
             
             //instantiate path prefab
-            GameObject path = (GameObject)Instantiate(example1.pathPrefab, pos, Quaternion.identity);
+            GameObject path = Instantiate(example1.pathPrefab, pos, Quaternion.identity);
             
             //start movement on the new path
             walker.GetComponent<splineMove>().SetPath(WaypointManager.Paths[path.name]);
@@ -213,7 +213,7 @@ public class RuntimeDemo : MonoBehaviour
             PathManager path = newPath.AddComponent<PathManager>();
 
             //declare waypoint positions
-            Vector3[] positions = new Vector3[] { new Vector3(-25, 0, -20), new Vector3(-15, 3, -20), new Vector3(-4, 0, -20) };
+            Vector3[] positions = { new Vector3(-25, 0, -20), new Vector3(-15, 3, -20), new Vector3(-4, 0, -20) };
             Transform[] waypoints = new Transform[positions.Length];
 
             //instantiate waypoints
@@ -237,15 +237,15 @@ public class RuntimeDemo : MonoBehaviour
     }
 
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass1
     {
         public GameObject walkerPrefab;
         public GameObject pathPrefab;
-        public bool done = false;
+        public bool done;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass2
     {
         public splineMove moveRef;
@@ -253,35 +253,35 @@ public class RuntimeDemo : MonoBehaviour
         public string pathName2;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass3
     {
         public splineMove moveRef;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass4
     {
         public splineMove moveRef;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass5
     {
         public splineMove moveRef;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass6
     {
         public splineMove moveRef;
         public GameObject target;
-        public bool done = false;
+        public bool done;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class ExampleClass7
     {
-        public bool done = false;
+        public bool done;
     }
 }

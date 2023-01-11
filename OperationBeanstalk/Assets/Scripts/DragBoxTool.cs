@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
+using UnityEngine;
 
 public class ItemHitDetails: MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class DragBoxTool : MonoBehaviour
 {
     public float spring = 50.0f;
     public float damper = 0.2f;
-    public float drag = 0f;
+    public float drag;
     public float angularDrag = 5.0f;
     public float distance = 0.2f;
     public bool attachToCenterOfMass;
@@ -25,7 +25,7 @@ public class DragBoxTool : MonoBehaviour
     public float maxForce;
     public GameObject lineContainer;
 
-    public bool dragBlockByPoint = false;
+    public bool dragBlockByPoint;
 
     public bool isDragging;
     void Update()
@@ -59,10 +59,10 @@ public class DragBoxTool : MonoBehaviour
         if (!springJoint)
         {
             GameObject go = new GameObject("Rigidbody dragger");
-            Rigidbody body = go.AddComponent<Rigidbody>() as Rigidbody;
-            springJoint = go.AddComponent<SpringJoint>() as SpringJoint;
-            springJoint.minDistance = this.minForce;
-            springJoint.maxDistance = this.maxForce;
+            Rigidbody body = go.AddComponent<Rigidbody>();
+            springJoint = go.AddComponent<SpringJoint>();
+            springJoint.minDistance = minForce;
+            springJoint.maxDistance = maxForce;
             body.isKinematic = true;
         }
 
@@ -107,18 +107,19 @@ public class DragBoxTool : MonoBehaviour
             
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
 
-            DrawLine.Draw(this.lineContainer, attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, (Time.deltaTime * 1.5f));
+            DrawLine.Draw(lineContainer, attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, (Time.deltaTime * 1.5f));
             yield return stuffToFollow.distance;
         }
 
         if (springJoint != null && springJoint.connectedBody)
         {
+            //TODO - set these values to config values for block 
             springJoint.connectedBody.drag = 1f;
-            springJoint.connectedBody.angularDrag = 0.05f;
+            springJoint.connectedBody.angularDrag = 2f;
             springJoint.connectedBody = null;
         }
 
-        DrawLine.ResetLine(this.lineContainer);
+        DrawLine.ResetLine(lineContainer);
         destroyAllRigidBodies();
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isBeingDragged = false;
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().isActive = false;
@@ -139,7 +140,7 @@ public class DragBoxTool : MonoBehaviour
         {
             foreach(var obj in objects) 
             {
-                GameObject.Destroy(obj);
+                Destroy(obj);
             }
         }
     }

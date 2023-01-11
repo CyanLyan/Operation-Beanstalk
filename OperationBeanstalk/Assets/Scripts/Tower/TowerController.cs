@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static BlockBuilder;
@@ -18,26 +17,26 @@ public class TowerController : MonoBehaviour
         try
         {
             //Set initdetails to match current tower
-            initDetails.TowerCollisionBox = this.towerCollisionBoxObj;
+            initDetails.TowerCollisionBox = towerCollisionBoxObj;
             initDetails.towerArea = gameObject;
-            initDetails.towerTop = this.towerTop;
+            initDetails.towerTop = towerTop;
             initDetails.nPallets= nPallets;
-            initDetails.TowerDropZone= this.towerDropZone;
-            this.towerCollisionBox = this.towerCollisionBoxObj.GetComponent<TowerCollisionBox>();
+            initDetails.TowerDropZone= towerDropZone;
+            towerCollisionBox = towerCollisionBoxObj.GetComponent<TowerCollisionBox>();
             initDetails.blockSettings.BlockMover.towerDropZone = initDetails.TowerDropZone;
             initDetails.blockSettings.BlockMover.cam = initDetails.cam;
             initDetails.SetTowerCollisionBoxAndDropZone(towerCollisionBoxObj);
-            this.blockPlacingZone.transform.position = initDetails.dropZonePosition;
-            this.BlocksInTower = TowerBuilder.createTower(initDetails);
-            this.towerCollisionBox.CalculateTowerBoundsAndSet(this.BlocksInTower, initDetails.nPallets);
+            blockPlacingZone.transform.position = initDetails.dropZonePosition;
+            BlocksInTower = TowerBuilder.createTower(initDetails);
+            towerCollisionBox.CalculateTowerBoundsAndSet(BlocksInTower, initDetails.nPallets);
 
-            var towerSize = this.towerCollisionBox.GetComponent<BoxCollider>().size;
+            var towerSize = towerCollisionBox.GetComponent<BoxCollider>().size;
             initDetails.MidwayBlockMovePoint.transform.localPosition = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight / 3, 0);
-            this.towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
+            towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
             
             SetBlockPlacingZoneDimensions(initDetails);
 
-            this.ActivateBlockPlacingZone();
+            ActivateBlockPlacingZone();
             return true;
 
         } catch (Exception e)
@@ -55,7 +54,7 @@ public class TowerController : MonoBehaviour
 
     private void SetBlockPlacingZoneDimensions(TowerInitDetails initDetails) 
     {
-        BoxCollider boxCollider = this.blockPlacingZone.GetComponent<BoxCollider>();
+        BoxCollider boxCollider = blockPlacingZone.GetComponent<BoxCollider>();
         var newWidth = initDetails.blockSettings.NBlocksPerPallet;
         //TODO-figure out more convinient calculation for y dim than magic number
         boxCollider.size = new Vector3(newWidth, 0.12f, newWidth);
@@ -63,7 +62,7 @@ public class TowerController : MonoBehaviour
 
     public void UpdateBlockPlacingZonePosition(float newYPosition)
     {
-        BoxCollider box = this.blockPlacingZone.GetComponent<BoxCollider>();
+        BoxCollider box = blockPlacingZone.GetComponent<BoxCollider>();
         box.transform.position = new Vector3(box.transform.position.x, newYPosition, box.transform.position.z);
     }
 

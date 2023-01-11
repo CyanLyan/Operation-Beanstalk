@@ -1,22 +1,21 @@
-﻿using MoreMountains.Feedbacks;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+using MoreMountains.Feedbacks;
 using UnityEngine;
 
 public class Block : MonoBehaviour
 {
     // Block states
-    public bool hasBlockBeenMovedByPlayerRecently { get; set; } = false;
-    public bool isBlockTouchingGround { get; set; } = false;
-    public bool blocksTouching { get; set; } = false;
+    public bool hasBlockBeenMovedByPlayerRecently { get; set; }
+    public bool isBlockTouchingGround { get; set; }
+    public bool blocksTouching { get; set; }
     
-    public bool isBeingNudged = false;
+    public bool isBeingNudged;
 
     public bool blockIsInTowerZone = true;
     
-    public bool isBeingPlacedOnTop = false;
+    public bool isBeingPlacedOnTop;
 
-    private bool _isInDropPosition = false;
+    private bool _isInDropPosition;
     public bool isInDropPosition
     {
         get { return _isInDropPosition; }
@@ -24,19 +23,19 @@ public class Block : MonoBehaviour
     }
 
     
-    public bool isBeingDragged = false;
+    public bool isBeingDragged;
 
-    public bool isActive = false;
+    public bool isActive;
 
-    public bool userCanDrag = false;
+    public bool userCanDrag;
     public bool userCanNudge = true;
-    public static int nBlocksOnGround { get; set; } = 0;
+    public static int nBlocksOnGround { get; set; }
 
     public BoxCollider towerZone;
 
     public float nudgeForce = 500f;
 
-    public float timeSpentNotTouching = 0f;
+    public float timeSpentNotTouching;
 
     private float startTime;
     private Vector3 mouseStartPos = new Vector3(0,0,0);
@@ -57,7 +56,7 @@ public class Block : MonoBehaviour
 
     private CursorController cursorInstance;
 
-    private Rigidbody rigidbody;
+    private Rigidbody rigidbody { get; set; }
     
     private float timeOnMouseDownNeededForDrag;
     public BlockMover blockMover;
@@ -68,6 +67,8 @@ public class Block : MonoBehaviour
     public MMFeedbacks NudgeEffect;
     private Camera _camera;
 
+    public GameObject BlockMoverObj;
+
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
                  CursorController cursorInstance,
@@ -76,15 +77,15 @@ public class Block : MonoBehaviour
                  float timeOnMouseDownNeededForNudge)
     {
         this.gameController = gameController;
-        this.blockStartPos = gameObject.transform.position;
-        this.originalRotation = transform.rotation;
-        this.outline = this.GetComponent<Outline>();
+        blockStartPos = gameObject.transform.position;
+        originalRotation = transform.rotation;
+        outline = GetComponent<Outline>();
         this.cursorInstance = cursorInstance;
-        this.rigidbody = this.GetComponent<Rigidbody>();
-        this.gameObject.name = blockObjTag + GetInstanceID().ToString();
-        this.isInDropPosition = false;
-        this.mouseDriftPermittedToDrag = mouseDriftNeededForNudge;
-        this.timeOnMouseDownNeededForDrag = timeOnMouseDownNeededForNudge;
+        rigidbody = GetComponent<Rigidbody>();
+        gameObject.name = blockObjTag + GetInstanceID();
+        isInDropPosition = false;
+        mouseDriftPermittedToDrag = mouseDriftNeededForNudge;
+        timeOnMouseDownNeededForDrag = timeOnMouseDownNeededForNudge;
 
         this.blockMover = blockMover;
         _camera = Camera.main;
@@ -94,12 +95,12 @@ public class Block : MonoBehaviour
     void Update()
     {
         checkOutlineState();
-        if(this.isActive)
+        if(isActive)
         {
-            if (!this.userCanDrag && !this.isBeingPlacedOnTop & Input.GetMouseButton(0) && (this.mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
+            if (!userCanDrag && !isBeingPlacedOnTop & Input.GetMouseButton(0) && (mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
             {
-                this.userCanNudge= false;
-                this.userCanDrag = true;
+                userCanNudge= false;
+                userCanDrag = true;
             }
         }
     }
@@ -109,13 +110,13 @@ public class Block : MonoBehaviour
     public void HandleBlockTouchingNothing()
     {
         // Only move block to tower top IF player moved it
-        if(this.hasBlockBeenMovedByPlayerRecently)
+        if(hasBlockBeenMovedByPlayerRecently && !isBeingPlacedOnTop)
         {
             //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
-            this.blockMover.PlaceBlockInDroppingPosition(this);
+            blockMover.PlaceBlockInDroppingPosition(this);
         } else
         {
-            this.gameController.tower.TowerIsCollapsing();
+            gameController.tower.TowerIsCollapsing();
         }
     }
 
@@ -128,9 +129,9 @@ public class Block : MonoBehaviour
             isBlockTouchingGround = true;
             nBlocksOnGround++;
         }
-        else if (other.gameObject.tag == this.blockObjTag)
+        else if (other.gameObject.tag == blockObjTag)
         {
-            if (this.isBeingPlacedOnTop)
+            if (isBeingPlacedOnTop)
             {
             } else {
                 blocksTouching = true;
@@ -149,7 +150,7 @@ public class Block : MonoBehaviour
             isBlockTouchingGround = false;
             nBlocksOnGround--;
         }
-        else if (other.gameObject.tag == this.blockObjTag)
+        else if (other.gameObject.tag == blockObjTag)
         {
             blocksTouching = false;
         }
@@ -159,81 +160,81 @@ public class Block : MonoBehaviour
     private void OnMouseDown()
     {
         // After pulling block out, if block is in drop position, give user control again
-        this.mouseStartPos = Input.mousePosition;
-        if (this.isInDropPosition && this.userCanDrag) 
+        mouseStartPos = Input.mousePosition;
+        if (isInDropPosition && userCanDrag) 
         {
-            this.rigidbody.useGravity = true;
+            rigidbody.useGravity = true;
         }
-        this.startTime = Time.time;
-        if(!this.isBeingNudged && !this.isBeingDragged) this.isActive = false;
+        startTime = Time.time;
+        if(!isBeingNudged && !isBeingDragged) isActive = false;
     }
 
     private void OnMouseOver()
     {
-        if (dragBox.isDragging && !this.isBeingDragged)
+        if (dragBox.isDragging && !isBeingDragged)
         {
-            this.isActive = false;
+            isActive = false;
         } else
         {
-            this.isActive = true;
+            isActive = true;
         }
         if (Input.GetMouseButtonUp(0))
         {
             OnLeftMouseUp();
-            if (this.mouseStartPos == new Vector3(0, 0, 0)) this.mouseStartPos = Input.mousePosition;
+            if (mouseStartPos == new Vector3(0, 0, 0)) mouseStartPos = Input.mousePosition;
         } 
     }
 
     private void OnMouseExit()
     {
-        if (!this.isBeingNudged && !this.isBeingDragged && !this.isInDropPosition)
+        if (!isBeingNudged && !isBeingDragged && !isInDropPosition)
         {
-            this.isActive = false;
-            this.startTime = 0;
+            isActive = false;
+            startTime = 0;
         }
     }
 
     //Only use this to wait for user to release mouse after block is removed, so that they don't glitch the game out
     private void OnMouseUp()
     {
-        this.userCanDrag= false;
-        if(this.isInDropPosition)
+        userCanDrag= false;
+        if(isInDropPosition)
         {
-            this.userCanDrag = true;
+            userCanDrag = true;
         }
-        if(!this.isInDropPosition) this.userCanNudge= true;
+        if(!isInDropPosition) userCanNudge= true;
     }
 
     //Checks if the mouse has moved enough for the user to be able to drag it.
     public bool mouseMovedEnoughToDrag()
     {
-        Vector3 changedMousePos = Input.mousePosition - this.mouseStartPos;
-        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > this.mouseDriftPermittedToDrag) || 
-            (Mathf.Abs(changedMousePos.y) > this.mouseDriftPermittedToDrag) || 
-            (Mathf.Abs(changedMousePos.z) > this.mouseDriftPermittedToDrag);
+        Vector3 changedMousePos = Input.mousePosition - mouseStartPos;
+        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > mouseDriftPermittedToDrag) || 
+            (Mathf.Abs(changedMousePos.y) > mouseDriftPermittedToDrag) || 
+            (Mathf.Abs(changedMousePos.z) > mouseDriftPermittedToDrag);
         return mouseMovedEnough;
     }
 
     public bool enoughTimeHasEllapsed()
     {
-        if (this.startTime == 0) return false;
+        if (startTime == 0) return false;
         var endTime = Time.time;
-        var timeDiff = Mathf.Abs(endTime - this.startTime);
-        return timeDiff > this.timeOnMouseDownNeededForDrag;
+        var timeDiff = Mathf.Abs(endTime - startTime);
+        return timeDiff > timeOnMouseDownNeededForDrag;
     }
 
     //Event for when user releases mouse
     private void OnLeftMouseUp()
     {
-        if (this.userCanNudge && (this.startTime != 0) && (!mouseMovedEnoughToDrag()))
+        if (userCanNudge && (startTime != 0) && (!mouseMovedEnoughToDrag()))
         {
-            this.NudgeBlock();
-        } else if (this.userCanDrag && this.isBeingPlacedOnTop) {
+            NudgeBlock();
+        } else if (userCanDrag && isBeingPlacedOnTop) {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
 
-        this.mouseStartPos = new Vector3(0, 0, 0);
-        if(this.isActive) this.isActive = false;
+        mouseStartPos = new Vector3(0, 0, 0);
+        if(isActive) isActive = false;
     }
 
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
@@ -247,12 +248,12 @@ public class Block : MonoBehaviour
             GameObject blockHit = hit.collider.gameObject;
             if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
             {
-                this.isBeingNudged= true;
-                this.NudgeEffect.PlayFeedbacks();
-                this.NudgeBlockByFaceEdge(this.GetHitFace(hit));
-                this.cursorInstance.DoCursorNudgeEffect(hit);
-                this.cursorInstance.playSoundAfterDelay(this.soundEmitter);
-                this.isBeingNudged = false;
+                isBeingNudged= true;
+                NudgeEffect.PlayFeedbacks();
+                NudgeBlockByFaceEdge(GetHitFace(hit));
+                cursorInstance.DoCursorNudgeEffect(hit);
+                cursorInstance.playSoundAfterDelay(soundEmitter);
+                isBeingNudged = false;
             }
         }
     }
@@ -268,7 +269,7 @@ public class Block : MonoBehaviour
         {
             // Code to go left here
 
-            DrawLine.Draw(this.lineRenderer, traj, ray.GetPoint(10f), Color.cyan, (Time.deltaTime * 3f));
+            DrawLine.Draw(lineRenderer, traj, ray.GetPoint(10f), Color.cyan, (Time.deltaTime * 3f));
             timePassed += Time.deltaTime;
 
             yield return null;
@@ -321,28 +322,28 @@ public class Block : MonoBehaviour
         switch (faceHit)
         {
             case MCFace.South:
-                this.pushBlock(new Vector3(-1, 0, 0));
+                pushBlock(new Vector3(-1, 0, 0));
                 break;
 
             case MCFace.North:
-                this.pushBlock(new Vector3(1, 0, 0));
+                pushBlock(new Vector3(1, 0, 0));
 
                 break;
 
             case MCFace.Up:
-                this.pushBlock(new Vector3(0, -1, 0));
+                pushBlock(new Vector3(0, -1, 0));
                 break;
 
             case MCFace.Down:
-                this.pushBlock(new Vector3(1, 1, 1));
+                pushBlock(new Vector3(1, 1, 1));
                 break;
 
             case MCFace.West:
-                this.pushBlock(new Vector3(0, 0, 1));
+                pushBlock(new Vector3(0, 0, 1));
                 break;
 
             case MCFace.East:
-                this.pushBlock(new Vector3(0, 0, -1));
+                pushBlock(new Vector3(0, 0, -1));
                 break;
 
         }
@@ -351,32 +352,32 @@ public class Block : MonoBehaviour
     //Adds force to rigidbody so that block is moved in a direction, like it's being shoved.
     private void pushBlock(Vector3 velocity)
     {
-        this.hasBlockBeenMovedByPlayerRecently = true;
-        var adjustedVelocity = new Vector3(velocity.x * this.nudgeForce, velocity.y, velocity.z * this.nudgeForce);
-        this.rigidbody.velocity = adjustedVelocity * this.nudgeForce;
+        hasBlockBeenMovedByPlayerRecently = true;
+        var adjustedVelocity = new Vector3(velocity.x * nudgeForce, velocity.y, velocity.z * nudgeForce);
+        rigidbody.velocity = adjustedVelocity * nudgeForce;
     }
 
 
     //TODO: Find more uses for other outline colours
     private void checkOutlineState()
     {
-        if (this.isActive)
+        if (isActive)
         {
-            if((this.isBeingDragged || this.isBeingNudged))
+            if((isBeingDragged || isBeingNudged))
             {
-                this.outline.updateOutlineState(CollisionColourState.green);
+                outline.updateOutlineState(CollisionColourState.green);
             } else 
             {
                 //TODO - figure out why this is sometimes null, it's possibly being deleted after activation
-                if (this.outline != null) this.outline.updateOutlineState(CollisionColourState.blue);
+                if (outline != null) outline.updateOutlineState(CollisionColourState.blue);
             }
         } else
         {
-            if (this.outline == null)
+            if (outline == null)
             {
                 //Debug.Log(this);
             }
-            if (this.outline != null) this.outline.updateOutlineState(CollisionColourState.none);
+            if (outline != null) outline.updateOutlineState(CollisionColourState.none);
         }
     }
 
