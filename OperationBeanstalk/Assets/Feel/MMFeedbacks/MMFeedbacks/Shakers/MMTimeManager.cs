@@ -138,7 +138,7 @@ namespace MoreMountains.Feedbacks
 		protected virtual void Update()
 		{
 			// if we have things in our stack, we handle them, otherwise we reset to the normal time scale
-			while (_timeScaleProperties.Count > 0)
+			while (_timeScaleProperties != null && _timeScaleProperties.Count > 0)
 			{
 				_currentProperty = _timeScaleProperties.Peek();
 				TargetTimeScale = _currentProperty.TimeScale;

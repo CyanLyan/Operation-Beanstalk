@@ -50,7 +50,7 @@ public class GameController : MonoBehaviour
         GameObject newGO = new GameObject("myTextGO");
         newGO.transform.SetParent(textUI.transform);
 
-        
+        this.tower.numBlocksCollapsed = 0;
         turnIndex = 0;
         GameObject textObj = new GameObject("p1 text");
         cursorInstance = PlayerList[0].cursorController;
@@ -93,6 +93,7 @@ public class GameController : MonoBehaviour
 
     public void FinishTurn()
     {
+        this.tower.numBlocksCollapsed = 0;
         turnIndex++;
         if(turnIndex%3 == 0)
         {
@@ -101,6 +102,23 @@ public class GameController : MonoBehaviour
             var newYPosition = currentGameSettings.NPalletsHigh * currentGameSettings.BlockSettings.BlockHeight;
             tower.UpdateBlockPlacingZonePosition(newYPosition);
         }
+    }
+
+    public bool CheckIfTowerIsCollapsing()
+    {
+        var isTowerCollapsing = this.tower.TowerIsCollapsing();
+        if (!isTowerCollapsing) return false;
+        Debug.Log("AAA TOWER IS COLLAPSING");
+        return true;
+        
+    }
+    
+    public void GameFinish()
+    {
+        Debug.Log("Game Over");
+        //Remove control from all players
+        //Find out who has the highest score
+        //Announce winning player
     }
 
     public void SaveTower()

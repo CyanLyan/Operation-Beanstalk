@@ -110,13 +110,13 @@ public class Block : MonoBehaviour
     public void HandleBlockTouchingNothing()
     {
         // Only move block to tower top IF player moved it
-        if(hasBlockBeenMovedByPlayerRecently && !isBeingPlacedOnTop)
+        var playerHasRemovedBlock = hasBlockBeenMovedByPlayerRecently && !isBeingPlacedOnTop;
+        
+        //If the player removed this block OR they accidentally knocked off this block
+        if(playerHasRemovedBlock || (!gameController.CheckIfTowerIsCollapsing()))
         {
             //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
             blockMover.PlaceBlockInDroppingPosition(this);
-        } else
-        {
-            gameController.tower.TowerIsCollapsing();
         }
     }
 

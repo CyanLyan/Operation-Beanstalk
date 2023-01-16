@@ -46,7 +46,7 @@ public class BlockMover : MonoBehaviour
      * */
     public void FinishDroppingBlockInPlace()
     {
-        CleanUpPathAssets();
+        Destroy(block.gameObject.GetComponent<splineMove>());
         block.isBeingPlacedOnTop = false;
         block.blocksTouching = true;
         block.isInDropPosition = false;
@@ -103,11 +103,6 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(MoveBlockToDropRotation());
     }
 
-    private void CleanUpPathAssets()
-    {
-        Destroy(block.gameObject.GetComponent<splineMove>());
-    }
-    
     private void SetBlockStatsForDropPosition()
     {
         block.isInDropPosition = true;

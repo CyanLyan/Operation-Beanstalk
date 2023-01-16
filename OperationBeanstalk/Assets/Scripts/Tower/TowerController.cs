@@ -12,6 +12,8 @@ public class TowerController : MonoBehaviour
     public GameObject blockPlacingZone;
     public float TowerSetUpWaitTime = 0.5f;
     public List<GameObject> BlocksInTower= new List<GameObject>();
+    public float numBlocksCollapsed { get; set; }
+    
     public bool GenerateTower(TowerInitDetails initDetails, int nPallets)
     {
         try
@@ -66,8 +68,9 @@ public class TowerController : MonoBehaviour
         box.transform.position = new Vector3(box.transform.position.x, newYPosition, box.transform.position.z);
     }
 
-    public void TowerIsCollapsing()
+    public bool TowerIsCollapsing()
     {
-        Debug.Log("AAA TOWER IS COLLAPSING");
+        numBlocksCollapsed++;
+        return (numBlocksCollapsed > 2);
     }
 }
