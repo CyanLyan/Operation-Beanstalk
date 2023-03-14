@@ -308,7 +308,7 @@ public class Outline : MonoBehaviour {
     }
   }
 
-    public void updateOutlineState(Block.CollisionColourState state)
+    public void updateOutlineState(CollisionColourState state)
     {
         
         switch (state)

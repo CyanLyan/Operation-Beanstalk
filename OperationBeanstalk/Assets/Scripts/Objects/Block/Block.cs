@@ -2,70 +2,22 @@
 using MoreMountains.Feedbacks;
 using UnityEngine;
 
-public class Block : MonoBehaviour
+public class Block : Object
 {
     // Block states
     public bool hasBlockBeenMovedByPlayerRecently { get; set; }
     public bool isBlockTouchingGround { get; set; }
     public bool blocksTouching { get; set; }
     
-    public bool isBeingNudged;
-
     public bool blockIsInTowerZone = true;
     
-    public bool isBeingPlacedOnTop;
-
     private bool _isInDropPosition;
-    public bool isInDropPosition
-    {
-        get { return _isInDropPosition; }
-        set { _isInDropPosition = value; }
-    }
-
-    
-    public bool isBeingDragged;
-
-    public bool isActive;
-
-    public bool userCanDrag;
-    public bool userCanNudge = true;
     public static int nBlocksOnGround { get; set; }
 
-    public BoxCollider towerZone;
-
-    public float nudgeForce = 500f;
-
-    public float timeSpentNotTouching;
-
-    private float startTime;
-    private Vector3 mouseStartPos = new Vector3(0,0,0);
-
     public Vector3 blockStartPos;
-    private float mouseDriftPermittedToDrag;
-
-    public Quaternion originalRotation;
-
-    private string blockObjTag = "Block";
-
-    private Outline outline;
-
-    public GameController gameController;
-    public GameObject lineRenderer;
-
-    public AudioSource soundEmitter;
-
-    private CursorController cursorInstance;
-
-    private Rigidbody rigidbody { get; set; }
     
-    private float timeOnMouseDownNeededForDrag;
     public BlockMover blockMover;
     public bool hasBeenPlaced;
-
-    public DragBoxTool dragBox;
-
-    public MMFeedbacks NudgeEffect;
-    private Camera _camera;
 
     public GameObject BlockMoverObj;
 
@@ -82,7 +34,7 @@ public class Block : MonoBehaviour
         outline = GetComponent<Outline>();
         this.cursorInstance = cursorInstance;
         rigidbody = GetComponent<Rigidbody>();
-        gameObject.name = blockObjTag + GetInstanceID();
+        gameObject.name = tag + GetInstanceID();
         isInDropPosition = false;
         mouseDriftPermittedToDrag = mouseDriftNeededForNudge;
         timeOnMouseDownNeededForDrag = timeOnMouseDownNeededForNudge;
@@ -129,7 +81,7 @@ public class Block : MonoBehaviour
             isBlockTouchingGround = true;
             nBlocksOnGround++;
         }
-        else if (other.gameObject.tag == blockObjTag)
+        else if (other.gameObject.tag == tag)
         {
             if (isBeingPlacedOnTop)
             {
