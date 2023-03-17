@@ -13,7 +13,7 @@ public class TowerBuilder: MonoBehaviour {
 
         Quaternion spawnRotation;
         Vector3 spawnPosition;
-        float height = initDetails.nPallets * initDetails.blockSettings.BlockHeight;
+        float height = (initDetails.nPallets) * initDetails.blockSettings.BlockHeight;
         
         float i;
 
@@ -29,7 +29,7 @@ public class TowerBuilder: MonoBehaviour {
             palletStack.AddRange(pallet);
         }
 
-        Camera.main.GetComponent<CameraController>().maxHeight = height * 1.4f;
+        Camera.main.GetComponent<CameraController>().maxHeight = height * 0.6f;
 
         initDetails.towerArea.transform.position = new Vector3(0, height / 2);
         initDetails.towerArea.transform.localScale = new Vector3(3f - 0.1f, height, 3f - 0.1f);

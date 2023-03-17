@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
@@ -37,6 +38,8 @@ public class CameraController : MonoBehaviour
     private GameObject mainView;
     private GameObject dropView;
 
+    private Key currentUserInput;
+
     //Primarily controls where camera is, based on which keys are pressed by a user every frame.
     private void Awake()
     {
@@ -50,39 +53,51 @@ public class CameraController : MonoBehaviour
 
     public void Update()
     {
-        if (CorrectKeyDetected() && userCanMoveCamera)
-        {
-            HandleUserCameraInput();
-        }
+        
+        HandleUserCameraInput(currentUserInput);
     }
 
-    private bool CorrectKeyDetected()
+    public void SetCameraInputKey(Key keyCode)
     {
-        return (Input.anyKey && !(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)));
+        Debug.Log(keyCode);
+        if(keyCode == Key.None)
+        {
+            currentUserInput = 0;
+        }
+        currentUserInput = keyCode;
     }
 
     //Moves MainView - which the camera follows while we're removing blocks.
     //It also moves the x & z axis of the block drop camera view - DropView.
     //Having these two views be separate objects allows us to snap between the views easily
-    public void HandleUserCameraInput()
+    public void HandleUserCameraInput(Key keyCode)
     {
-        //var camera = (this.cameraIsInDropView) ? this.mainView.transform : this.
-        //var target = this.CurrentCameraFocus.transform.position;
-        if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        switch (keyCode)
         {
-            mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        {
-            mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, maxHeight, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
-        }
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, 0, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
+            case Key.Q:
+
+            case Key.LeftArrow:
+            case Key.A:
+                mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, 1, 0), speed * Time.deltaTime);
+                break;
+
+            case Key.RightArrow:
+            case Key.E:
+            case Key.D:
+                mainView.transform.RotateAround(CurrentCameraFocus.transform.position, new Vector3(0, -1, 0), speed * Time.deltaTime);
+                break;
+            case Key.W:
+            case Key.UpArrow:
+                mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, maxHeight, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);
+                break;
+        
+            case Key.DownArrow:
+            case Key.S:
+                mainView.transform.position = Vector3.Lerp(mainView.transform.position, new Vector3(mainView.transform.position.x, 0, mainView.transform.position.z), Time.deltaTime * yMoveSpeed);        
+                break;
+
+            default:
+                break;
         }
 
         transform.position = mainView.transform.position;

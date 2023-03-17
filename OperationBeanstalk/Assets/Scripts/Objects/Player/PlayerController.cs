@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
-public class CursorController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     public GameObject particleSystemInstance;
@@ -9,7 +11,6 @@ public class CursorController : MonoBehaviour
     public List<GameObject> CursorParts;
     public GameObject defaultCursorObj;
     private Camera viewCamera;
-    private RaycastHit hit;
     public Quaternion cursorRotation;
 
     public GameObject laserBeam;
@@ -25,6 +26,63 @@ public class CursorController : MonoBehaviour
     public float distanceAwayFromSurface = 3f;
     public bool InGunDisplayLoop { get; private set; }
 
+    private InputAction playerDrag;
+    private InputAction playerMoveCamera;
+    private InputAction playerNudge;
+
+    public Color color { get; set; }
+    public string playerName { get; set; }
+    public int score { get; set; }
+
+    public PlayerInputActions playerControls;
+    public CameraController cameraController;
+    public PlayerController(Color color, string name, int score = 0)
+    {
+        this.color = color;
+        playerName = name;
+        this.score = score;
+    }
+    private void OnEnable()
+    {
+        playerControls = new PlayerInputActions();
+        playerControls.Enable();
+        playerNudge = playerControls.Player.Fire;
+        playerControls.Player.CameraRotate.started += CameraRotate;
+        playerControls.Player.CameraRotate.canceled += StopCamera;
+    }
+
+    private void OnDisable()
+    {
+        playerControls.Disable();
+        playerNudge.Disable();
+    }
+
+    private void Fire(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+    }
+
+    private void Move(InputAction.CallbackContext context)
+    {
+        CameraRotate(context);
+    }
+
+    private void CameraRotate(InputAction.CallbackContext context)
+    {
+        Debug.Log(context);
+        //if (userCanMoveCamera)
+        //{
+        cameraController.SetCameraInputKey(((KeyControl)context.control).keyCode);
+        //}
+    }
+
+    private void StopCamera(InputAction.CallbackContext context)
+    {
+        Debug.Log("STOP");
+        Debug.Log(context);
+        cameraController.SetCameraInputKey(0);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,13 +92,14 @@ public class CursorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gunActive = Input.GetMouseButton(1);
-        gunPrefab.SetActive(gunActive);
-        UpdateCursorBasedOnMouse();
-        if (gunActive)
-        {
-            PointGunAtBlock();
-        }
+        //Todo - move to fire function?
+        //gunActive = Input.GetMouseButton(1);
+        //gunPrefab.SetActive(gunActive);
+        //UpdateCursorBasedOnMouse();
+        //if (gunActive)
+        //{
+        //    PointGunAtBlock();
+        //}
     }
 
     public void DoCursorNudgeEffect(RaycastHit hit)

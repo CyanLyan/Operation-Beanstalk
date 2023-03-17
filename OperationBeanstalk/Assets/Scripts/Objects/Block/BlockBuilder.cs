@@ -72,7 +72,6 @@ public static class BlockBuilder
         block = randomizeBlockDimensions(block, initDetails.blockSettings.RandomnessIndex);
         block.transform.parent = initDetails.TowerCollisionBox.transform;
         block.GetComponent<Block>().Init(initDetails.gameController, 
-                                         initDetails.cursorController, 
                                          initDetails.blockSettings.BlockMover, 
                                          initDetails.blockSettings.DistanceNeededForMouseDrag, 
                                          initDetails.blockSettings.TimeOnMouseDownNeededForDrag);
@@ -94,8 +93,6 @@ public static class BlockBuilder
         public int nPallets { get; set; }
 
         public Vector3 dropZonePosition { get; set; }
-
-        public CursorController cursorController { get; set; }
         public GameObject TowerDropZone { get; internal set; }
 
         public GameObject MidwayBlockMovePoint { get; set; }
@@ -103,7 +100,6 @@ public static class BlockBuilder
         public TowerInitDetails(BlockSettings blockSettings, 
                                 CameraController cameraController, 
                                 GameController gameController, 
-                                CursorController cursorController,
                                 GameObject midwayBlockMovePoint,
                                 int nPallets = 0, 
                                 GameObject blockPrefab = null) : this()
@@ -113,7 +109,6 @@ public static class BlockBuilder
             cam = cameraController;
             this.gameController = gameController;
             this.nPallets = nPallets;
-            this.cursorController = cursorController;
             MidwayBlockMovePoint= midwayBlockMovePoint;
         }
 
@@ -122,7 +117,7 @@ public static class BlockBuilder
             TowerCollisionBox = box;
             var height = nPallets * blockSettings.BlockHeight;
             dropZonePosition = new Vector3(TowerCollisionBox.transform.position.x, height);
-            towerTop.transform.position = new Vector3(TowerCollisionBox.transform.position.x, height + 1f);
+            towerTop.transform.position = new Vector3(TowerCollisionBox.transform.position.x, height);
             dropZonePosition = new Vector3(TowerCollisionBox.transform.position.x, height);
             TowerCollisionBox.transform.position = new Vector3(TowerCollisionBox.transform.position.x, height / 2f, TowerCollisionBox.transform.position.z);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using MoreMountains.Feedbacks;
 using UnityEngine;
 
-public class Object : MonoBehaviour
+public class InteractiveGameObject : MonoBehaviour
 {
     // Object states
     public bool hasObjectBeenMovedByPlayerRecently { get; set; }
@@ -15,13 +15,6 @@ public class Object : MonoBehaviour
     public bool ObjectIsInTowerZone = true;
     
     public bool isBeingPlacedOnTop;
-
-    private bool _isInDropPosition;
-    public bool isInDropPosition
-    {
-        get { return _isInDropPosition; }
-        set { _isInDropPosition = value; }
-    }
         
     public bool isBeingDragged;
 
@@ -52,7 +45,7 @@ public class Object : MonoBehaviour
 
     public AudioSource soundEmitter;
 
-    public CursorController cursorInstance;
+    public PlayerController cursorInstance;
 
     public Rigidbody rigidbody { get; set; }
     

@@ -198,7 +198,7 @@ public class RuntimeDemo : MonoBehaviour
     {
         //get receiving script
         EventReceiver receiver = example6.moveRef.GetComponent<EventReceiver>();
-        receiver.ActivateForTime(example6.target);
+        //receiver.ActivateForTime(example6.target);
     }
 
 

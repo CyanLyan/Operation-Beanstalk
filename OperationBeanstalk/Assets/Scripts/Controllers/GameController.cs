@@ -6,7 +6,7 @@ using static BlockBuilder;
 public class GameController : MonoBehaviour
 {
 
-    public List<Player> PlayerList = new List<Player>();
+    public List<PlayerController> PlayerList = new List<PlayerController>();
 
     public TowerController tower;
 
@@ -22,13 +22,13 @@ public class GameController : MonoBehaviour
 
     public GameObject PlayerPrefab;
 
-    public Player CurrentPlayer;
+    public PlayerController CurrentPlayer;
 
     public TurnState CurrentTurnState;
 
     public Canvas textUI;
 
-    private CursorController cursorInstance;
+    private PlayerController cursorInstance;
     
     public GameObject cursorControllerObj;
 
@@ -53,21 +53,19 @@ public class GameController : MonoBehaviour
         this.tower.numBlocksCollapsed = 0;
         turnIndex = 0;
         GameObject textObj = new GameObject("p1 text");
-        cursorInstance = PlayerList[0].cursorController;
         CurrentTurnState = TurnState.GetBlock;
         var cameraController = camerControllerObj.GetComponent<CameraController>();
         cameraController.cameraViewPivotSpeed = currentGameSettings.cameraViewPivotSpeed;
         TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
                                                         this, 
-                                                        cursorInstance, 
                                                         midwayBlockMovePoint);
         details.blockSettings.BlockMover = details.blockSettings.BlockMoverObj.GetComponent<BlockMover>();
         details.blockSettings.BlockMover.gameController = this;
         var gameReady = tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
     }
 
-    GameObject addPlayer(Player p, GameObject t)
+    GameObject addPlayer(PlayerController p, GameObject t)
     {
         Text myText = t.AddComponent<Text>();
         myText.text += p.playerName + ": " + p.score + "\n";
@@ -77,8 +75,8 @@ public class GameController : MonoBehaviour
     
     void test2PlayerGame()
     {
-        PlayerList.Add(new Player(Color.red, "james", 0, cursorControllerObj));
-        PlayerList.Add(new Player(Color.cyan, "cyan", 0, cursorControllerObj));
+        PlayerList.Add(new PlayerController(Color.red, "james"));
+        PlayerList.Add(new PlayerController(Color.cyan, "cyan"));
     }
 
     public void GoToTurnState(TurnState state)

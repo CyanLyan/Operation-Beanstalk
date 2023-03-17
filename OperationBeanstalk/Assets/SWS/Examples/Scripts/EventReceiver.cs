@@ -68,12 +68,12 @@ public class EventReceiver : MonoBehaviour
         //get references
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
         navMove myMove = GetComponent<navMove>();
-        GameObject tar = (GameObject)target;
+        //GameObject tar = (GameObject)target;
 
         //increase agent speed
         myMove.ChangeSpeed(4);
         //set new destination of the navmesh agent
-        agent.SetDestination(tar.transform.position);
+        //agent.SetDestination(tar.transform.position);
 
         //wait until the path has been calculated
         while (agent.pathPending)
@@ -105,10 +105,10 @@ public class EventReceiver : MonoBehaviour
 
     private IEnumerator ActivateForTimeRoutine(Object target)
     {
-        GameObject tar = (GameObject)target;
-        tar.SetActive(true);
+        //GameObject tar = (GameObject)target;
+        //tar.SetActive(true);
 
         yield return new WaitForSeconds(6);
-        tar.SetActive(false);
+        //tar.SetActive(false);
     }
 }

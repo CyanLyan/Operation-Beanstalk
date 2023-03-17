@@ -2,7 +2,7 @@
 using MoreMountains.Feedbacks;
 using UnityEngine;
 
-public class Block : Object
+public class Block : InteractiveGameObject
 {
     // Block states
     public bool hasBlockBeenMovedByPlayerRecently { get; set; }
@@ -11,7 +11,7 @@ public class Block : Object
     
     public bool blockIsInTowerZone = true;
     
-    private bool _isInDropPosition;
+    public bool isInDropPosition;
     public static int nBlocksOnGround { get; set; }
 
     public Vector3 blockStartPos;
@@ -21,9 +21,12 @@ public class Block : Object
 
     public GameObject BlockMoverObj;
 
+    public float nudgeForce = 500f;
+
+    public DropBlock dropBlock;
+
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
-                 CursorController cursorInstance,
                  BlockMover blockMover,
                  float mouseDriftNeededForNudge,
                  float timeOnMouseDownNeededForNudge)
@@ -32,7 +35,6 @@ public class Block : Object
         blockStartPos = gameObject.transform.position;
         originalRotation = transform.rotation;
         outline = GetComponent<Outline>();
-        this.cursorInstance = cursorInstance;
         rigidbody = GetComponent<Rigidbody>();
         gameObject.name = tag + GetInstanceID();
         isInDropPosition = false;
@@ -102,7 +104,7 @@ public class Block : Object
             isBlockTouchingGround = false;
             nBlocksOnGround--;
         }
-        else if (other.gameObject.tag == blockObjTag)
+        else if (other.gameObject.tag == tag)
         {
             blocksTouching = false;
         }
@@ -155,6 +157,16 @@ public class Block : Object
             userCanDrag = true;
         }
         if(!isInDropPosition) userCanNudge= true;
+    }
+
+
+    //TODO: Replace magic number with actual block dimensions, which can be gotten through the game controller
+    private void OnMouseDrag()
+    {
+        if(isBeingPlacedOnTop)
+        {
+            dropBlock.SetDropBlockPlacement(gameObject.transform.position, 1.5f);
+        }
     }
 
     //Checks if the mouse has moved enough for the user to be able to drag it.

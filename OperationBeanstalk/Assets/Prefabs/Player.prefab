@@ -46,3 +46,11 @@ MonoBehaviour:
   cursorControllerObj: {fileID: 9126710567471718061, guid: 457c0a03d51b1f74c8b418aeac937fab,
     type: 3}
   cursorController: {fileID: 0}
+  playerControls:
+    m_Name: Player Controls
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 04ace42f-88e3-4790-9bf5-2af331b4a42f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
