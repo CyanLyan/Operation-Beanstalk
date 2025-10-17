@@ -71,8 +71,11 @@ public class BlockMover : MonoBehaviour
     {
         point1 = CopyTransform(point1,block.transform);
         point2 = CopyTransform(point2,midwayBlockMovePoint.transform);
-        point2.transform.position = block.transform.TransformPoint(towerDropZone.transform.position);
-        point3 = CopyTransform(point3,towerDropZone.transform);
+        //point2.transform.position = block.transform.TransformPoint(towerDropZone.transform.position);
+        var towerTop = GameObject.FindGameObjectWithTag("DropZone"); 
+        //var newDropPosition = new Trans(towerTop.transform.position.x, towerTop.transform.position.y - 100, towerTop.transform.position.z);
+        //towerTop.transform.position = new Vector3(towerTop.transform.position.x, towerTop.transform.position.y - 100, towerTop.transform.position.z);
+        point3 = CopyTransform(point3, towerTop.transform);
         pathManager.Create(new []{point1.transform, point2.transform, point3.transform});
         return pathManager;
     }
@@ -92,7 +95,12 @@ public class BlockMover : MonoBehaviour
         block.userCanNudge = false;
         gameController.GoToTurnState(TurnState.PlaceBlock);
         StartCoroutine(cam.pivotToDropView());
-        midwayBlockMovePoint.transform.position = Vector3.zero;   
+        //var closestTransform = GetClosestDropViewToBlock(block);
+        //var cameraTransform = GameObject.Find("MainView").gameObject.transform.position;
+        Vector3 direction = (block.transform.position - towerDropZone.transform.position).normalized;
+        Vector3 safePosition = block.transform.position + direction * 3.0f;
+               
+        midwayBlockMovePoint.transform.position = new Vector3(safePosition.x, midwayBlockMovePoint.transform.position.y, safePosition.z);   
         pathManager = CreatePath();
         CreateSplineMove(pathManager);
         StartCoroutine(MoveBlockToDropRotation());
@@ -117,5 +125,23 @@ public class BlockMover : MonoBehaviour
             yield return 0;
         }
         //this.doneRotating = true;
+    }
+
+    public Transform GetClosestDropViewToBlock(Block block)
+    {
+        var dropViews = GameObject.FindGameObjectsWithTag("DropView");
+        var maxDistance = -Mathf.Infinity;
+        Transform closestTransform = null;
+        foreach(GameObject dropView in dropViews)
+        {
+            var distance = dropView.transform.position - block.transform.position;
+            float sqrDistance = distance.sqrMagnitude;
+            if (maxDistance < sqrDistance)
+            {
+                maxDistance = sqrDistance;
+                closestTransform = dropView.transform;
+            }
+        }
+        return closestTransform;
     }
 }

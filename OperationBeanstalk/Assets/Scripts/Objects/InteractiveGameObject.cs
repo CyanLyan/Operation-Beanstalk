@@ -27,7 +27,7 @@ public class InteractiveGameObject : MonoBehaviour
     public float timeSpentNotTouching;
 
     public float startTime;
-    public Vector3 mouseStartPos = new Vector3(0,0,0);
+    public Vector2 mouseStartPos = new Vector3(0,0,0);
 
     public Vector3 startPos;
     public float mouseDriftPermittedToDrag;

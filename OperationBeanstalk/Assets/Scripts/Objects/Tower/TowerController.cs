@@ -33,6 +33,7 @@ public class TowerController : MonoBehaviour
             towerCollisionBox.CalculateTowerBoundsAndSet(BlocksInTower, initDetails.nPallets);
 
             var towerSize = towerCollisionBox.GetComponent<BoxCollider>().size;
+            towerTop.transform.position = new Vector3(towerTop.transform.position.x, towerSize.y, towerTop.transform.position.z); 
             initDetails.MidwayBlockMovePoint.transform.localPosition = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight / 3, 0);
             towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
             

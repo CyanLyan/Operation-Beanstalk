@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Block : InteractiveGameObject
 {
@@ -113,7 +114,7 @@ public class Block : InteractiveGameObject
     private void OnMouseDown()
     {
         // After pulling block out, if block is in drop position, give user control again
-        mouseStartPos = Input.mousePosition;
+        mouseStartPos = Mouse.current.position.ReadValue();
         if (isInDropPosition && userCanDrag) 
         {
             rigidbody.useGravity = true;
@@ -133,8 +134,8 @@ public class Block : InteractiveGameObject
         }
         if (Input.GetMouseButtonUp(0))
         {
-            OnLeftMouseUp();
-            if (mouseStartPos == new Vector3(0, 0, 0)) mouseStartPos = Input.mousePosition;
+            //OnLeftMouseUp();
+            if (mouseStartPos == new Vector2(0, 0)) mouseStartPos = Mouse.current.position.ReadValue();
         } 
     }
 
@@ -171,10 +172,10 @@ public class Block : InteractiveGameObject
     //Checks if the mouse has moved enough for the user to be able to drag it.
     public bool mouseMovedEnoughToDrag()
     {
-        Vector3 changedMousePos = Input.mousePosition - mouseStartPos;
+        Vector2 changedMousePos = Mouse.current.position.ReadValue() - mouseStartPos;
         bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > mouseDriftPermittedToDrag) || 
             (Mathf.Abs(changedMousePos.y) > mouseDriftPermittedToDrag) || 
-            (Mathf.Abs(changedMousePos.z) > mouseDriftPermittedToDrag);
+            (Mathf.Abs(changedMousePos.x) > mouseDriftPermittedToDrag);
         return mouseMovedEnough;
     }
 
@@ -187,25 +188,25 @@ public class Block : InteractiveGameObject
     }
 
     //Event for when user releases mouse
-    private void OnLeftMouseUp()
+    public void OnNudgeBlockInput()
     {
-        if (userCanNudge && (startTime != 0) && (!mouseMovedEnoughToDrag()))
+        if (userCanNudge && (!mouseMovedEnoughToDrag()))
         {
             NudgeBlock();
         } else if (userCanDrag && isBeingPlacedOnTop) {
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
 
-        mouseStartPos = new Vector3(0, 0, 0);
+        mouseStartPos = new Vector2(0, 0);
         if(isActive) isActive = false;
     }
 
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
-    private void NudgeBlock()
+    public void NudgeBlock()
     {
         RaycastHit hit;
-        Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit);
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(_camera.ScreenPointToRay(Mouse.current.position.ReadValue()), out hit);
+        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             GameObject blockHit = hit.collider.gameObject;
@@ -214,8 +215,6 @@ public class Block : InteractiveGameObject
                 isBeingNudged= true;
                 NudgeEffect.PlayFeedbacks();
                 NudgeBlockByFaceEdge(GetHitFace(hit));
-                cursorInstance.DoCursorNudgeEffect(hit);
-                cursorInstance.playSoundAfterDelay(soundEmitter);
                 isBeingNudged = false;
             }
         }

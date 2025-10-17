@@ -1,10 +1,4 @@
-﻿#if ENABLE_INPUT_SYSTEM && ENABLE_INPUT_SYSTEM_PACKAGE
-#define USE_INPUT_SYSTEM
-    using UnityEngine.InputSystem;
-    using UnityEngine.InputSystem.Controls;
-#endif
-
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace UnityTemplateProjects
@@ -117,8 +111,6 @@ namespace UnityTemplateProjects
         {
             Vector3 translation = Vector3.zero;
 
-#if ENABLE_LEGACY_INPUT_MANAGER
-
             // Exit Sample  
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -164,9 +156,7 @@ namespace UnityTemplateProjects
             boost += Input.mouseScrollDelta.y * 0.2f;
             translation *= Mathf.Pow(2.0f, boost);
 
-#elif USE_INPUT_SYSTEM 
             // TODO: make the new input system work
-#endif
 
             m_TargetCameraState.Translate(translation);
 

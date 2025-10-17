@@ -108,7 +108,7 @@ public class DragBoxTool : MonoBehaviour
         while (Input.GetMouseButton(0) && stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().userCanDrag)
         {
             Vector3 attatchedItem = stuffToFollow.itemHitRigidBody.transform.TransformPoint(springJoint.connectedAnchor);
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             
             springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
 

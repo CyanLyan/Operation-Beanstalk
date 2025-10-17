@@ -26,10 +26,6 @@ public class PlayerController : MonoBehaviour
     public float distanceAwayFromSurface = 3f;
     public bool InGunDisplayLoop { get; private set; }
 
-    private InputAction playerDrag;
-    private InputAction playerMoveCamera;
-    private InputAction playerNudge;
-
     public Color color { get; set; }
     public string playerName { get; set; }
     public int score { get; set; }
@@ -46,40 +42,95 @@ public class PlayerController : MonoBehaviour
     {
         playerControls = new PlayerInputActions();
         playerControls.Enable();
-        playerNudge = playerControls.Player.Fire;
-        playerControls.Player.CameraRotate.started += CameraRotate;
-        playerControls.Player.CameraRotate.canceled += StopCamera;
+        playerControls.Player.Fire.started += Fire;
+
+        playerControls.Player.CameraRotateLeft.started += CameraRotateLeft;
+        playerControls.Player.CameraRotateRight.started += CameraRotateRight;
+        
+        playerControls.Player.CameraRotateLeft.canceled += StopCamera;
+        playerControls.Player.CameraRotateRight.canceled += StopCamera;
+
+        playerControls.Player.CameraZoomIn.started += CameraZoomIn;
+        playerControls.Player.CameraZoomOut.started += CameraZoomOut;
+
+        playerControls.Player.CameraZoomIn.canceled += StopCamera;
+        playerControls.Player.CameraZoomOut.canceled += StopCamera;
     }
 
     private void OnDisable()
     {
         playerControls.Disable();
-        playerNudge.Disable();
+    }
+
+    //public void Click(InputAction.CallbackContext context)
+    //{
+    //    if(context.performed)
+    //    {
+    //        Cursor.lockState = CursorLockMode.Locked;
+    //    } else if (context.canceled)
+    //    {
+    //        Cursor.visible = true;
+    //        Cursor.lockState = CursorLockMode.None;
+    //    }
+    //}
+
+
+    public Block getBlockHitByUserAction()
+    {
+        Ray ray = viewCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            Block blockHit = hit.collider.GetComponent<Block>();
+            // TODO - move this once we start to do drag effect
+            DoCursorNudgeEffect(hit);
+            return blockHit;
+        }
+        return null;
     }
 
     private void Fire(InputAction.CallbackContext context)
     {
-        //Debug.Log(context);
+        var blockHit = getBlockHitByUserAction();
+        blockHit.NudgeBlock();
+        playSoundAfterDelay(blockHit.soundEmitter);
     }
 
-    private void Move(InputAction.CallbackContext context)
+    private void CameraRotateLeft(InputAction.CallbackContext context)
     {
-        CameraRotate(context);
+        if (context.started)
+        {
+            cameraController.SetCameraInputKey(Key.LeftArrow);
+        }
     }
 
-    private void CameraRotate(InputAction.CallbackContext context)
+    private void CameraRotateRight(InputAction.CallbackContext context)
     {
-        //Debug.Log(context);
-        //if (userCanMoveCamera)
-        //{
-        cameraController.SetCameraInputKey(((KeyControl)context.control).keyCode);
-        //}
+        if (context.started)
+        {
+            cameraController.SetCameraInputKey(Key.RightArrow);
+        }
     }
+
+    private void CameraZoomIn(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            cameraController.SetCameraInputKey(Key.UpArrow);
+        }
+    }
+
+    private void CameraZoomOut(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            cameraController.SetCameraInputKey(Key.DownArrow);
+        }
+    }
+
 
     private void StopCamera(InputAction.CallbackContext context)
     {
-        //Debug.Log("STOP");
-        //Debug.Log(context);
         cameraController.SetCameraInputKey(0);
     }
 
@@ -88,20 +139,6 @@ public class PlayerController : MonoBehaviour
     {
         viewCamera = Camera.main;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //Todo - move to fire function?
-        //gunActive = Input.GetMouseButton(1);
-        //gunPrefab.SetActive(gunActive);
-        //UpdateCursorBasedOnMouse();
-        //if (gunActive)
-        //{
-        //    PointGunAtBlock();
-        //}
-    }
-
     public void DoCursorNudgeEffect(RaycastHit hit)
     {
         var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
@@ -129,7 +166,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateCursorBasedOnMouse()
     {
-        Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = viewCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
@@ -151,7 +188,7 @@ public class PlayerController : MonoBehaviour
 
     private void PointGunAtBlock()
     {
-        Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = viewCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
