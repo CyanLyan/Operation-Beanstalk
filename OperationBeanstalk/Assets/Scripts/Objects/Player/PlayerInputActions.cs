@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
+using static UnityEngine.InputSystem.InputAction;
 
 public class @PlayerInputActions : IInputActionCollection, IDisposable
 {
@@ -1160,22 +1161,22 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     }
     public interface IPlayerActions
     {
-        void OnMove(InputAction.CallbackContext context);
-        void OnLook(InputAction.CallbackContext context);
-        void OnFire(InputAction.CallbackContext context);
-        void OnCameraRotate(InputAction.CallbackContext context);
+        void OnMove(CallbackContext context);
+        void OnLook(CallbackContext context);
+        void OnFire(CallbackContext context);
+        void OnCameraRotate(CallbackContext context);
     }
     public interface IUIActions
     {
-        void OnNavigate(InputAction.CallbackContext context);
-        void OnSubmit(InputAction.CallbackContext context);
-        void OnCancel(InputAction.CallbackContext context);
-        void OnPoint(InputAction.CallbackContext context);
-        void OnClick(InputAction.CallbackContext context);
-        void OnScrollWheel(InputAction.CallbackContext context);
-        void OnMiddleClick(InputAction.CallbackContext context);
-        void OnRightClick(InputAction.CallbackContext context);
-        void OnTrackedDevicePosition(InputAction.CallbackContext context);
-        void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+        void OnNavigate(CallbackContext context);
+        void OnSubmit(CallbackContext context);
+        void OnCancel(CallbackContext context);
+        void OnPoint(CallbackContext context);
+        void OnClick(CallbackContext context);
+        void OnScrollWheel(CallbackContext context);
+        void OnMiddleClick(CallbackContext context);
+        void OnRightClick(CallbackContext context);
+        void OnTrackedDevicePosition(CallbackContext context);
+        void OnTrackedDeviceOrientation(CallbackContext context);
     }
 }

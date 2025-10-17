@@ -1,8 +1,6 @@
 using System;
 using UnityEngine.Events;
-using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.XR;
 
 ////TODO: allow multiple device paths
 
@@ -404,15 +402,12 @@ namespace UnityEngine.InputSystem
         [SerializeField] private int m_CaptureMemoryMaxSize = 10 * 1024 * 1024;
 
         [SerializeField]
-        [InputControl(layout = "InputDevice")]
         private string m_DevicePath;
 
         [SerializeField]
-        [InputControl(layout = "Button")]
         private string m_RecordButtonPath;
 
         [SerializeField]
-        [InputControl(layout = "Button")]
         private string m_PlayButtonPath;
 
         [SerializeField] private ChangeEvent m_ChangeEvent;

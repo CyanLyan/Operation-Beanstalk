@@ -110,12 +110,12 @@ public class BlockMover : MonoBehaviour
 
     public IEnumerator MoveBlockToDropRotation()
     {
-        this.doneRotating = false;
+        //this.doneRotating = false;
         while (Quaternion.Angle(block.transform.rotation, block.originalRotation) > 1f)
         {
             block.gameObject.transform.rotation = Quaternion.RotateTowards(block.transform.rotation, block.originalRotation, 100f);
             yield return 0;
         }
-        this.doneRotating = true;
+        //this.doneRotating = true;
     }
 }
