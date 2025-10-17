@@ -77,11 +77,11 @@ public class DropBlock : InteractiveGameObject
 
     void OnCollisionExit(Collision other)
     {
-        Debug.Log(other);
+        //Debug.Log(other);
     }
 
     void OnCollisionEnter(Collision other)
     {
-        Debug.Log(other);
+        //Debug.Log(other);
     }
 }

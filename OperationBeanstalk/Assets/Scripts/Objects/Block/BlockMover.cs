@@ -18,11 +18,6 @@ public class BlockMover : MonoBehaviour
 
     public PathManager pathManager;
 
-    private bool doneRotating;
-    private bool donePositioning;
-    private bool moveToPoint1;
-    private bool moveToPoint2;
-
     public float moveDistancePerStep;
 
     private UnityAction movementEnd;

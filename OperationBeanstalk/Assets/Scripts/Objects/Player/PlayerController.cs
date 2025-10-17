@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour
 
     private void Fire(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        //Debug.Log(context);
     }
 
     private void Move(InputAction.CallbackContext context)
@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotate(InputAction.CallbackContext context)
     {
-        Debug.Log(context);
+        //Debug.Log(context);
         //if (userCanMoveCamera)
         //{
         cameraController.SetCameraInputKey(((KeyControl)context.control).keyCode);
@@ -78,8 +78,8 @@ public class PlayerController : MonoBehaviour
 
     private void StopCamera(InputAction.CallbackContext context)
     {
-        Debug.Log("STOP");
-        Debug.Log(context);
+        //Debug.Log("STOP");
+        //Debug.Log(context);
         cameraController.SetCameraInputKey(0);
     }
 

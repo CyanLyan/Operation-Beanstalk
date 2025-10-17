@@ -7,10 +7,6 @@ public class TowerBuilder: MonoBehaviour {
     {
         List<GameObject> palletStack = new List<GameObject>();
 
-        float x;
-        float y;
-        float z;
-
         Quaternion spawnRotation;
         Vector3 spawnPosition;
         float height = (initDetails.nPallets) * initDetails.blockSettings.BlockHeight;
@@ -21,7 +17,7 @@ public class TowerBuilder: MonoBehaviour {
         GameObject block = SetNonUniqueBlockSettings(initDetails.blockSettings.BlockPrefab, initDetails.blockSettings);
         for (i = 0; i < initDetails.nPallets; i++)
         {
-            y = (i == 0) ? 0.5f : (i * initDetails.blockSettings.BlockHeight * 1.1f);
+            var y = (i == 0) ? 0.5f : (i * initDetails.blockSettings.BlockHeight * 1.1f);
             spawnRotation = getSpawnRotation(i);
             spawnPosition = new Vector3(0, y, 0);
 

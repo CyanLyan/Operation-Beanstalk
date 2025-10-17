@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.15908219, g: 0.53927946, b: 0.18432873, a: 1}
+  m_IndirectSpecularColor: {r: 0.15857005, g: 0.53804004, b: 0.18244578, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1655,6 +1655,10 @@ PrefabInstance:
       propertyPath: Active
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1676615639, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
+      propertyPath: BoundRenderer
+      value: 
+      objectReference: {fileID: 1101568646}
     - target: {fileID: 1676615640, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
       propertyPath: Active
       value: 1
@@ -2020,6 +2024,14 @@ PrefabInstance:
       propertyPath: Feedbacks.Array.data[4]
       value: 
       objectReference: {fileID: 891967416}
+    - target: {fileID: 1676615639, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
+      propertyPath: Active
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1676615639, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
+      propertyPath: BoundRenderer
+      value: 
+      objectReference: {fileID: 891967414}
     - target: {fileID: 1676615640, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
       propertyPath: Active
       value: 1
@@ -4013,7 +4025,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1444554649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4135,6 +4147,10 @@ PrefabInstance:
       propertyPath: Active
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1676615639, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
+      propertyPath: BoundRenderer
+      value: 
+      objectReference: {fileID: 1459499837}
     - target: {fileID: 1676615640, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
       propertyPath: Active
       value: 1
@@ -5108,6 +5124,10 @@ PrefabInstance:
       propertyPath: Active
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1676615639, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
+      propertyPath: BoundRenderer
+      value: 
+      objectReference: {fileID: 1586678112}
     - target: {fileID: 1676615640, guid: 770ea8f73496d5a479e8e2557b96f2e1, type: 3}
       propertyPath: Active
       value: 1

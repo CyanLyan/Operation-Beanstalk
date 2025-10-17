@@ -59,7 +59,7 @@ public class CameraController : MonoBehaviour
 
     public void SetCameraInputKey(Key keyCode)
     {
-        Debug.Log(keyCode);
+        //Debug.Log(keyCode);
         if(keyCode == Key.None)
         {
             currentUserInput = 0;
