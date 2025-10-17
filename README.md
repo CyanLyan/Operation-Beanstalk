@@ -1,6 +1,14 @@
 # Operation-Beanstalk
 
-This is a basic clone of Jenga done in Unity v202.3.17f. The original intention was to create an expanded game with multiple towers and a real-estate/monopoly metagame aspect, but for the moment we're just trying to nail down the basics. Back in 2022 we had a basic gameplay loop working, where blocks could be clicked/dragged, placed on top, before moving more blocks. 
+This is a basic clone of Jenga done in Unity v202.3.17f. The original intention was to create an expanded game with multiple towers and a real-estate/monopoly metagame aspect, but for the moment we're just trying to nail down the basics. Back in 2022 we had a basic gameplay loop working, where blocks could be clicked/dragged, placed on top, before moving more blocks. I started this project because I used to really enjoy the NaturalMotion mobile version of Jenga, and was sad when that game was no longer available. 
+
+# Controls/How to Play ##
+Q/E or Left/Right Arrows: Pivot the camera around the tower
+W/S or UP/Down Arrows: Move the camera up or down relative to the tower
+Left Click (Tap): Nudges a block. The block will move based on which side of clicked
+Left Click (Hold): Drags a block on the x/z axis. 
+
+Each turn will have a player remove one block from the tower, then place it on top. The game continues until the tower collapses. 
 
 ## TODO LIST ##
 -Fix block mover to move to MidwayBlockMovePoint THEN the dropview selected, using LERP
