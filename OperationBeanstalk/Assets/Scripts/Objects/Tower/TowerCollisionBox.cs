@@ -4,6 +4,7 @@ using UnityEngine;
 public class TowerCollisionBox : MonoBehaviour
 {
     public float CurrentTowerHeightInBlocks;
+    public bool GameReady = false;
     // Update is called once per frame
 
     public void UpdateTowerBoxBounds(float currentTowerHeightInBlocks)
@@ -41,11 +42,14 @@ public class TowerCollisionBox : MonoBehaviour
 
     public void OnTriggerExit(Collider other)
     {
-        if(other is MeshCollider)
-        {
-            if (other.gameObject.tag == "Block") {
-                other.gameObject.GetComponent<Block>().HandleBlockTouchingNothing();
+        //if (GameReady)
+        //{
+            if(other is MeshCollider)
+            {
+                if (other.gameObject.tag == "Block") {
+                    other.gameObject.GetComponent<Block>().HandleBlockTouchingNothing();
+                }
             }
-        }
+        //}
     }
 }

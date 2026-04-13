@@ -39,6 +39,10 @@ public class GameController : MonoBehaviour
 
     public GameObject midwayBlockMovePoint;
 
+    public bool blockIsBeingPlacedOnTop;
+
+    public bool gameReady = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,7 +66,15 @@ public class GameController : MonoBehaviour
                                                         midwayBlockMovePoint);
         details.blockSettings.BlockMover = details.blockSettings.BlockMoverObj.GetComponent<BlockMover>();
         details.blockSettings.BlockMover.gameController = this;
-        var gameReady = tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
+
+        TowerController.OnTowerReady += TowerReady;
+
+        tower.GenerateTower(details, currentGameSettings.NPalletsHigh);
+    }
+
+    void TowerReady()
+    {
+        gameReady = true;
     }
 
     GameObject addPlayer(PlayerController p, GameObject t)

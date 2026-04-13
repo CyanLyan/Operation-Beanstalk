@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.Interactions;
 
 public class PlayerController : MonoBehaviour
 {
@@ -41,8 +42,9 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         playerControls = new PlayerInputActions();
+        playerControls.Player.Fire.canceled += FireCanceled;
+        playerControls.Player.Fire.performed += FirePerformed;
         playerControls.Enable();
-        playerControls.Player.Fire.started += Fire;
 
         playerControls.Player.CameraRotateLeft.started += CameraRotateLeft;
         playerControls.Player.CameraRotateRight.started += CameraRotateRight;
@@ -89,11 +91,27 @@ public class PlayerController : MonoBehaviour
         return null;
     }
 
-    private void Fire(InputAction.CallbackContext context)
+    private void FirePerformed(InputAction.CallbackContext context)
     {
-        var blockHit = getBlockHitByUserAction();
-        blockHit.NudgeBlock();
-        playSoundAfterDelay(blockHit.soundEmitter);
+        if(context.interaction is TapInteraction)
+        {
+            var blockHit = getBlockHitByUserAction();
+            blockHit.NudgeBlock();
+            playSoundAfterDelay(blockHit.soundEmitter);
+        } else if (context.interaction is HoldInteraction)
+        {
+            var blockHit = getBlockHitByUserAction();
+            blockHit.DragBlock();
+        }
+    }
+
+    private void FireCanceled(InputAction.CallbackContext context)
+    {
+        if(context.interaction is HoldInteraction)
+        {
+            var blockHit = getBlockHitByUserAction();
+            blockHit.DragBlock();
+        }
     }
 
     private void CameraRotateLeft(InputAction.CallbackContext context)
@@ -139,6 +157,8 @@ public class PlayerController : MonoBehaviour
     {
         viewCamera = Camera.main;
     }
+
+    //TODO - move this elsewhere, shouldn't be in PlayerController
     public void DoCursorNudgeEffect(RaycastHit hit)
     {
         var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);

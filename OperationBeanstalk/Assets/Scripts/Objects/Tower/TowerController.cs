@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static BlockBuilder;
+using static TowerInitDetails;
 
 public class TowerController : MonoBehaviour
 {   
@@ -11,13 +13,15 @@ public class TowerController : MonoBehaviour
     public GameObject towerDropZone;
     public GameObject blockPlacingZone;
     public float TowerSetUpWaitTime = 0.5f;
-    public List<GameObject> BlocksInTower= new List<GameObject>();
+    public List<GameObject> BlocksInTower = new List<GameObject>();
     public float numBlocksCollapsed { get; set; }
+
+    public static event Action OnTowerReady;
     
-    public bool GenerateTower(TowerInitDetails initDetails, int nPallets)
+    public void GenerateTower(TowerInitDetails initDetails, int nPallets)
     {
-        try
-        {
+        //try
+        //{
             //Set initdetails to match current tower
             initDetails.TowerCollisionBox = towerCollisionBoxObj;
             initDetails.towerArea = gameObject;
@@ -35,18 +39,27 @@ public class TowerController : MonoBehaviour
             var towerSize = towerCollisionBox.GetComponent<BoxCollider>().size;
             towerTop.transform.position = new Vector3(towerTop.transform.position.x, towerSize.y, towerTop.transform.position.z); 
             initDetails.MidwayBlockMovePoint.transform.localPosition = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight / 3, 0);
-            towerDropZone.transform.position = new Vector3(0, Camera.main.GetComponent<CameraController>().maxHeight - 1, 0);
+            //towerDropZone.transform.position = new Vector3(0, (Camera.main.GetComponent<CameraController>().maxHeight - 1), 0);
             
             SetBlockPlacingZoneDimensions(initDetails);
+            StartCoroutine(WaitForTowerToSettle());
+            //ActivateBlockPlacingZone();
+            //return true;
 
-            ActivateBlockPlacingZone();
-            return true;
+        //} catch (Exception e)
+        //{
+        //    Debug.LogError(e.Message);
+        //    return false;
+        //}
+    }
 
-        } catch (Exception e)
-        {
-            Debug.LogError(e.Message);
-            return false;
-        }
+    private IEnumerator WaitForTowerToSettle()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        Debug.Log("Tower settled");
+        ActivateBlockPlacingZone();
+        OnTowerReady?.Invoke();
     }
 
     public void ActivateBlockPlacingZone()

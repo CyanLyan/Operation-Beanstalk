@@ -33,63 +33,66 @@ public class DragBoxTool : MonoBehaviour
     {
         // Make sure the user pressed the mouse down
         //TODO - modify to call from PlayerController
-        //if (!Input.GetMouseButton(0))
-        //    return;
+        if(isDragging)
+        {
+            //if (!Input.GetMouseButton(0))
+            //    return;
 
-        ItemHitDetails itemHit = gameObject.AddComponent<ItemHitDetails>();
-        RaycastHit hit;
-        // We need to actually hit an object
+            ItemHitDetails itemHit = gameObject.AddComponent<ItemHitDetails>();
+            RaycastHit hit;
+            // We need to actually hit an object
         
 
-        //TODO - move to input handler
-        //if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))
-        //{
-        //    return;
-        //}
-        //itemHit.distance = hit.distance;
+            //TODO - move to input handler
+            //if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))
+            //{
+            //    return;
+            //}
+            //itemHit.distance = hit.distance;
 
-        //var hitBlock = hit.collider.gameObject.GetComponent<Block>();
+            //var hitBlock = hit.collider.gameObject.GetComponent<Block>();
 
-        //if (!hitBlock || hitBlock.hasBeenPlaced || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
-        //itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
-        //itemHit.block = hitBlock;
-        //mainCamera = FindCamera();
+            //if (!hitBlock || hitBlock.hasBeenPlaced || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
+            //itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
+            //itemHit.block = hitBlock;
+            //mainCamera = FindCamera();
 
-        //// We need to hit a rigidbody that is not kinematic
-        //if (!hit.rigidbody || hit.rigidbody.isKinematic)
-        //{
-        //    return;
-        //}
+            //// We need to hit a rigidbody that is not kinematic
+            //if (!hit.rigidbody || hit.rigidbody.isKinematic)
+            //{
+            //    return;
+            //}
 
-        //if (!springJoint)
-        //{
-        //    GameObject go = new GameObject("Rigidbody dragger");
-        //    Rigidbody body = go.AddComponent<Rigidbody>();
-        //    springJoint = go.AddComponent<SpringJoint>();
-        //    springJoint.minDistance = minForce;
-        //    springJoint.maxDistance = maxForce;
-        //    body.isKinematic = true;
-        //}
+            //if (!springJoint)
+            //{
+            //    GameObject go = new GameObject("Rigidbody dragger");
+            //    Rigidbody body = go.AddComponent<Rigidbody>();
+            //    springJoint = go.AddComponent<SpringJoint>();
+            //    springJoint.minDistance = minForce;
+            //    springJoint.maxDistance = maxForce;
+            //    body.isKinematic = true;
+            //}
 
-        //springJoint.transform.position = hit.point;
-        //if (attachToCenterOfMass)
-        //{
-        //    Vector3 anchor = transform.TransformDirection(hit.rigidbody.centerOfMass) + hit.rigidbody.transform.position;
-        //    anchor = springJoint.transform.InverseTransformPoint(anchor);
-        //    springJoint.anchor = anchor;
-        //}
-        //else
-        //{
+            //springJoint.transform.position = hit.point;
+            //if (attachToCenterOfMass)
+            //{
+            //    Vector3 anchor = transform.TransformDirection(hit.rigidbody.centerOfMass) + hit.rigidbody.transform.position;
+            //    anchor = springJoint.transform.InverseTransformPoint(anchor);
+            //    springJoint.anchor = anchor;
+            //}
+            //else
+            //{
 
-        //    springJoint.autoConfigureConnectedAnchor = true;
-        //}
+            //    springJoint.autoConfigureConnectedAnchor = true;
+            //}
 
-        //springJoint.spring = spring;
-        //springJoint.damper = damper;
-        //springJoint.maxDistance = distance;
-        //springJoint.connectedBody = hit.rigidbody;
+            //springJoint.spring = spring;
+            //springJoint.damper = damper;
+            //springJoint.maxDistance = distance;
+            //springJoint.connectedBody = hit.rigidbody;
 
-        //hitBlock.isBeingDragged = true;
+            //hitBlock.isBeingDragged = true;
+        }
         //isDragging = true;
         //StartCoroutine("DragTheBox", itemHit);
     }
@@ -148,5 +151,10 @@ public class DragBoxTool : MonoBehaviour
                 Destroy(obj);
             }
         }
+    }
+
+    public void StartDragging()
+    {
+        isDragging = true;
     }
 }

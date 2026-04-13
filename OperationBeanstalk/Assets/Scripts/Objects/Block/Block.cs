@@ -17,6 +17,7 @@ public class Block : InteractiveGameObject
     public Vector3 blockStartPos;
     
     public BlockMover blockMover;
+    public bool isBeingPlaced;
     public bool hasBeenPlaced;
 
     public GameObject BlockMoverObj;
@@ -25,13 +26,15 @@ public class Block : InteractiveGameObject
 
     public DropBlock dropBlock;
 
+    private GameController GameController;
+
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
                  BlockMover blockMover,
                  float mouseDriftNeededForNudge,
                  float timeOnMouseDownNeededForNudge)
     {
-        this.gameController = gameController;
+        this.GameController = gameController;
         blockStartPos = gameObject.transform.position;
         originalRotation = transform.rotation;
         outline = GetComponent<Outline>();
@@ -63,14 +66,18 @@ public class Block : InteractiveGameObject
     // This is only triggered when a block has been properly removed
     public void HandleBlockTouchingNothing()
     {
-        // Only move block to tower top IF player moved it
-        var playerHasRemovedBlock = hasBlockBeenMovedByPlayerRecently && !isBeingPlacedOnTop;
-        
-        //If the player removed this block OR they accidentally knocked off this block
-        if(playerHasRemovedBlock || (!gameController.CheckIfTowerIsCollapsing()))
+        if ((GameController.gameReady))
         {
-            //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
-            blockMover.PlaceBlockInDroppingPosition(this);
+            // Only move block to tower top IF player moved it
+            var playerHasRemovedBlock = hasBlockBeenMovedByPlayerRecently && !isBeingPlacedOnTop;
+        
+            //If the player removed this block OR they accidentally knocked off this block
+            if(playerHasRemovedBlock || (!this.GameController.CheckIfTowerIsCollapsing()))
+            {
+                //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
+                isBeingPlacedOnTop = true;
+                blockMover.PlaceBlockInDroppingPosition(this);
+            }
         }
     }
 
@@ -115,7 +122,7 @@ public class Block : InteractiveGameObject
     {
         // After pulling block out, if block is in drop position, give user control again
         mouseStartPos = Mouse.current.position.ReadValue();
-        if (isInDropPosition && userCanDrag) 
+        if (isInDropPosition && userCanDrag && isBeingDragged) 
         {
             rigidbody.useGravity = true;
         }
@@ -204,19 +211,30 @@ public class Block : InteractiveGameObject
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
     public void NudgeBlock()
     {
-        RaycastHit hit;
-        Physics.Raycast(_camera.ScreenPointToRay(Mouse.current.position.ReadValue()), out hit);
-        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        if (GameController.gameReady)
         {
-            GameObject blockHit = hit.collider.gameObject;
-            if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
+            RaycastHit hit;
+            Physics.Raycast(_camera.ScreenPointToRay(Mouse.current.position.ReadValue()), out hit);
+            Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
-                isBeingNudged= true;
-                NudgeEffect.PlayFeedbacks();
-                NudgeBlockByFaceEdge(GetHitFace(hit));
-                isBeingNudged = false;
+                GameObject blockHit = hit.collider.gameObject;
+                if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
+                {
+                    isBeingNudged = true;
+                    NudgeEffect.PlayFeedbacks();
+                    NudgeBlockByFaceEdge(GetHitFace(hit));
+                    isBeingNudged = false;
+                }
             }
+        }
+    }
+
+    public void DragBlock()
+    {
+        if (GameController.gameReady)
+        {
+
         }
     }
 

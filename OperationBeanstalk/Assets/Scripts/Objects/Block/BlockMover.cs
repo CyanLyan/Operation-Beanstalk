@@ -22,6 +22,8 @@ public class BlockMover : MonoBehaviour
 
     private UnityAction movementEnd;
 
+    private bool blockIsBeingPlaced;
+
     private Block block;
     private GameObject point1;
     private GameObject point2;
@@ -86,8 +88,11 @@ public class BlockMover : MonoBehaviour
         EmptyObj.transform.rotation = transform.rotation;
         return EmptyObj;
     }
+
     public void PlaceBlockInDroppingPosition(Block block)
     {
+        if(blockIsBeingPlaced) { return; }
+        blockIsBeingPlaced = true;
         this.block = block;
         block.userCanDrag = false;
         block.isBeingPlacedOnTop = true;
@@ -100,7 +105,7 @@ public class BlockMover : MonoBehaviour
         Vector3 direction = (block.transform.position - towerDropZone.transform.position).normalized;
         Vector3 safePosition = block.transform.position + direction * 3.0f;
                
-        midwayBlockMovePoint.transform.position = new Vector3(safePosition.x, midwayBlockMovePoint.transform.position.y, safePosition.z);   
+        midwayBlockMovePoint.transform.position = new Vector3(safePosition.x, midwayBlockMovePoint.transform.position.y, safePosition.z*2);   
         pathManager = CreatePath();
         CreateSplineMove(pathManager);
         StartCoroutine(MoveBlockToDropRotation());
