@@ -55,7 +55,7 @@ public class TowerController : MonoBehaviour
 
     private IEnumerator WaitForTowerToSettle()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
 
         Debug.Log("Tower settled");
         ActivateBlockPlacingZone();

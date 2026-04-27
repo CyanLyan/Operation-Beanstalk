@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     public Vector3 initCameraPosition;
     public Quaternion initCameraRotation;
 
-    public float yMoveSpeed = 1f;
+    public float yMoveSpeed = 17f;
     public float maxHeight;
     private float speed = 100f;
 
@@ -196,5 +196,14 @@ public class CameraController : MonoBehaviour
     public void rotateCameraBetween2Points(float duration, Quaternion newRotation)
     {
         mainView.transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, duration);
+    }
+
+    public void adjustDropViewHeight(float maxViewHeight)
+    {
+        List<GameObject> dropViewCameras = GetDropViews();
+        foreach (var dropView in dropViewCameras)
+        {
+            dropView.transform.position = new Vector3(dropView.transform.position.x, maxViewHeight, dropView.transform.position.z);
+        }
     }
 }

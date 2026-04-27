@@ -12,11 +12,15 @@ public class Block : InteractiveGameObject
     public bool blockIsInTowerZone = true;
     
     public bool isInDropPosition;
+
+    public bool userIsPlacingBlockOnTop { get; set; }
     public static int nBlocksOnGround { get; set; }
 
     public Vector3 blockStartPos;
     
     public BlockMover blockMover;
+    public DragBoxTool2 dragBoxTool;
+
     public bool isBeingPlaced;
     public bool hasBeenPlaced;
 
@@ -27,6 +31,8 @@ public class Block : InteractiveGameObject
     public DropBlock dropBlock;
 
     private GameController GameController;
+
+    public GameObject particleSystemInstance;
 
     //Function to call instead of Awake/Start, should be faster as it already has access to these components
     public void Init(GameController gameController,
@@ -46,20 +52,21 @@ public class Block : InteractiveGameObject
 
         this.blockMover = blockMover;
         _camera = Camera.main;
+        this.userCanDrag = true;
     }
 
     //Runs every frame for each block. Does different actions depending on which states are enabled/disabled.
     void Update()
     {
-        checkOutlineState();
-        if(isActive)
-        {
-            if (!userCanDrag && !isBeingPlacedOnTop & Input.GetMouseButton(0) && (mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
-            {
-                userCanNudge= false;
-                userCanDrag = true;
-            }
-        }
+        if (outline != null) checkOutlineState();
+        //if(isActive)
+        //{
+        //    if (!userCanDrag && !isBeingPlacedOnTop (mouseMovedEnoughToDrag() && enoughTimeHasEllapsed()))
+        //    {
+        //        userCanNudge= false;
+        //        userCanDrag = true;
+        //    }
+        //}
     }
 
     // Called by Tower Collision box whenever a block leaves it's collision area
@@ -75,6 +82,8 @@ public class Block : InteractiveGameObject
             if(playerHasRemovedBlock || (!this.GameController.CheckIfTowerIsCollapsing()))
             {
                 //Activate this once the first turn on the current tower is occuring so that we don't confuse the collider
+                StopDraggingBlock();
+                this.userCanDrag = false;
                 isBeingPlacedOnTop = true;
                 blockMover.PlaceBlockInDroppingPosition(this);
             }
@@ -211,7 +220,7 @@ public class Block : InteractiveGameObject
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
     public void NudgeBlock()
     {
-        if (GameController.gameReady)
+        if (GameController.gameReady && !userIsPlacingBlockOnTop)
         {
             RaycastHit hit;
             Physics.Raycast(_camera.ScreenPointToRay(Mouse.current.position.ReadValue()), out hit);
@@ -221,6 +230,8 @@ public class Block : InteractiveGameObject
                 GameObject blockHit = hit.collider.gameObject;
                 if (blockHit != null && (blockHit.GetInstanceID() == gameObject.GetInstanceID()))
                 {
+                    DoCursorNudgeEffect(hit);
+                    playSoundAfterDelay(this.soundEmitter);
                     isBeingNudged = true;
                     NudgeEffect.PlayFeedbacks();
                     NudgeBlockByFaceEdge(GetHitFace(hit));
@@ -230,11 +241,43 @@ public class Block : InteractiveGameObject
         }
     }
 
+    public void playSoundAfterDelay(AudioSource audioSource)
+    {
+        audioSource.pitch = (Random.Range(0.7f, 1f));
+        audioSource.PlayDelayed(0);
+    }
+
     public void DragBlock()
     {
-        if (GameController.gameReady)
+        if (GameController.gameReady && this.userCanDrag)
         {
+            /* TODO: Find a better way to toggle gravity on and off, the issue here is
+             *       that we're disabling it in BlockMover, then enabling it again here.
+             */
+            if(this.isBeingPlacedOnTop)
+            {
+                this.ToggleGravity(false);
+                userIsPlacingBlockOnTop = true;
+            }
+            dragBoxTool.ToggleDragBlock(true);
+        }
+    }
 
+    public void StopDraggingBlock()
+    {
+        if(dragBoxTool.isDragging)
+        {
+            Debug.Log("Stop dragging");
+            dragBoxTool.ToggleDragBlock(false);
+            this.isBeingDragged = false;
+            this.isActive = false;
+            
+            // If the user has dragged a block out of the tower and it's touching nothing,
+            // but they HAVE NOT clicked the block again to place it
+            if(!userIsPlacingBlockOnTop && !isBlockTouchingGround)
+            {
+
+            }
         }
     }
 
@@ -343,7 +386,8 @@ public class Block : InteractiveGameObject
     {
         if (isActive)
         {
-            if((isBeingDragged || isBeingNudged))
+            outline.updateOutlineState(CollisionColourState.green);
+            if ((isBeingDragged || isBeingNudged))
             {
                 outline.updateOutlineState(CollisionColourState.green);
             } else 
@@ -353,11 +397,7 @@ public class Block : InteractiveGameObject
             }
         } else
         {
-            if (outline == null)
-            {
-                //Debug.Log(this);
-            }
-            if (outline != null) outline.updateOutlineState(CollisionColourState.none);
+            outline.updateOutlineState(CollisionColourState.none);
         }
     }
 
@@ -369,5 +409,25 @@ public class Block : InteractiveGameObject
         orange, //FF7D00
         red, //FF0500
         green
+    }
+
+    //TODO - move this elsewhere, shouldn't be in PlayerController
+    public void DoCursorNudgeEffect(RaycastHit hit)
+    {
+        var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+        // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit                
+        var localInstance = Instantiate(particleSystemInstance, hit.point, cursorRotation);
+        var particalSystem = localInstance.GetComponent<ParticleSystem>();
+        var main = particalSystem.main;
+        main.startDelay = 0;
+        localInstance.SetActive(true);
+
+        //gunParticleSystemObj.ToString();
+        //if (gunActive) gunParticleSystemObj.SetActive(true);
+    }
+
+    public void ToggleGravity(bool enableGravity)
+    {
+        this.GetComponent<Rigidbody>().useGravity = enableGravity;
     }
 }

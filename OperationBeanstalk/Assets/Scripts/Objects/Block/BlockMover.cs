@@ -43,6 +43,7 @@ public class BlockMover : MonoBehaviour
      * */
     public void FinishDroppingBlockInPlace()
     {
+        Debug.Log("Finished Putting Block in Dropping Position");
         Destroy(block.gameObject.GetComponent<splineMove>());
         block.isBeingPlacedOnTop = false;
         block.blocksTouching = true;
@@ -92,11 +93,12 @@ public class BlockMover : MonoBehaviour
     public void PlaceBlockInDroppingPosition(Block block)
     {
         if(blockIsBeingPlaced) { return; }
+        block.gameObject.GetComponent<Rigidbody>().freezeRotation = true;
         blockIsBeingPlaced = true;
         this.block = block;
         block.userCanDrag = false;
         block.isBeingPlacedOnTop = true;
-        block.GetComponent<Rigidbody>().useGravity = false;
+        block.ToggleGravity(false);
         block.userCanNudge = false;
         gameController.GoToTurnState(TurnState.PlaceBlock);
         StartCoroutine(cam.pivotToDropView());
@@ -108,7 +110,7 @@ public class BlockMover : MonoBehaviour
         midwayBlockMovePoint.transform.position = new Vector3(safePosition.x, midwayBlockMovePoint.transform.position.y, safePosition.z*2);   
         pathManager = CreatePath();
         CreateSplineMove(pathManager);
-        StartCoroutine(MoveBlockToDropRotation());
+        StartCoroutine(MoveBlockToDropRotation(block));
     }
 
     private void SetBlockStatsForDropPosition()
@@ -121,7 +123,7 @@ public class BlockMover : MonoBehaviour
         block.GetComponent<Rigidbody>().drag = 1f;
     }
 
-    public IEnumerator MoveBlockToDropRotation()
+    public IEnumerator MoveBlockToDropRotation(Block block)
     {
         //this.doneRotating = false;
         while (Quaternion.Angle(block.transform.rotation, block.originalRotation) > 1f)
@@ -129,6 +131,8 @@ public class BlockMover : MonoBehaviour
             block.gameObject.transform.rotation = Quaternion.RotateTowards(block.transform.rotation, block.originalRotation, 100f);
             yield return 0;
         }
+        Debug.Log("Finished moving block!");
+        block.userCanDrag = true;
         //this.doneRotating = true;
     }
 

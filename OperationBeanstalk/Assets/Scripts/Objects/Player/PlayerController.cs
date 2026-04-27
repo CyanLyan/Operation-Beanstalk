@@ -31,8 +31,12 @@ public class PlayerController : MonoBehaviour
     public string playerName { get; set; }
     public int score { get; set; }
 
+    private bool isHolding { get; set; }
+
     public PlayerInputActions playerControls;
     public CameraController cameraController;
+
+    private Block lastBlockHit;
     public PlayerController(Color color, string name, int score = 0)
     {
         this.color = color;
@@ -42,8 +46,32 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         playerControls = new PlayerInputActions();
-        playerControls.Player.Fire.canceled += FireCanceled;
+        isHolding = false;
+        playerControls.Player.Fire.started += context =>
+        {
+            isHolding = false;
+            //if(lastBlockHit)
+            //{
+            //    lastBlockHit.isBeingDragged = false;
+            //    lastBlockHit.isActive = false;
+            //}
+        };
         playerControls.Player.Fire.performed += FirePerformed;
+
+        // TODO: Put this into a function
+        playerControls.Player.Fire.canceled += context =>
+        {
+            if (lastBlockHit)
+            {
+                lastBlockHit.StopDraggingBlock();
+            }
+
+            // TODO: Gotta find a better way to do this? Gravity toggle in function?
+            if(lastBlockHit.isBeingPlacedOnTop && lastBlockHit.userIsPlacingBlockOnTop)
+            {
+                lastBlockHit.ToggleGravity(true);
+            }
+        };
         playerControls.Enable();
 
         playerControls.Player.CameraRotateLeft.started += CameraRotateLeft;
@@ -64,19 +92,6 @@ public class PlayerController : MonoBehaviour
         playerControls.Disable();
     }
 
-    //public void Click(InputAction.CallbackContext context)
-    //{
-    //    if(context.performed)
-    //    {
-    //        Cursor.lockState = CursorLockMode.Locked;
-    //    } else if (context.canceled)
-    //    {
-    //        Cursor.visible = true;
-    //        Cursor.lockState = CursorLockMode.None;
-    //    }
-    //}
-
-
     public Block getBlockHitByUserAction()
     {
         Ray ray = viewCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -84,8 +99,6 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
             Block blockHit = hit.collider.GetComponent<Block>();
-            // TODO - move this once we start to do drag effect
-            DoCursorNudgeEffect(hit);
             return blockHit;
         }
         return null;
@@ -93,24 +106,19 @@ public class PlayerController : MonoBehaviour
 
     private void FirePerformed(InputAction.CallbackContext context)
     {
-        if(context.interaction is TapInteraction)
+        var blockHit = getBlockHitByUserAction();
+        if(blockHit)
         {
-            var blockHit = getBlockHitByUserAction();
-            blockHit.NudgeBlock();
-            playSoundAfterDelay(blockHit.soundEmitter);
-        } else if (context.interaction is HoldInteraction)
-        {
-            var blockHit = getBlockHitByUserAction();
-            blockHit.DragBlock();
-        }
-    }
-
-    private void FireCanceled(InputAction.CallbackContext context)
-    {
-        if(context.interaction is HoldInteraction)
-        {
-            var blockHit = getBlockHitByUserAction();
-            blockHit.DragBlock();
+            lastBlockHit = blockHit;
+            if(context.interaction is TapInteraction && !isHolding)
+            {
+                blockHit.NudgeBlock();
+            
+            } else if (context.interaction is HoldInteraction)
+            {
+                isHolding = true;
+                blockHit.DragBlock();
+            }
         }
     }
 
@@ -158,30 +166,9 @@ public class PlayerController : MonoBehaviour
         viewCamera = Camera.main;
     }
 
-    //TODO - move this elsewhere, shouldn't be in PlayerController
-    public void DoCursorNudgeEffect(RaycastHit hit)
+    private void Update()
     {
-        var cursorRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-        // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit                
-        var localInstance = Instantiate(particleSystemInstance, hit.point, cursorRotation);
-        var particalSystem = localInstance.GetComponent<ParticleSystem>();
-        var main = particalSystem.main;
-        main.startDelay = cursorEffectDelay;
-        localInstance.SetActive(true);
-
-        gunParticleSystemObj.ToString();
-        if(gunActive) gunParticleSystemObj.SetActive(true);
-    }
-
-    public void playSoundAfterDelay(AudioSource audioSource)
-    {
-        randomizeAudioPitch(audioSource).PlayDelayed(cursorEffectDelay);
-    }
-
-    public AudioSource randomizeAudioPitch(AudioSource audioSource)
-    {
-        audioSource.pitch = (Random.Range(0.7f, 1f));
-        return audioSource;
+        UpdateCursorBasedOnMouse();
     }
 
     private void UpdateCursorBasedOnMouse()
@@ -190,6 +177,13 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
+            Block blockHit = hit.collider.GetComponent<Block>();
+            if(blockHit)
+            {
+                if (lastBlockHit && (blockHit != lastBlockHit)) lastBlockHit.isActive = false;
+                lastBlockHit = blockHit;
+                blockHit.isActive = true;
+            }
             // If the ray hits something, set the position to the hit point and rotate based on the normal vector of the hit       
             defaultCursorObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
             defaultCursorObj.transform.position = hit.point;
@@ -198,6 +192,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (lastBlockHit) lastBlockHit.isActive = false;
             // If the ray doesn't hit anything, set the position to the maxCursorDistance and rotate to point away from the camera
             defaultCursorObj.transform.position = ray.origin + ray.direction.normalized * maxCursorDistance;
             defaultCursorObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, -ray.direction);

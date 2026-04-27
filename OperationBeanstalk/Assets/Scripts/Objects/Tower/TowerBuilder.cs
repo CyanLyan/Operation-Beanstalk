@@ -25,7 +25,10 @@ public class TowerBuilder: MonoBehaviour {
             palletStack.AddRange(pallet);
         }
 
-        Camera.main.GetComponent<CameraController>().maxHeight = height * 0.6f;
+        // TODO: Fix this awful code here, values shouldn't be set directly with magic numbers
+        CameraController cameraController = Camera.main.GetComponent<CameraController>();
+        cameraController.maxHeight = height * 1.5f;
+        cameraController.adjustDropViewHeight(height * 1.5f);
 
         initDetails.towerArea.transform.position = new Vector3(0, height / 2);
         initDetails.towerArea.transform.localScale = new Vector3(3f - 0.1f, height, 3f - 0.1f);

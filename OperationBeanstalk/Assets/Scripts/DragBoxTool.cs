@@ -41,62 +41,66 @@ public class DragBoxTool : MonoBehaviour
             ItemHitDetails itemHit = gameObject.AddComponent<ItemHitDetails>();
             RaycastHit hit;
             // We need to actually hit an object
-        
+
 
             //TODO - move to input handler
-            //if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit, 100))
-            //{
-            //    return;
-            //}
+            if (!Physics.Raycast(mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue()), out hit, 100))
+            {
+                return;
+            }
             //itemHit.distance = hit.distance;
 
-            //var hitBlock = hit.collider.gameObject.GetComponent<Block>();
+            var hitBlock = hit.collider.gameObject.GetComponent<Block>();
 
-            //if (!hitBlock || hitBlock.hasBeenPlaced || hitBlock.isBeingNudged || !hitBlock.userCanDrag || hitBlock.isBeingDragged) return;
-            //itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
+            if (!hitBlock || hitBlock.hasBeenPlaced || hitBlock.isBeingNudged || hitBlock.isBeingDragged)
+            {
+                return;
+            }
+            itemHit.itemHitRigidBody = hit.collider.gameObject.GetComponent<Rigidbody>();
             //itemHit.block = hitBlock;
             //mainCamera = FindCamera();
 
             //// We need to hit a rigidbody that is not kinematic
-            //if (!hit.rigidbody || hit.rigidbody.isKinematic)
-            //{
-            //    return;
-            //}
+            if (!hit.rigidbody || hit.rigidbody.isKinematic)
+            {
+                return;
+            }
 
-            //if (!springJoint)
-            //{
-            //    GameObject go = new GameObject("Rigidbody dragger");
-            //    Rigidbody body = go.AddComponent<Rigidbody>();
-            //    springJoint = go.AddComponent<SpringJoint>();
-            //    springJoint.minDistance = minForce;
-            //    springJoint.maxDistance = maxForce;
-            //    body.isKinematic = true;
-            //}
+            if (!springJoint)
+            {
+                GameObject go = new GameObject("Rigidbody dragger");
+                Rigidbody body = go.AddComponent<Rigidbody>();
+                springJoint = go.AddComponent<SpringJoint>();
+                springJoint.minDistance = minForce;
+                springJoint.maxDistance = maxForce;
+                body.isKinematic = true;
+            }
 
-            //springJoint.transform.position = hit.point;
-            //if (attachToCenterOfMass)
-            //{
-            //    Vector3 anchor = transform.TransformDirection(hit.rigidbody.centerOfMass) + hit.rigidbody.transform.position;
-            //    anchor = springJoint.transform.InverseTransformPoint(anchor);
-            //    springJoint.anchor = anchor;
-            //}
-            //else
-            //{
+            springJoint.transform.position = hit.point;
+            if (attachToCenterOfMass)
+            {
+                Vector3 anchor = transform.TransformDirection(hit.rigidbody.centerOfMass) + hit.rigidbody.transform.position;
+                anchor = springJoint.transform.InverseTransformPoint(anchor);
+                springJoint.anchor = anchor;
+            }
+            else
+            {
 
-            //    springJoint.autoConfigureConnectedAnchor = true;
-            //}
+                springJoint.autoConfigureConnectedAnchor = true;
+            }
 
-            //springJoint.spring = spring;
-            //springJoint.damper = damper;
-            //springJoint.maxDistance = distance;
-            //springJoint.connectedBody = hit.rigidbody;
+            springJoint.spring = spring;
+            springJoint.damper = damper;
+            springJoint.maxDistance = distance;
+            springJoint.connectedBody = hit.rigidbody;
 
-            //hitBlock.isBeingDragged = true;
+            hitBlock.isBeingDragged = true;
+            StartCoroutine("DragTheBox", itemHit);
         }
         //isDragging = true;
-        //StartCoroutine("DragTheBox", itemHit);
     }
 
+    //TODO - remove ItemHitDetails, it doesn't seem to actually be simplifying code here at all
     IEnumerator DragTheBox(ItemHitDetails stuffToFollow)
     {
         stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().hasBlockBeenMovedByPlayerRecently = true;
@@ -108,12 +112,14 @@ public class DragBoxTool : MonoBehaviour
         springJoint.connectedBody.angularDrag = angularDrag;
         lineContainer = GameObject.FindGameObjectWithTag("LineRenderer");
 
-        while (Input.GetMouseButton(0) && stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().userCanDrag)
+        while (stuffToFollow.itemHitRigidBody.gameObject.GetComponent<Block>().userCanDrag)
         {
             Vector3 attatchedItem = stuffToFollow.itemHitRigidBody.transform.TransformPoint(springJoint.connectedAnchor);
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            springJoint.transform.position = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             
-            springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
+            
+            //springJoint.transform.position = ray.GetPoint(stuffToFollow.distance);
 
             DrawLine.Draw(lineContainer, attatchedItem, ray.GetPoint(stuffToFollow.distance), Color.cyan, (Time.deltaTime * 1.5f));
             yield return stuffToFollow.distance;

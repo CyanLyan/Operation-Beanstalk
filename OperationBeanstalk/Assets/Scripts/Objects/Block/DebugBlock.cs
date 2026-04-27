@@ -7,6 +7,6 @@ public class DebugBlock : Block
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.GetComponent<Rigidbody>().useGravity = false;   
+        gameObject.GetComponent<Block>().ToggleGravity(false);   
     }
 }
