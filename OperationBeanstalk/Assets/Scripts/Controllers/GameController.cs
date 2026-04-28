@@ -32,7 +32,9 @@ public class GameController : MonoBehaviour
     
     public GameObject cursorControllerObj;
 
-    public GameObject camerControllerObj;
+    public GameObject cameraControllerObj;
+
+    private CameraController cameraController;
     
     //TODO - create tool/toggle for point drag vs. frozen rotation drag
     public GameObject dragBoxToolObj;
@@ -42,6 +44,8 @@ public class GameController : MonoBehaviour
     public bool blockIsBeingPlacedOnTop;
 
     public bool gameReady = false;
+
+    public bool towerIsCollapsing;
 
     // Start is called before the first frame update
     void Start()
@@ -58,7 +62,7 @@ public class GameController : MonoBehaviour
         turnIndex = 0;
         GameObject textObj = new GameObject("p1 text");
         CurrentTurnState = TurnState.GetBlock;
-        var cameraController = camerControllerObj.GetComponent<CameraController>();
+        cameraController = cameraControllerObj.GetComponent<CameraController>();
         cameraController.cameraViewPivotSpeed = currentGameSettings.cameraViewPivotSpeed;
         TowerInitDetails details = new TowerInitDetails(currentGameSettings.BlockSettings, 
                                                         cameraController, 
@@ -116,11 +120,17 @@ public class GameController : MonoBehaviour
 
     public bool CheckIfTowerIsCollapsing()
     {
-        var isTowerCollapsing = this.tower.TowerIsCollapsing();
-        if (!isTowerCollapsing) return false;
+        towerIsCollapsing = this.tower.TowerIsCollapsing();
+        if (!towerIsCollapsing) return false;
         Debug.Log("AAA TOWER IS COLLAPSING");
         return true;
         
+    }
+
+    public void TowerIsCollapsingEvent()
+    {
+        //camerControllerObj.
+        StartCoroutine(cameraController.pivotToDropCam());
     }
     
     public void GameFinish()

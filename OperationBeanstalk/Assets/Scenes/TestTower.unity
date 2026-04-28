@@ -1581,11 +1581,12 @@ MonoBehaviour:
   textUI: {fileID: 515430410}
   cursorControllerObj: {fileID: 9126710567471718061, guid: 457c0a03d51b1f74c8b418aeac937fab,
     type: 3}
-  camerControllerObj: {fileID: 960258024}
+  cameraControllerObj: {fileID: 960258024}
   dragBoxToolObj: {fileID: 369392694}
   midwayBlockMovePoint: {fileID: 1397583543}
   blockIsBeingPlacedOnTop: 0
   gameReady: 0
+  towerIsCollapsing: 0
 --- !u!4 &725078023
 Transform:
   m_ObjectHideFlags: 0

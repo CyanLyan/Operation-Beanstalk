@@ -37,6 +37,7 @@ public class CameraController : MonoBehaviour
     private float initDistanceFromTowerCollisionBox;
     private GameObject mainView;
     private GameObject dropView;
+    private GameObject topDownView;
 
     private Key currentUserInput;
 
@@ -45,6 +46,7 @@ public class CameraController : MonoBehaviour
     {
         initDistanceFromTowerCollisionBox = Vector3.Distance(transform.position, GameObject.Find("EventSystem").transform.position);
         mainView = GameObject.Find("MainView").gameObject;
+        topDownView = GameObject.Find("TopDownDropView");
         previousViewPosition = Vector3.zero;
         previousViewRotation = new Quaternion(0,0,0,0);
 
@@ -176,6 +178,7 @@ public class CameraController : MonoBehaviour
     //Returns camera to previous camera position
     public IEnumerator pivotBackToPreviousView(Vector3 startingPosition)
     {
+
         for (var t = 0.0f; t < cameraViewPivotSpeed; t += Time.deltaTime)
         {
             moveCameraBetween2Points(mainView.transform.position, previousViewPosition, (t / cameraViewPivotSpeed));
@@ -204,6 +207,19 @@ public class CameraController : MonoBehaviour
         foreach (var dropView in dropViewCameras)
         {
             dropView.transform.position = new Vector3(dropView.transform.position.x, maxViewHeight, dropView.transform.position.z);
+        }
+    }
+
+    public IEnumerator pivotToDropCam()
+    {
+        Debug.Log("Pivoting to tower drop cam");
+        for (var t = 0.0f; t < cameraViewPivotSpeed; t += Time.deltaTime)
+        {
+            moveCameraBetween2Points(topDownView.transform.position, previousViewPosition, (t / cameraViewPivotSpeed));
+            rotateCameraBetween2Points((t / cameraViewPivotSpeed) * 20, previousViewRotation);
+            transform.position = topDownView.transform.position;
+            transform.rotation = topDownView.transform.rotation;
+            yield return null;
         }
     }
 }

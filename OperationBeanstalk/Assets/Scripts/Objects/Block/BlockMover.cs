@@ -36,28 +36,6 @@ public class BlockMover : MonoBehaviour
         point3 = new GameObject("tmp3");
     }
 
-    /**
-     * Activated externally by the dropzone collision box, once the block is in place.
-     * TODO - after implementing SWS (simple waypoint system) see if we even need this
-     *        chain of events or can just manually end the sequence ourselves.
-     * */
-    public void FinishDroppingBlockInPlace()
-    {
-        Debug.Log("Finished Putting Block in Dropping Position");
-        Destroy(block.gameObject.GetComponent<splineMove>());
-        block.isBeingPlacedOnTop = false;
-        block.blocksTouching = true;
-        block.isInDropPosition = false;
-        block.userCanDrag = false;
-        block.userCanNudge = false;
-        block.hasBlockBeenMovedByPlayerRecently = false;
-        block.GetComponent<Rigidbody>().freezeRotation = false;
-        block.hasBeenPlaced = true;
-        StartCoroutine(cam.pivotBackToPreviousView(cam.transform.position));
-        gameController.FinishTurn();
-    }
-
-
     private void CreateSplineMove(PathManager pathManager)
     {
         var splineMove = block.gameObject.AddComponent<splineMove>();
@@ -90,6 +68,7 @@ public class BlockMover : MonoBehaviour
         return EmptyObj;
     }
 
+    //TODO - fix all these direct value accesses 
     public void PlaceBlockInDroppingPosition(Block block)
     {
         if(blockIsBeingPlaced) { return; }
@@ -113,6 +92,29 @@ public class BlockMover : MonoBehaviour
         StartCoroutine(MoveBlockToDropRotation(block));
     }
 
+    /**
+ * Activated externally by the dropzone collision box, once the block is in place.
+ * TODO - after implementing SWS (simple waypoint system) see if we even need this
+ *        chain of events or can just manually end the sequence ourselves.
+ * */
+    public void FinishDroppingBlockInPlace()
+    {
+        Debug.Log("Finished Putting Block in Dropping Position");
+        Destroy(block.gameObject.GetComponent<splineMove>());
+        block.isBeingPlacedOnTop = false;
+        block.blocksTouching = true;
+        block.isInDropPosition = false;
+        block.userCanDrag = false;
+        block.userCanNudge = false;
+        block.userIsPlacingBlockOnTop = false;
+        block.hasBlockBeenMovedByPlayerRecently = false;
+        block.GetComponent<Rigidbody>().freezeRotation = false;
+        block.hasBeenPlaced = true;
+        StartCoroutine(cam.pivotBackToPreviousView(cam.transform.position));
+        blockIsBeingPlaced = false;
+        gameController.FinishTurn();
+    }
+
     private void SetBlockStatsForDropPosition()
     {
         block.isInDropPosition = true;
@@ -123,6 +125,8 @@ public class BlockMover : MonoBehaviour
         block.GetComponent<Rigidbody>().drag = 1f;
     }
 
+
+    //TODO - figure out why this doesn't work
     public IEnumerator MoveBlockToDropRotation(Block block)
     {
         //this.doneRotating = false;

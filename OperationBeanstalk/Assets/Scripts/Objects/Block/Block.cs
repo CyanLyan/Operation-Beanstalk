@@ -86,7 +86,11 @@ public class Block : InteractiveGameObject
                 this.userCanDrag = false;
                 isBeingPlacedOnTop = true;
                 blockMover.PlaceBlockInDroppingPosition(this);
-            }
+            } 
+            //else if(this.gameController.CheckIfTowerIsCollapsing())
+            //{
+                
+            //}
         }
     }
 
@@ -123,98 +127,20 @@ public class Block : InteractiveGameObject
         else if (other.gameObject.tag == tag)
         {
             blocksTouching = false;
-        }
-    }
-
-    //Event for when user clicks on block object
-    private void OnMouseDown()
-    {
-        // After pulling block out, if block is in drop position, give user control again
-        mouseStartPos = Mouse.current.position.ReadValue();
-        if (isInDropPosition && userCanDrag && isBeingDragged) 
-        {
-            rigidbody.useGravity = true;
-        }
-        startTime = Time.time;
-        if(!isBeingNudged && !isBeingDragged) isActive = false;
-    }
-
-    private void OnMouseOver()
-    {
-        if (dragBox.isDragging && !isBeingDragged)
-        {
-            isActive = false;
-        } else
-        {
-            isActive = true;
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            //OnLeftMouseUp();
-            if (mouseStartPos == new Vector2(0, 0)) mouseStartPos = Mouse.current.position.ReadValue();
         } 
     }
 
-    private void OnMouseExit()
+    private void OnCollisionEnter(Collision collision)
     {
-        if (!isBeingNudged && !isBeingDragged && !isInDropPosition)
+        if (collision.gameObject.tag == "Block")
         {
-            isActive = false;
-            startTime = 0;
+            if (userIsPlacingBlockOnTop && !GameController.towerIsCollapsing)
+            {
+                blockMover.FinishDroppingBlockInPlace();
+                Debug.Log("Block placed");
+            }
+
         }
-    }
-
-    //Only use this to wait for user to release mouse after block is removed, so that they don't glitch the game out
-    private void OnMouseUp()
-    {
-        userCanDrag= false;
-        if(isInDropPosition)
-        {
-            userCanDrag = true;
-        }
-        if(!isInDropPosition) userCanNudge= true;
-    }
-
-
-    //TODO: Replace magic number with actual block dimensions, which can be gotten through the game controller
-    private void OnMouseDrag()
-    {
-        if(isBeingPlacedOnTop)
-        {
-            dropBlock.SetDropBlockPlacement(gameObject.transform.position, 1.5f);
-        }
-    }
-
-    //Checks if the mouse has moved enough for the user to be able to drag it.
-    public bool mouseMovedEnoughToDrag()
-    {
-        Vector2 changedMousePos = Mouse.current.position.ReadValue() - mouseStartPos;
-        bool mouseMovedEnough = (Mathf.Abs(changedMousePos.x) > mouseDriftPermittedToDrag) || 
-            (Mathf.Abs(changedMousePos.y) > mouseDriftPermittedToDrag) || 
-            (Mathf.Abs(changedMousePos.x) > mouseDriftPermittedToDrag);
-        return mouseMovedEnough;
-    }
-
-    public bool enoughTimeHasEllapsed()
-    {
-        if (startTime == 0) return false;
-        var endTime = Time.time;
-        var timeDiff = Mathf.Abs(endTime - startTime);
-        return timeDiff > timeOnMouseDownNeededForDrag;
-    }
-
-    //Event for when user releases mouse
-    public void OnNudgeBlockInput()
-    {
-        if (userCanNudge && (!mouseMovedEnoughToDrag()))
-        {
-            NudgeBlock();
-        } else if (userCanDrag && isBeingPlacedOnTop) {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-        }
-
-        mouseStartPos = new Vector2(0, 0);
-        if(isActive) isActive = false;
     }
 
     //Takes raycast of user's mouse relative to where the block was clicked, finds which face of the block was touched on, then forces the block in that direction.
